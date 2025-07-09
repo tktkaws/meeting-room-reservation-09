@@ -9,13 +9,19 @@ class AuthManager {
         this.isAdmin = false;
         this.departments = [];
         this.userColorSettings = {};
+        this.initialized = false;
         this.init();
     }
 
     async init() {
+        if (this.initialized) {
+            return;
+        }
+        
         await this.checkAuthStatus();
         await this.loadDepartments();
         this.setupEventListeners();
+        this.initialized = true;
     }
 
     // 認証状態確認
@@ -28,7 +34,16 @@ class AuthManager {
             
             
             if (this.currentUser && this.currentUser.color_setting) {
-                this.userColorSettings = JSON.parse(this.currentUser.color_setting);
+                const parsedSettings = JSON.parse(this.currentUser.color_setting);
+                
+                // 配列形式の場合はオブジェクト形式に変換
+                if (Array.isArray(parsedSettings)) {
+                    this.userColorSettings = this.convertArrayToObjectSettings(parsedSettings);
+                } else {
+                    this.userColorSettings = parsedSettings;
+                }
+            } else {
+                this.userColorSettings = {};
             }
             
             this.updateUI();
@@ -37,6 +52,7 @@ class AuthManager {
             this.isLoggedIn = false;
             this.isAdmin = false;
             this.currentUser = null;
+            this.userColorSettings = {};
             this.updateUI();
         }
     }
@@ -54,22 +70,51 @@ class AuthManager {
 
     // イベントリスナー設定
     setupEventListeners() {
+        console.log('AuthManager: イベントリスナーを設定します');
+        
+        // 既存のイベントリスナーをクリア
+        this.clearEventListeners();
+        
         // ログインフォーム
         const loginForm = document.querySelector('#loginForm form');
         if (loginForm) {
-            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+            this.loginHandler = (e) => this.handleLogin(e);
+            loginForm.addEventListener('submit', this.loginHandler);
         }
 
         // ログアウトボタン
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => this.handleLogout());
+            this.logoutHandler = () => this.handleLogout();
+            logoutBtn.addEventListener('click', this.logoutHandler);
         }
 
         // カラー設定
         const colorSettings = document.getElementById('colorSettings');
         if (colorSettings) {
-            colorSettings.addEventListener('change', (e) => this.handleColorChange(e));
+            this.colorChangeHandler = (e) => this.handleColorChange(e);
+            colorSettings.addEventListener('change', this.colorChangeHandler);
+        }
+    }
+
+    // イベントリスナーをクリア
+    clearEventListeners() {
+        // ログインフォーム
+        const loginForm = document.querySelector('#loginForm form');
+        if (loginForm && this.loginHandler) {
+            loginForm.removeEventListener('submit', this.loginHandler);
+        }
+
+        // ログアウトボタン
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn && this.logoutHandler) {
+            logoutBtn.removeEventListener('click', this.logoutHandler);
+        }
+
+        // カラー設定
+        const colorSettings = document.getElementById('colorSettings');
+        if (colorSettings && this.colorChangeHandler) {
+            colorSettings.removeEventListener('change', this.colorChangeHandler);
         }
     }
 
@@ -81,7 +126,7 @@ class AuthManager {
         const password = document.getElementById('password').value;
         
         if (!email || !password) {
-            showErrorMessage('メールアドレスとパスワードを入力してください。', document.querySelector('.login-section'));
+            showErrorMessage('メールアドレスとパスワードを入力してください。', document.querySelector('#sidebar-message'));
             return;
         }
 
@@ -99,10 +144,16 @@ class AuthManager {
             this.isAdmin = Boolean(response.user.admin);
             
             if (this.currentUser.color_setting) {
-                this.userColorSettings = JSON.parse(this.currentUser.color_setting);
+                const parsedSettings = JSON.parse(this.currentUser.color_setting);
+                // 配列形式の場合はオブジェクト形式に変換
+                if (Array.isArray(parsedSettings)) {
+                    this.userColorSettings = this.convertArrayToObjectSettings(parsedSettings);
+                } else {
+                    this.userColorSettings = parsedSettings;
+                }
             }
 
-            showSuccessMessage('ログインしました', document.querySelector('.login-section'));
+            showSuccessMessage('ログインしました', document.querySelector('#sidebar-message'));
             
             // フォームをリセット
             event.target.reset();
@@ -116,7 +167,7 @@ class AuthManager {
             }
 
         } catch (error) {
-            showErrorMessage(error.message, document.querySelector('.login-section'));
+            showErrorMessage(error.message, document.querySelector('#sidebar-message'));
         } finally {
             hideLoading();
         }
@@ -132,7 +183,7 @@ class AuthManager {
             this.isAdmin = false;
             this.userColorSettings = {};
             
-            showSuccessMessage('ログアウトしました', document.querySelector('.login-section'));
+            showSuccessMessage('ログアウトしました', document.querySelector('#sidebar-message'));
             
             // UI更新
             this.updateUI();
@@ -148,7 +199,7 @@ class AuthManager {
             }
 
         } catch (error) {
-            showErrorMessage(error.message, document.querySelector('.login-section'));
+            showErrorMessage(error.message, document.querySelector('#sidebar-message'));
         }
     }
 
@@ -171,7 +222,7 @@ class AuthManager {
                 }
                 
             } catch (error) {
-                showErrorMessage('カラー設定の保存に失敗しました', document.querySelector('.color-settings'));
+                showErrorMessage('カラー設定の保存に失敗しました', document.querySelector('#sidebar-message'));
             }
         }
     }
@@ -184,6 +235,7 @@ class AuthManager {
         const userDepartment = document.getElementById('userDepartment');
         const userRole = document.getElementById('userRole');
         const actionButtons = document.getElementById('actionButtons');
+        const colorSettingsSection = document.querySelector('.color-settings');
 
         if (this.isLoggedIn && this.currentUser) {
             // ログイン済み表示
@@ -205,11 +257,22 @@ class AuthManager {
             }
             
             if (actionButtons) actionButtons.style.display = 'block';
+            
+            // カラー設定を表示・更新
+            if (colorSettingsSection) {
+                colorSettingsSection.style.display = 'block';
+                this.updateColorSettings();
+            }
         } else {
             // 未ログイン表示
             if (loginForm) loginForm.style.display = 'block';
             if (userInfo) userInfo.style.display = 'none';
             if (actionButtons) actionButtons.style.display = 'none';
+            
+            // カラー設定を非表示
+            if (colorSettingsSection) {
+                colorSettingsSection.style.display = 'none';
+            }
         }
 
         // 管理者メニュー
@@ -228,10 +291,27 @@ class AuthManager {
     // カラー設定UI更新
     updateColorSettings() {
         const colorSettings = document.getElementById('colorSettings');
-        if (!colorSettings || !this.isLoggedIn) return;
+        if (!colorSettings) return;
 
         colorSettings.innerHTML = '';
 
+        // 全社の項目を一番上に追加
+        const companyColorItem = document.createElement('div');
+        companyColorItem.className = 'color-item';
+        
+        const companyLabel = document.createElement('label');
+        companyLabel.textContent = '全社';
+        
+        const companyColorInput = document.createElement('input');
+        companyColorInput.type = 'color';
+        companyColorInput.value = this.userColorSettings['company'] || '#3498db';
+        companyColorInput.dataset.departmentId = 'company';
+        
+        companyColorItem.appendChild(companyLabel);
+        companyColorItem.appendChild(companyColorInput);
+        colorSettings.appendChild(companyColorItem);
+
+        // 各部署の項目を追加
         this.departments.forEach(department => {
             const colorItem = document.createElement('div');
             colorItem.className = 'color-item';
@@ -248,6 +328,26 @@ class AuthManager {
             colorItem.appendChild(colorInput);
             colorSettings.appendChild(colorItem);
         });
+
+        // デフォルトに戻すボタンを追加
+        const resetButtonContainer = document.createElement('div');
+        resetButtonContainer.style.marginTop = '1rem';
+        resetButtonContainer.style.textAlign = 'center';
+        
+        const resetButton = document.createElement('button');
+        resetButton.textContent = 'デフォルトに戻す';
+        resetButton.className = 'reset-colors-btn';
+        resetButton.style.padding = '0.5rem 1rem';
+        resetButton.style.backgroundColor = '#95a5a6';
+        resetButton.style.color = 'white';
+        resetButton.style.border = 'none';
+        resetButton.style.borderRadius = '4px';
+        resetButton.style.cursor = 'pointer';
+        resetButton.style.fontSize = '0.9rem';
+        resetButton.addEventListener('click', () => this.resetColorsToDefault());
+        
+        resetButtonContainer.appendChild(resetButton);
+        colorSettings.appendChild(resetButtonContainer);
     }
 
     // 権限チェック
@@ -267,12 +367,88 @@ class AuthManager {
 
     // 部署カラー取得
     getDepartmentColor(departmentId) {
-        if (this.userColorSettings[departmentId]) {
+        // ログインしていてユーザー設定がある場合
+        if (this.isLoggedIn && this.userColorSettings[departmentId]) {
             return this.userColorSettings[departmentId];
         }
         
+        // 部署のデフォルトカラーを取得
         const department = this.getDepartment(departmentId);
-        return department ? department.default_color : '#718096';
+        if (department) {
+            return department.default_color;
+        }
+        
+        return '#718096';
+    }
+
+    // 予約カラー取得（全社かどうかも考慮）
+    getReservationColor(reservation) {
+        // console.log('予約カラー取得:', {
+        //     reservation: reservation,
+        //     user_department_id: reservation.user_department_id,
+        //     department_id: reservation.department_id,
+        //     is_company_wide: reservation.is_company_wide
+        // });
+        
+        // 全社の場合
+        if (reservation.is_company_wide) {
+            if (this.isLoggedIn) {
+                return this.userColorSettings['company'] || '#3498db';
+            } else {
+                return '#3498db'; // ログインしていない場合の全社デフォルトカラー
+            }
+        }
+        
+        // 部署固有の場合 - department_idも試す
+        const departmentId = reservation.user_department_id || reservation.department_id;
+        return this.getDepartmentColor(departmentId);
+    }
+
+    // 配列形式のカラー設定をオブジェクト形式に変換
+    convertArrayToObjectSettings(arraySettings) {
+        const objectSettings = {};
+        
+        // 配列の各インデックスを部署IDまたは特別なキーにマッピング
+        // インデックス0は全社（company）として扱う
+        if (arraySettings[0] !== null && arraySettings[0] !== undefined) {
+            objectSettings['company'] = arraySettings[0];
+        }
+        
+        // インデックス1以降は部署ID（1, 2, 3...）として扱う
+        for (let i = 1; i < arraySettings.length; i++) {
+            if (arraySettings[i] !== null && arraySettings[i] !== undefined) {
+                objectSettings[i.toString()] = arraySettings[i];
+            }
+        }
+        
+        
+        return objectSettings;
+    }
+
+    // カラー設定をデフォルトに戻す
+    async resetColorsToDefault() {
+        try {
+            // ユーザー設定をクリア
+            this.userColorSettings = {};
+            
+            // サーバーに空の設定を保存
+            await put('api/users.php?action=colors', {
+                color_settings: {}
+            });
+            
+            // UI更新
+            this.updateColorSettings();
+            
+            // カレンダー再描画
+            if (window.calendarManager) {
+                window.calendarManager.render();
+            }
+            
+            showSuccessMessage('カラー設定をデフォルトに戻しました', document.querySelector('#sidebar-message'));
+            
+        } catch (error) {
+            showErrorMessage('カラー設定のリセットに失敗しました', document.querySelector('#sidebar-message'));
+        }
     }
 
     // 現在のユーザー情報取得
@@ -290,8 +466,15 @@ class AuthManager {
     }
 }
 
-// グローバルインスタンス作成
-const authManager = new AuthManager();
+// グローバルインスタンス作成（シングルトンパターン）
+let authManagerInstance = null;
+
+function getAuthManager() {
+    if (!authManagerInstance) {
+        authManagerInstance = new AuthManager();
+    }
+    return authManagerInstance;
+}
 
 // エクスポート
-export default authManager;
+export default getAuthManager();

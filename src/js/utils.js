@@ -262,6 +262,7 @@ export function showErrorMessage(message, container) {
 
 // 成功メッセージ表示
 export function showSuccessMessage(message, container) {
+    console.log('Success:', message);
     const successDiv = createElement('div', 'success-message', message);
     container.insertBefore(successDiv, container.firstChild);
     

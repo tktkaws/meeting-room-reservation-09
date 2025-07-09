@@ -88,7 +88,7 @@ class ReservationManager {
             
         } catch (error) {
             console.error('予約の取得に失敗しました:', error);
-            showErrorMessage('予約の取得に失敗しました', document.querySelector('.main-content'));
+            showErrorMessage('予約の取得に失敗しました', document.querySelector('#sidebar-message'));
         }
     }
 
@@ -106,14 +106,14 @@ class ReservationManager {
             
         } catch (error) {
             console.error('過去の予約の取得に失敗しました:', error);
-            showErrorMessage('過去の予約の取得に失敗しました', document.querySelector('.main-content'));
+            showErrorMessage('過去の予約の取得に失敗しました', document.querySelector('#sidebar-message'));
         }
     }
 
     // 新規予約モーダル表示
     showNewReservationModal(date = null) {
         if (!authManager.getLoginStatus().isLoggedIn) {
-            showErrorMessage('ログインが必要です', document.querySelector('.main-content'));
+            showErrorMessage('ログインが必要です', document.querySelector('#sidebar-message'));
             return;
         }
 
@@ -157,7 +157,7 @@ class ReservationManager {
     // 編集予約モーダル表示
     showEditReservationModal(reservation) {
         if (!authManager.canEditReservation(reservation)) {
-            showErrorMessage('この予約を編集する権限がありません', document.querySelector('.main-content'));
+            showErrorMessage('この予約を編集する権限がありません', document.querySelector('#sidebar-message'));
             return;
         }
 
@@ -460,14 +460,14 @@ class ReservationManager {
     async createReservation(data) {
         console.log('送信データ:', data); // デバッグ用
         const response = await post('api/reservations.php', data);
-        showSuccessMessage('予約を作成しました', document.querySelector('.main-content'));
+        showSuccessMessage('予約を作成しました', document.querySelector('#sidebar-message'));
         return response;
     }
 
     // 予約更新
     async updateReservation(id, data) {
         const response = await put('api/reservations.php', { id, ...data });
-        showSuccessMessage('予約を更新しました', document.querySelector('.main-content'));
+        showSuccessMessage('予約を更新しました', document.querySelector('#sidebar-message'));
         return response;
     }
 
@@ -478,10 +478,10 @@ class ReservationManager {
             hideModal('reservationModal');
             
             await del('api/reservations.php', { id });
-            showSuccessMessage('予約を削除しました', document.querySelector('.main-content'));
+            showSuccessMessage('予約を削除しました', document.querySelector('#sidebar-message'));
             await this.loadReservations();
         } catch (error) {
-            showErrorMessage(error.message, document.querySelector('.main-content'));
+            showErrorMessage(error.message, document.querySelector('#sidebar-message'));
         }
     }
 

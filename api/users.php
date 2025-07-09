@@ -132,15 +132,26 @@ if ($method === 'PUT' && $action === 'colors') {
     
     $color_settings = json_encode($data['color_settings']);
     
+    // デバッグログ
+    error_log("カラー設定保存: ユーザーID " . $_SESSION['user_id'] . ", 設定: " . $color_settings);
+    
     $pdo = getDB();
     
     try {
         $stmt = $pdo->prepare("UPDATE users SET color_setting = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute([$color_settings, $_SESSION['user_id']]);
         
-        jsonResponse(['message' => 'Color settings updated successfully']);
+        // 保存確認のために再取得
+        $stmt = $pdo->prepare("SELECT color_setting FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $saved_settings = $stmt->fetch();
+        
+        error_log("保存確認: " . $saved_settings['color_setting']);
+        
+        jsonResponse(['message' => 'Color settings updated successfully', 'saved_settings' => $saved_settings['color_setting']]);
         
     } catch (PDOException $e) {
+        error_log("カラー設定保存エラー: " . $e->getMessage());
         jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
     }
 }

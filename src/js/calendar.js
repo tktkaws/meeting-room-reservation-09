@@ -299,7 +299,7 @@ class CalendarManager {
         dayReservations.forEach(reservation => {
             const reservationElement = createElement('div', 'reservation-item');
             reservationElement.textContent = reservation.title;
-            reservationElement.style.backgroundColor = authManager.getDepartmentColor(reservation.user_department_id);
+            reservationElement.style.backgroundColor = authManager.getReservationColor(reservation);
             reservationElement.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.showReservationDetails(reservation);
@@ -424,7 +424,7 @@ class CalendarManager {
             // 予約要素を作成
             const reservationElement = createElement('div', 'week-reservation');
             reservationElement.textContent = reservation.title;
-            reservationElement.style.backgroundColor = authManager.getDepartmentColor(reservation.user_department_id);
+            reservationElement.style.backgroundColor = authManager.getReservationColor(reservation);
             reservationElement.style.color = 'white';
             
             // 絶対配置で位置を設定
@@ -519,7 +519,7 @@ class CalendarManager {
         item.appendChild(time);
         
         // カラー表示
-        item.style.borderLeft = `4px solid ${authManager.getDepartmentColor(reservation.user_department_id)}`;
+        item.style.borderLeft = `4px solid ${authManager.getReservationColor(reservation)}`;
         
         // クリックイベント
         item.addEventListener('click', () => {
