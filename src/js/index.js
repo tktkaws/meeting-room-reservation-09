@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         reservationManager.loadReservations();
     };
     
-    console.log('会議室予約システムが初期化されました');
+    // console.log('会議室予約システムが初期化されました');
 });
 
 // エラーハンドリング

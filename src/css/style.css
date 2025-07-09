@@ -61,8 +61,7 @@ header nav a:hover {
     width: 300px;
     background-color: #ecf0f1;
     padding: 2rem 1rem;
-    margin-top: 80px;
-    height: calc(100vh - 80px);
+    height: 100vh;
     overflow-y: auto;
     border-right: 1px solid #bdc3c7;
 }
@@ -164,10 +163,56 @@ header nav a:hover {
 /* メインコンテンツ */
 .main-content {
     flex: 1;
-    padding: 2rem;
-    margin-top: 80px;
-    height: calc(100vh - 80px);
+    padding: 1rem;
+    height: 100vh;
     overflow-y: auto;
+}
+
+/* コンテンツヘッダー */
+.content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* ハンバーガーメニュー */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.hamburger-btn .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #2c3e50;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+/* リストコントロール */
+.list-controls {
+    display: none;
+    gap: 1rem;
+}
+
+.list-controls button {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.list-controls button:hover {
+    background-color: #2980b9;
 }
 
 /* ビューコントロール */
@@ -333,7 +378,101 @@ header nav a:hover {
 }
 
 /* 週間カレンダー */
-.week-calendar {
+.week-view-container {
+    display: flex;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.week-time-axis {
+    width: 80px;
+    background-color: #ecf0f1;
+    border-right: 1px solid #bdc3c7;
+}
+
+.time-axis-header {
+    height: 40px;
+    background-color: #34495e;
+    border-bottom: 1px solid #bdc3c7;
+}
+
+.time-label {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c3e50;
+    border-bottom: 1px solid #bdc3c7;
+}
+
+.day-column {
+    flex: 1;
+    position: relative;
+    border-right: 1px solid #bdc3c7;
+}
+
+.day-column:last-child {
+    border-right: none;
+}
+
+.day-header {
+    height: 40px;
+    background-color: #34495e;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    border-bottom: 1px solid #bdc3c7;
+}
+
+.day-header.today {
+    background-color: #3498db;
+}
+
+.time-grid {
+    display: grid;
+    grid-template-rows: repeat(36, 20px); /* 9時間 × 4スロット = 36スロット */
+}
+
+.time-slot {
+    border-bottom: 1px solid #ecf0f1;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.time-slot:hover {
+    background-color: #e8f4fd;
+}
+
+.time-slot:nth-child(4n) {
+    border-bottom: 1px solid #bdc3c7;
+}
+
+.week-reservation {
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.week-reservation:hover {
+    opacity: 0.8;
+}
+
+/* 旧週間カレンダー（非使用） */
+.week-calendar-old {
     display: grid;
     grid-template-columns: 80px repeat(7, 1fr);
     gap: 1px;
@@ -456,8 +595,10 @@ header nav a:hover {
 
 /* アクションボタン */
 .action-buttons {
-    margin-top: 2rem;
-    text-align: center;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
 }
 
 .action-buttons button {
@@ -734,29 +875,46 @@ table tr:hover {
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
+@media (max-width: 1200px) {
+    .hamburger-btn {
+        display: flex;
     }
     
     .sidebar {
-        width: 100%;
-        height: auto;
-        margin-top: 0;
+        position: fixed;
+        left: -300px;
+        top: 0;
+        height: 100vh;
+        z-index: 1500;
+        transition: left 0.3s ease;
+    }
+    
+    .sidebar.active {
+        left: 0;
     }
     
     .main-content {
-        margin-top: 0;
-        height: auto;
+        width: 100%;
     }
     
-    .view-controls {
-        flex-wrap: wrap;
+    .content-header {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-header {
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .navigation {
-        flex-direction: column;
-        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .view-controls {
+        justify-content: center;
+        flex-wrap: wrap;
     }
     
     .month-calendar {
@@ -771,6 +929,11 @@ table tr:hover {
     
     .week-calendar {
         grid-template-columns: 60px repeat(7, 1fr);
+    }
+    
+    .action-buttons {
+        bottom: 1rem;
+        right: 1rem;
     }
 }
 

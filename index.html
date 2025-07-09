@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会議室予約システム</title>
     <link rel="stylesheet" href="src/css/style.css">
 </head>
+
 <body>
     <div class="container">
-        <header>
+        <!-- <header>
             <h1>会議室予約システム</h1>
-        </header>
-        
+        </header> -->
+
         <aside class="sidebar">
+            <h1>会議室予約システム</h1>
             <div class="login-section">
                 <div id="loginForm">
                     <h3>ログイン</h3>
@@ -45,39 +48,47 @@
                     <button id="logoutBtn">ログアウト</button>
                 </div>
             </div>
-            
+
             <div class="color-settings">
                 <h3>カラー設定</h3>
                 <div id="colorSettings"></div>
             </div>
         </aside>
-        
+
         <main class="main-content">
-            <div class="view-controls">
-                <button id="monthView" class="view-btn active">月間ビュー</button>
-                <button id="weekView" class="view-btn">週間ビュー</button>
-                <button id="listView" class="view-btn">リストビュー</button>
-                <button id="todayBtn" class="today-btn">今日</button>
+            <div class="content-header">
+                <button id="toggleSidebar" class="hamburger-btn">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <div class="navigation">
+                    <button id="todayBtn" class="today-btn">今日</button>
+                    <button class="nav-btn" id="prevBtnMonth">&lt;</button>
+                    <button class="nav-btn" id="nextBtnMonth">&gt;</button>
+                    <span class="current-date" id="currentDate"></span>
+                </div>
+                <div class="list-controls" style="display: none;">
+                    <button>今後の予定</button>
+                    <button>過去の予定</button>
+                </div>
+                <div class="view-controls">
+                    <button id="monthView" class="view-btn active">月間ビュー</button>
+                    <button id="weekView" class="view-btn">週間ビュー</button>
+                    <button id="listView" class="view-btn">リストビュー</button>
+                </div>
             </div>
-            
-            <div class="navigation">
-                <button id="prevBtn">&lt;</button>
-                <span id="currentDate"></span>
-                <button id="nextBtn">&gt;</button>
-            </div>
-            
             <div id="calendar-container">
                 <div id="monthCalendar" class="calendar-view"></div>
                 <div id="weekCalendar" class="calendar-view" style="display: none;"></div>
                 <div id="listCalendar" class="calendar-view" style="display: none;"></div>
             </div>
-            
             <div class="action-buttons" id="actionButtons" style="display: none;">
                 <button id="createReservationBtn">新規予約</button>
             </div>
         </main>
     </div>
-    
+
     <!-- モーダル -->
     <div id="reservationModal" class="modal">
         <div class="modal-content">
@@ -86,7 +97,8 @@
             <div id="modalContent"></div>
         </div>
     </div>
-    
+
     <script type="module" src="src/js/index.js"></script>
 </body>
+
 </html>

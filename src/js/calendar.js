@@ -34,11 +34,26 @@ class CalendarManager {
         document.getElementById('weekView').addEventListener('click', () => this.changeView('week'));
         document.getElementById('listView').addEventListener('click', () => this.changeView('list'));
 
-        // ナビゲーション
-        document.getElementById('prevBtn').addEventListener('click', () => this.navigatePrev());
-        document.getElementById('nextBtn').addEventListener('click', () => this.navigateNext());
+        // 今日ボタン
         document.getElementById('todayBtn').addEventListener('click', () => this.goToToday());
+
+        // ナビゲーションボタン
+        document.getElementById('prevBtnMonth').addEventListener('click', () => this.navigatePrev());
+        document.getElementById('nextBtnMonth').addEventListener('click', () => this.navigateNext());
+
+        // サイドバートグル
+        const toggleSidebarBtn = document.getElementById('toggleSidebar');
+        if (toggleSidebarBtn) {
+            toggleSidebarBtn.addEventListener('click', () => this.toggleSidebar());
+        }
     }
+
+    // サイドバートグル
+    toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('active');
+    }
+    
 
     // ビュー変更
     changeView(view) {
@@ -48,8 +63,22 @@ class CalendarManager {
         document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${view}View`).classList.add('active');
         
+        // currentDateを今日に更新
+        this.currentDate = new Date();
+        
+        // ナビゲーション/リストコントロール表示切り替え
+        this.updateControlsVisibility();
+        
+        // ナビゲーション表示更新
+        this.updateNavigationDisplay();
+        
         // カレンダー表示更新
         this.render();
+        
+        // 表示期間の予約情報を自動取得
+        if (window.reservationManager) {
+            window.reservationManager.loadReservations();
+        }
     }
 
     // 前へナビゲート
@@ -68,6 +97,11 @@ class CalendarManager {
         }
         this.updateNavigationDisplay();
         this.render();
+        
+        // 表示期間の予約情報を自動取得
+        if (window.reservationManager) {
+            window.reservationManager.loadReservations();
+        }
     }
 
     // 次へナビゲート
@@ -86,6 +120,11 @@ class CalendarManager {
         }
         this.updateNavigationDisplay();
         this.render();
+        
+        // 表示期間の予約情報を自動取得
+        if (window.reservationManager) {
+            window.reservationManager.loadReservations();
+        }
     }
 
     // 今日へ移動
@@ -93,11 +132,31 @@ class CalendarManager {
         this.currentDate = new Date();
         this.updateNavigationDisplay();
         this.render();
+        
+        // 表示期間の予約情報を自動取得
+        if (window.reservationManager) {
+            window.reservationManager.loadReservations();
+        }
+    }
+
+    // コントロール表示切り替え
+    updateControlsVisibility() {
+        const navigation = document.querySelector('.navigation');
+        const listControls = document.querySelector('.list-controls');
+        
+        if (this.currentView === 'list') {
+            navigation.style.display = 'none';
+            listControls.style.display = 'flex';
+        } else {
+            navigation.style.display = 'flex';
+            listControls.style.display = 'none';
+        }
     }
 
     // ナビゲーション表示更新
     updateNavigationDisplay() {
         const currentDateElement = document.getElementById('currentDate');
+        if (!currentDateElement) return;
         
         switch (this.currentView) {
             case 'month':
@@ -109,7 +168,7 @@ class CalendarManager {
                 currentDateElement.textContent = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
                 break;
             case 'list':
-                currentDateElement.textContent = `${this.currentDate.getFullYear()}年${this.currentDate.getMonth() + 1}月`;
+                // リストビューではナビゲーション表示なし
                 break;
         }
     }
@@ -167,23 +226,47 @@ class CalendarManager {
         const firstDay = getFirstDayOfMonth(this.currentDate);
         const lastDay = getLastDayOfMonth(this.currentDate);
         
-        // 月の最初の週の月曜日を取得
+        // 月の最初の営業日（月曜日）を取得
         const startDate = getFirstDayOfWeek(firstDay);
         
-        // 6週間分の平日のみを生成
-        for (let week = 0; week < 6; week++) {
+        // 月の最後の営業日（金曜日）を取得
+        const endDate = new Date(lastDay);
+        while (endDate.getDay() !== 5) { // 金曜日になるまで進める
+            endDate.setDate(endDate.getDate() + 1);
+        }
+        
+        // 必要な週数を計算
+        const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        const weeks = Math.ceil(totalDays / 7);
+        
+        // 各週の平日セルを生成（other-monthのみの週は除外）
+        for (let week = 0; week < weeks; week++) {
+            let hasCurrentMonthCell = false;
+            const weekCells = [];
+            
+            // 各週の平日をチェック
             for (let day = 0; day < 5; day++) { // 0-4 (月-金)
                 const cellDate = new Date(startDate);
                 cellDate.setDate(startDate.getDate() + (week * 7) + day);
                 
                 // 土日チェック（念のため）
-                const dayOfWeek = cellDate.getDay(); // 0=日曜日, 6=土曜日
+                const dayOfWeek = cellDate.getDay();
                 if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    continue; // 土日の場合はセルを生成しない
+                    continue;
+                }
+                
+                // 現在の月のセルがあるかチェック
+                if (cellDate.getMonth() === this.currentDate.getMonth()) {
+                    hasCurrentMonthCell = true;
                 }
                 
                 const cell = this.createMonthCell(cellDate);
-                calendar.appendChild(cell);
+                weekCells.push(cell);
+            }
+            
+            // 現在の月のセルが1つでもあれば、その週のセルを追加
+            if (hasCurrentMonthCell) {
+                weekCells.forEach(cell => calendar.appendChild(cell));
             }
         }
         
@@ -249,14 +332,26 @@ class CalendarManager {
         const container = document.getElementById('weekCalendar');
         clearElement(container);
 
-        // ヘッダー作成
-        const header = createElement('div', 'week-header');
+        // 週間ビューのメインコンテナ
+        const weekContainer = createElement('div', 'week-view-container');
         
-        // 空のセル（時間列用）
-        const emptyCell = createElement('div', 'week-time-slot');
-        header.appendChild(emptyCell);
+        // 時間軸の作成
+        const timeAxis = createElement('div', 'week-time-axis');
         
-        // 曜日ヘッダー（土日を除く）
+        // 時間軸のヘッダー（day-headerと同じ高さ）
+        const timeAxisHeader = createElement('div', 'time-axis-header');
+        timeAxis.appendChild(timeAxisHeader);
+        
+        // 9:00-18:00の時間ラベル（1時間刻み）
+        for (let hour = 9; hour < 18; hour++) {
+            const timeLabel = createElement('div', 'time-label');
+            timeLabel.textContent = `${hour}:00`;
+            timeAxis.appendChild(timeLabel);
+        }
+        
+        weekContainer.appendChild(timeAxis);
+        
+        // 各日のカラムを作成
         const weekStart = getFirstDayOfWeek(this.currentDate);
         const dayNames = ['月', '火', '水', '木', '金'];
         
@@ -264,78 +359,105 @@ class CalendarManager {
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + i);
             
-            const headerCell = createElement('div', 'week-time-slot');
-            headerCell.innerHTML = `${dayNames[i]}<br>${date.getDate()}`;
+            const dayColumn = createElement('div', 'day-column');
+            dayColumn.dataset.date = getDateString(date);
+            
+            // 日付ヘッダー
+            const dayHeader = createElement('div', 'day-header');
+            dayHeader.innerHTML = `${dayNames[i]}<br>${date.getDate()}`;
             
             // 今日の場合
             const today = new Date();
             if (date.toDateString() === today.toDateString()) {
-                headerCell.classList.add('today');
+                dayHeader.classList.add('today');
             }
             
-            header.appendChild(headerCell);
-        }
-        
-        container.appendChild(header);
-
-        // タイムグリッド作成
-        const grid = createElement('div', 'week-calendar');
-        
-        // 9:00-18:00の時間スロット（15分刻み）
-        for (let hour = 9; hour < 18; hour++) {
-            for (let minute = 0; minute < 60; minute += 15) {
-                // 時間セル
-                const timeCell = createElement('div', 'week-time-slot');
-                if (minute === 0) {
-                    timeCell.textContent = `${hour}:00`;
-                    timeCell.classList.add('hour-start');
-                }
-                grid.appendChild(timeCell);
-                
-                // 各日のセル（土日を除く）
-                for (let day = 0; day < 5; day++) { // 0-4 (月-金)
-                    const cellDate = new Date(weekStart);
-                    cellDate.setDate(weekStart.getDate() + day);
-                    cellDate.setHours(hour, minute, 0, 0);
+            dayColumn.appendChild(dayHeader);
+            
+            // 時間グリッド（15分刻み）
+            const timeGrid = createElement('div', 'time-grid');
+            
+            // 9:00-18:00の時間スロット（15分刻み）
+            for (let hour = 9; hour < 18; hour++) {
+                for (let minute = 0; minute < 60; minute += 15) {
+                    const timeSlot = createElement('div', 'time-slot');
+                    timeSlot.dataset.hour = hour;
+                    timeSlot.dataset.minute = minute;
                     
-                    const cell = this.createWeekCell(cellDate);
-                    grid.appendChild(cell);
+                    // 時間スロットのクリックイベント
+                    timeSlot.addEventListener('click', () => {
+                        if (authManager.getLoginStatus().isLoggedIn) {
+                            const slotDate = new Date(date);
+                            slotDate.setHours(hour, minute, 0, 0);
+                            this.showNewReservationModal(slotDate);
+                        }
+                    });
+                    
+                    timeGrid.appendChild(timeSlot);
                 }
             }
+            
+            dayColumn.appendChild(timeGrid);
+            
+            // 予約を絶対配置で重ねる
+            this.renderDayReservations(dayColumn, date);
+            
+            weekContainer.appendChild(dayColumn);
         }
         
-        container.appendChild(grid);
+        container.appendChild(weekContainer);
     }
 
-    // 週間セル作成
-    createWeekCell(datetime) {
-        const cell = createElement('div', 'week-cell');
+    // 各日の予約を絶対配置で重ねる
+    renderDayReservations(dayColumn, date) {
+        const dateString = getDateString(date);
+        const dayReservations = this.getReservationsForDate(date);
         
-        // 予約があるかチェック
-        const reservation = this.getReservationForDateTime(datetime);
-        if (reservation) {
-            cell.textContent = reservation.title;
-            cell.style.backgroundColor = authManager.getDepartmentColor(reservation.user_department_id);
-            cell.style.color = 'white';
-            cell.addEventListener('click', () => {
+        dayReservations.forEach(reservation => {
+            const startTime = new Date(reservation.start_datetime);
+            const endTime = new Date(reservation.end_datetime);
+            
+            // 予約の開始・終了時間を15分単位のスロット番号に変換
+            const startSlot = this.getTimeSlotIndex(startTime);
+            const endSlot = this.getTimeSlotIndex(endTime);
+            
+            // 予約要素を作成
+            const reservationElement = createElement('div', 'week-reservation');
+            reservationElement.textContent = reservation.title;
+            reservationElement.style.backgroundColor = authManager.getDepartmentColor(reservation.user_department_id);
+            reservationElement.style.color = 'white';
+            
+            // 絶対配置で位置を設定
+            const slotHeight = 20; // 各スロットの高さ（px）
+            const headerHeight = 40; // ヘッダーの高さ（px）
+            
+            reservationElement.style.position = 'absolute';
+            reservationElement.style.top = `${headerHeight + (startSlot * slotHeight)}px`;
+            reservationElement.style.height = `${(endSlot - startSlot) * slotHeight}px`;
+            reservationElement.style.left = '2px';
+            reservationElement.style.right = '2px';
+            reservationElement.style.zIndex = '10';
+            
+            // クリックイベント
+            reservationElement.addEventListener('click', (e) => {
+                e.stopPropagation();
                 this.showReservationDetails(reservation);
             });
-        } else {
-            // 空のセルの場合、新規予約作成
-            cell.addEventListener('click', () => {
-                if (authManager.getLoginStatus().isLoggedIn) {
-                    // 土日チェック
-                    const dayOfWeek = datetime.getDay(); // 0=日曜日, 6=土曜日
-                    if (dayOfWeek === 0 || dayOfWeek === 6) {
-                        alert('土日の予約はできません。');
-                        return;
-                    }
-                    this.showNewReservationModal(datetime);
-                }
-            });
-        }
+            
+            dayColumn.appendChild(reservationElement);
+        });
+    }
+    
+    // 時間を15分単位のスロット番号に変換
+    getTimeSlotIndex(datetime) {
+        const hour = datetime.getHours();
+        const minute = datetime.getMinutes();
         
-        return cell;
+        // 9:00を基準（0番）とする
+        const hourFromNine = hour - 9;
+        const slotIndex = (hourFromNine * 4) + (minute / 15);
+        
+        return slotIndex;
     }
 
     // リストビュー描画
@@ -413,12 +535,12 @@ class CalendarManager {
         const filtered = this.reservations.filter(r => r.date === dateString);
         
         // デバッグ用ログ（一時的）
-        if (filtered.length > 0) {
-            console.log('予約マッチング:', {
-                cellDate: dateString,
-                reservations: filtered.map(r => ({ title: r.title, date: r.date }))
-            });
-        }
+        // if (filtered.length > 0) {
+        //     console.log('予約マッチング:', {
+        //         cellDate: dateString,
+        //         reservations: filtered.map(r => ({ title: r.title, date: r.date }))
+        //     });
+        // }
         
         return filtered;
     }
