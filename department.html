@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部署管理 - 会議室予約システム</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>部署管理</h1>
+            <nav>
+                <a href="index.html">予約画面に戻る</a>
+            </nav>
+        </header>
+        
+        <main class="department-main">
+            <section class="department-form-section">
+                <h2 id="formTitle">新規部署追加</h2>
+                <form id="departmentForm">
+                    <input type="hidden" id="departmentId">
+                    <div class="form-group">
+                        <label for="departmentName">部署名</label>
+                        <input type="text" id="departmentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="defaultColor">デフォルトカラー</label>
+                        <input type="color" id="defaultColor" value="#718096">
+                    </div>
+                    <div class="form-group">
+                        <label for="displayOrder">表示順序</label>
+                        <input type="number" id="displayOrder" value="0" min="0">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="submitBtn">追加</button>
+                        <button type="button" id="cancelBtn" style="display: none;">キャンセル</button>
+                    </div>
+                </form>
+            </section>
+            
+            <section class="department-list-section">
+                <h2>部署一覧</h2>
+                <div class="table-container">
+                    <table id="departmentTable">
+                        <thead>
+                            <tr>
+                                <th>部署名</th>
+                                <th>デフォルトカラー</th>
+                                <th>表示順序</th>
+                                <th>作成日</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="departmentTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- 削除確認モーダル -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>部署の削除</h3>
+            <p>この部署を削除してもよろしいですか？</p>
+            <p><strong>注意:</strong> この部署に所属するユーザーがいる場合は削除できません。</p>
+            <div class="modal-actions">
+                <button id="confirmDeleteBtn" class="danger">削除</button>
+                <button id="cancelDeleteBtn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="src/js/department.js"></script>
+</body>
+</html>

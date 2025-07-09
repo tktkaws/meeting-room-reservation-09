@@ -1,0 +1,156 @@
+<?php
+// エラーレポートを有効にする
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// データベース設定
+define('DB_PATH', dirname(__DIR__) . '/database/meeting-room-reservation.db');
+
+// データベース接続
+function getDB() {
+    try {
+        $pdo = new PDO('sqlite:' . DB_PATH);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        return $pdo;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]);
+        exit;
+    }
+}
+
+// JSONレスポンスを返す関数
+function jsonResponse($data, $status = 200) {
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// リクエストメソッドをチェックする関数
+function checkMethod($method) {
+    if ($_SERVER['REQUEST_METHOD'] !== $method) {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+}
+
+// JSONデータを取得する関数
+function getJsonInput() {
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        jsonResponse(['error' => 'Invalid JSON'], 400);
+    }
+    return $data;
+}
+
+// パスワードをハッシュ化する関数
+function hashPassword($password) {
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+// パスワードを検証する関数
+function verifyPassword($password, $hash) {
+    return password_verify($password, $hash);
+}
+
+// セッション開始
+session_start();
+
+// ログイン状態をチェックする関数
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+// 管理者権限をチェックする関数
+function isAdmin() {
+    return isset($_SESSION['admin']) && $_SESSION['admin'] === true;
+}
+
+// ユーザー情報を取得する関数
+function getCurrentUser() {
+    if (!isLoggedIn()) {
+        return null;
+    }
+    
+    $pdo = getDB();
+    $stmt = $pdo->prepare("
+        SELECT u.*, d.name as department_name 
+        FROM users u 
+        JOIN departments d ON u.department_id = d.id 
+        WHERE u.id = ?
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    return $stmt->fetch();
+}
+
+// メール送信関数（基本実装）
+function sendEmail($to, $subject, $message) {
+    // 実際のメール送信処理
+    // イントラネット用の簡単な実装
+    $headers = "From: system@company.com\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    
+    return mail($to, $subject, $message, $headers);
+}
+
+// 日付バリデーション関数
+function validateBusinessHours($datetime) {
+    $date = new DateTime($datetime);
+    $dayOfWeek = $date->format('N'); // 1=月曜日, 7=日曜日
+    $hour = $date->format('H');
+    $minute = $date->format('i');
+    
+    // 土日チェック
+    if ($dayOfWeek >= 6) {
+        return false;
+    }
+    
+    // 9時から18時までのチェック
+    if ($hour < 9 || $hour >= 18) {
+        return false;
+    }
+    
+    // 15分単位チェック
+    if ($minute % 15 !== 0) {
+        return false;
+    }
+    
+    return true;
+}
+
+// 予約時間の重複チェック
+function checkReservationConflict($start_datetime, $end_datetime, $exclude_id = null) {
+    $pdo = getDB();
+    $sql = "
+        SELECT id FROM reservations 
+        WHERE (
+            (start_datetime < ? AND end_datetime > ?) OR
+            (start_datetime < ? AND end_datetime > ?) OR
+            (start_datetime >= ? AND end_datetime <= ?)
+        )
+    ";
+    
+    $params = [$end_datetime, $start_datetime, $start_datetime, $start_datetime, $start_datetime, $end_datetime];
+    
+    if ($exclude_id) {
+        $sql .= " AND id != ?";
+        $params[] = $exclude_id;
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    
+    return $stmt->fetch() !== false;
+}
+
+// CORS設定
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+?>

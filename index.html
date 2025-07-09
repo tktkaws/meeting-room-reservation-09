@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会議室予約システム</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>会議室予約システム</h1>
+        </header>
+        
+        <aside class="sidebar">
+            <div class="login-section">
+                <div id="loginForm">
+                    <h3>ログイン</h3>
+                    <form>
+                        <input type="email" id="email" placeholder="メールアドレス" required>
+                        <input type="password" id="password" placeholder="パスワード" required>
+                        <button type="submit">ログイン</button>
+                    </form>
+                </div>
+                <div id="userInfo" style="display: none;">
+                    <h3>ユーザー情報</h3>
+                    <p id="userName"></p>
+                    <p id="userDepartment"></p>
+                    <div style="margin: 1rem 0;">
+                        <a href="config.html" style="color: #3498db; text-decoration: none;">設定</a>
+                        <span id="adminMenu" style="display: none;">
+                            | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
+                        </span>
+                    </div>
+                    <button id="logoutBtn">ログアウト</button>
+                </div>
+            </div>
+            
+            <div class="color-settings">
+                <h3>カラー設定</h3>
+                <div id="colorSettings"></div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="view-controls">
+                <button id="monthView" class="view-btn active">月間ビュー</button>
+                <button id="weekView" class="view-btn">週間ビュー</button>
+                <button id="listView" class="view-btn">リストビュー</button>
+                <button id="todayBtn" class="today-btn">今日</button>
+            </div>
+            
+            <div class="navigation">
+                <button id="prevBtn">&lt;</button>
+                <span id="currentDate"></span>
+                <button id="nextBtn">&gt;</button>
+            </div>
+            
+            <div id="calendar-container">
+                <div id="monthCalendar" class="calendar-view"></div>
+                <div id="weekCalendar" class="calendar-view" style="display: none;"></div>
+                <div id="listCalendar" class="calendar-view" style="display: none;"></div>
+            </div>
+            
+            <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button id="createReservationBtn">新規予約</button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- モーダル -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">予約詳細</h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    
+    <script type="module" src="src/js/index.js"></script>
+</body>
+</html>
