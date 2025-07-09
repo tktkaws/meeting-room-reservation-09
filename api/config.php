@@ -1,7 +1,8 @@
 <?php
-// エラーレポートを有効にする
+// エラーレポートを有効にする（開発環境用）
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0); // JSONレスポンスを保護するため無効化
+ini_set('log_errors', 1);
 
 // データベース設定
 define('DB_PATH', dirname(__DIR__) . '/database/meeting-room-reservation.db');
@@ -67,7 +68,7 @@ function isLoggedIn() {
 
 // 管理者権限をチェックする関数
 function isAdmin() {
-    return isset($_SESSION['admin']) && $_SESSION['admin'] === true;
+    return isset($_SESSION['admin']) && (bool)$_SESSION['admin'];
 }
 
 // ユーザー情報を取得する関数
@@ -104,7 +105,7 @@ function validateBusinessHours($datetime) {
     $hour = $date->format('H');
     $minute = $date->format('i');
     
-    // 土日チェック
+    // 土日チェック（土曜日=6, 日曜日=7）
     if ($dayOfWeek >= 6) {
         return false;
     }
@@ -120,6 +121,13 @@ function validateBusinessHours($datetime) {
     }
     
     return true;
+}
+
+// 土日チェック専用関数
+function validateWeekday($date) {
+    $dateObj = new DateTime($date);
+    $dayOfWeek = $dateObj->format('N'); // 1=月曜日, 7=日曜日
+    return $dayOfWeek <= 5; // 月曜日から金曜日のみ
 }
 
 // 予約時間の重複チェック

@@ -14,7 +14,7 @@ if ($method === 'GET') {
     $view_type = $_GET['view_type'] ?? 'month'; // month, week, list
     
     $sql = "
-        SELECT r.*, u.name as user_name, d.name as department_name, d.default_color
+        SELECT r.*, u.name as user_name, u.department_id, d.name as department_name, d.default_color
         FROM reservations r
         JOIN users u ON r.user_id = u.id
         JOIN departments d ON u.department_id = d.id
@@ -52,6 +52,7 @@ if ($method === 'POST') {
     }
     
     $data = getJsonInput();
+    error_log('受信データ: ' . print_r($data, true)); // デバッグ用
     
     // バリデーション
     $required_fields = ['title', 'date', 'start_datetime', 'end_datetime'];
@@ -76,6 +77,11 @@ if ($method === 'POST') {
     // 詳細の文字数チェック
     if (mb_strlen($description) > 300) {
         jsonResponse(['error' => 'Description must be 300 characters or less'], 400);
+    }
+    
+    // 土日チェック
+    if (!validateWeekday($date)) {
+        jsonResponse(['error' => 'Reservations are not allowed on weekends'], 400);
     }
     
     // 営業時間チェック
@@ -114,7 +120,7 @@ if ($method === 'POST') {
         
         // 作成された予約情報を取得
         $stmt = $pdo->prepare("
-            SELECT r.*, u.name as user_name, d.name as department_name, d.default_color
+            SELECT r.*, u.name as user_name, u.department_id, d.name as department_name, d.default_color
             FROM reservations r
             JOIN users u ON r.user_id = u.id
             JOIN departments d ON u.department_id = d.id
@@ -123,8 +129,8 @@ if ($method === 'POST') {
         $stmt->execute([$reservation_id]);
         $reservation = $stmt->fetch();
         
-        // メール通知の送信
-        sendReservationNotification('created', $reservation);
+        // メール通知の送信（一時的に無効化）
+        // sendReservationNotification('created', $reservation);
         
         jsonResponse([
             'message' => 'Reservation created successfully',
@@ -167,11 +173,12 @@ if ($method === 'PUT') {
     
     $current_user = getCurrentUser();
     
-    // 権限チェック：作成者、同じ部署のユーザー、または管理者のみ編集可能
-    if ($existing_reservation['user_id'] != $current_user['id'] && 
-        $existing_reservation['department_id'] != $current_user['department_id'] && 
-        !isAdmin()) {
-        jsonResponse(['error' => 'Permission denied'], 403);
+    // 権限チェック：管理者は全ての予約を編集可能、一般ユーザーは作成者または同じ部署のみ
+    if (!isAdmin()) {
+        if ($existing_reservation['user_id'] != $current_user['id'] && 
+            $existing_reservation['department_id'] != $current_user['department_id']) {
+            jsonResponse(['error' => 'Permission denied'], 403);
+        }
     }
     
     // バリデーション（作成時と同じ）
@@ -196,6 +203,11 @@ if ($method === 'PUT') {
     
     if (mb_strlen($description) > 300) {
         jsonResponse(['error' => 'Description must be 300 characters or less'], 400);
+    }
+    
+    // 土日チェック
+    if (!validateWeekday($date)) {
+        jsonResponse(['error' => 'Reservations are not allowed on weekends'], 400);
     }
     
     if (!validateBusinessHours($start_datetime) || !validateBusinessHours($end_datetime)) {
@@ -229,7 +241,7 @@ if ($method === 'PUT') {
         
         // 更新された予約情報を取得
         $stmt = $pdo->prepare("
-            SELECT r.*, u.name as user_name, d.name as department_name, d.default_color
+            SELECT r.*, u.name as user_name, u.department_id, d.name as department_name, d.default_color
             FROM reservations r
             JOIN users u ON r.user_id = u.id
             JOIN departments d ON u.department_id = d.id
@@ -238,8 +250,8 @@ if ($method === 'PUT') {
         $stmt->execute([$id]);
         $reservation = $stmt->fetch();
         
-        // メール通知の送信
-        sendReservationNotification('updated', $reservation);
+        // メール通知の送信（一時的に無効化）
+        // sendReservationNotification('updated', $reservation);
         
         jsonResponse([
             'message' => 'Reservation updated successfully',
@@ -282,17 +294,18 @@ if ($method === 'DELETE') {
     
     $current_user = getCurrentUser();
     
-    // 権限チェック：作成者、同じ部署のユーザー、または管理者のみ削除可能
-    if ($existing_reservation['user_id'] != $current_user['id'] && 
-        $existing_reservation['department_id'] != $current_user['department_id'] && 
-        !isAdmin()) {
-        jsonResponse(['error' => 'Permission denied'], 403);
+    // 権限チェック：管理者は全ての予約を削除可能、一般ユーザーは作成者または同じ部署のみ
+    if (!isAdmin()) {
+        if ($existing_reservation['user_id'] != $current_user['id'] && 
+            $existing_reservation['department_id'] != $current_user['department_id']) {
+            jsonResponse(['error' => 'Permission denied'], 403);
+        }
     }
     
     try {
         // 削除前に予約情報を取得（メール通知用）
         $stmt = $pdo->prepare("
-            SELECT r.*, u.name as user_name, d.name as department_name, d.default_color
+            SELECT r.*, u.name as user_name, u.department_id, d.name as department_name, d.default_color
             FROM reservations r
             JOIN users u ON r.user_id = u.id
             JOIN departments d ON u.department_id = d.id
@@ -304,8 +317,8 @@ if ($method === 'DELETE') {
         $stmt = $pdo->prepare("DELETE FROM reservations WHERE id = ?");
         $stmt->execute([$id]);
         
-        // メール通知の送信
-        sendReservationNotification('deleted', $reservation);
+        // メール通知の送信（一時的に無効化）
+        // sendReservationNotification('deleted', $reservation);
         
         jsonResponse(['message' => 'Reservation deleted successfully']);
         

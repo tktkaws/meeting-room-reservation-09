@@ -23,8 +23,9 @@ class AuthManager {
         try {
             const response = await get('api/auth.php?action=status');
             this.isLoggedIn = response.loggedIn;
-            this.isAdmin = response.admin;
+            this.isAdmin = Boolean(response.admin); // 明示的にbooleanに変換
             this.currentUser = response.user;
+            
             
             if (this.currentUser && this.currentUser.color_setting) {
                 this.userColorSettings = JSON.parse(this.currentUser.color_setting);
@@ -95,7 +96,7 @@ class AuthManager {
 
             this.currentUser = response.user;
             this.isLoggedIn = true;
-            this.isAdmin = response.user.admin;
+            this.isAdmin = Boolean(response.user.admin);
             
             if (this.currentUser.color_setting) {
                 this.userColorSettings = JSON.parse(this.currentUser.color_setting);
@@ -181,6 +182,7 @@ class AuthManager {
         const userInfo = document.getElementById('userInfo');
         const userName = document.getElementById('userName');
         const userDepartment = document.getElementById('userDepartment');
+        const userRole = document.getElementById('userRole');
         const actionButtons = document.getElementById('actionButtons');
 
         if (this.isLoggedIn && this.currentUser) {
@@ -189,6 +191,19 @@ class AuthManager {
             if (userInfo) userInfo.style.display = 'block';
             if (userName) userName.textContent = this.currentUser.name;
             if (userDepartment) userDepartment.textContent = this.currentUser.department_name;
+            
+            // 管理者権限表示
+            if (userRole) {
+                if (this.isAdmin) {
+                    userRole.textContent = '管理者';
+                    userRole.style.display = 'block';
+                    userRole.style.color = '#e74c3c';
+                    userRole.style.fontWeight = 'bold';
+                } else {
+                    userRole.style.display = 'none';
+                }
+            }
+            
             if (actionButtons) actionButtons.style.display = 'block';
         } else {
             // 未ログイン表示

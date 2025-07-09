@@ -28,7 +28,7 @@ if ($method === 'POST' && $action === 'login') {
     
     // セッションに保存
     $_SESSION['user_id'] = $user['id'];
-    $_SESSION['admin'] = $user['admin'];
+    $_SESSION['admin'] = (bool)$user['admin'];
     
     // パスワードは返さない
     unset($user['password']);

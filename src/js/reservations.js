@@ -125,19 +125,24 @@ class ReservationManager {
         
         modalTitle.textContent = '新規予約';
         
+        // 日本時間を取得
+        const now = this.getJapanTime();
+        
         // デフォルト日時設定
-        let defaultDate = date || new Date();
-        let defaultStartTime = date || adjustToBusinessHours();
+        let defaultDate = date || now;
+        let defaultStartTime = date || this.adjustToBusinessHours(now);
         let defaultEndTime = new Date(defaultStartTime.getTime() + 60 * 60 * 1000); // 1時間後
         
         // 15分単位に調整
-        defaultStartTime = roundToQuarter(defaultStartTime);
-        defaultEndTime = roundToQuarter(defaultEndTime);
+        defaultStartTime = this.roundToQuarter(defaultStartTime);
+        defaultEndTime = this.roundToQuarter(defaultEndTime);
         
         const form = this.createReservationForm({
             date: getDateString(defaultDate),
-            start_time: getDateTimeString(defaultStartTime).substring(11, 16),
-            end_time: getDateTimeString(defaultEndTime).substring(11, 16),
+            start_hour: defaultStartTime.getHours(),
+            start_minute: defaultStartTime.getMinutes(),
+            end_hour: defaultEndTime.getHours(),
+            end_minute: defaultEndTime.getMinutes(),
             title: '',
             description: '',
             is_company_wide: false
@@ -169,8 +174,10 @@ class ReservationManager {
         
         const form = this.createReservationForm({
             date: reservation.date,
-            start_time: startTime.toTimeString().substring(0, 5),
-            end_time: endTime.toTimeString().substring(0, 5),
+            start_hour: startTime.getHours(),
+            start_minute: startTime.getMinutes(),
+            end_hour: endTime.getHours(),
+            end_minute: endTime.getMinutes(),
             title: reservation.title,
             description: reservation.description || '',
             is_company_wide: reservation.is_company_wide
@@ -219,30 +226,92 @@ class ReservationManager {
         
         // 開始時間
         const startTimeGroup = createElement('div', 'form-group');
-        const startTimeLabel = createElement('label', '', '開始時間');
-        startTimeLabel.setAttribute('for', 'reservationStartTime');
-        const startTimeInput = createElement('input');
-        startTimeInput.type = 'time';
-        startTimeInput.id = 'reservationStartTime';
-        startTimeInput.value = data.start_time;
-        startTimeInput.step = 900; // 15分刻み
-        startTimeInput.required = true;
+        const startTimeLabel = createElement('label', '');
+        startTimeLabel.innerHTML = '開始時刻 <span class="required">*</span>';
+        startTimeLabel.setAttribute('for', 'reservation-start-hour');
+        
+        const startTimeSelectGroup = createElement('div', 'time-select-group');
+        
+        // 開始時間（時）
+        const startHourSelect = createElement('select');
+        startHourSelect.id = 'reservation-start-hour';
+        startHourSelect.name = 'start_hour';
+        startHourSelect.required = true;
+        for (let hour = 9; hour <= 17; hour++) {
+            const option = createElement('option', '', hour);
+            option.value = hour;
+            if (hour == data.start_hour) option.selected = true;
+            startHourSelect.appendChild(option);
+        }
+        
+        const hourSeparator = createElement('span', 'time-separator', '時');
+        
+        // 開始時間（分）
+        const startMinuteSelect = createElement('select');
+        startMinuteSelect.id = 'reservation-start-minute';
+        startMinuteSelect.name = 'start_minute';
+        startMinuteSelect.required = true;
+        [0, 15, 30, 45].forEach(minute => {
+            const option = createElement('option', '', minute.toString().padStart(2, '0'));
+            option.value = minute;
+            if (minute == data.start_minute) option.selected = true;
+            startMinuteSelect.appendChild(option);
+        });
+        
+        const minuteSeparator = createElement('span', 'time-separator', '分');
+        
+        startTimeSelectGroup.appendChild(startHourSelect);
+        startTimeSelectGroup.appendChild(hourSeparator);
+        startTimeSelectGroup.appendChild(startMinuteSelect);
+        startTimeSelectGroup.appendChild(minuteSeparator);
+        
         startTimeGroup.appendChild(startTimeLabel);
-        startTimeGroup.appendChild(startTimeInput);
+        startTimeGroup.appendChild(startTimeSelectGroup);
         form.appendChild(startTimeGroup);
         
         // 終了時間
         const endTimeGroup = createElement('div', 'form-group');
-        const endTimeLabel = createElement('label', '', '終了時間');
-        endTimeLabel.setAttribute('for', 'reservationEndTime');
-        const endTimeInput = createElement('input');
-        endTimeInput.type = 'time';
-        endTimeInput.id = 'reservationEndTime';
-        endTimeInput.value = data.end_time;
-        endTimeInput.step = 900; // 15分刻み
-        endTimeInput.required = true;
+        const endTimeLabel = createElement('label', '');
+        endTimeLabel.innerHTML = '終了時刻 <span class="required">*</span>';
+        endTimeLabel.setAttribute('for', 'reservation-end-hour');
+        
+        const endTimeSelectGroup = createElement('div', 'time-select-group');
+        
+        // 終了時間（時）
+        const endHourSelect = createElement('select');
+        endHourSelect.id = 'reservation-end-hour';
+        endHourSelect.name = 'end_hour';
+        endHourSelect.required = true;
+        for (let hour = 9; hour <= 18; hour++) {
+            const option = createElement('option', '', hour);
+            option.value = hour;
+            if (hour == data.end_hour) option.selected = true;
+            endHourSelect.appendChild(option);
+        }
+        
+        const endHourSeparator = createElement('span', 'time-separator', '時');
+        
+        // 終了時間（分）
+        const endMinuteSelect = createElement('select');
+        endMinuteSelect.id = 'reservation-end-minute';
+        endMinuteSelect.name = 'end_minute';
+        endMinuteSelect.required = true;
+        [0, 15, 30, 45].forEach(minute => {
+            const option = createElement('option', '', minute.toString().padStart(2, '0'));
+            option.value = minute;
+            if (minute == data.end_minute) option.selected = true;
+            endMinuteSelect.appendChild(option);
+        });
+        
+        const endMinuteSeparator = createElement('span', 'time-separator', '分');
+        
+        endTimeSelectGroup.appendChild(endHourSelect);
+        endTimeSelectGroup.appendChild(endHourSeparator);
+        endTimeSelectGroup.appendChild(endMinuteSelect);
+        endTimeSelectGroup.appendChild(endMinuteSeparator);
+        
         endTimeGroup.appendChild(endTimeLabel);
-        endTimeGroup.appendChild(endTimeInput);
+        endTimeGroup.appendChild(endTimeSelectGroup);
         form.appendChild(endTimeGroup);
         
         // 詳細
@@ -325,15 +394,23 @@ class ReservationManager {
 
     // フォームデータ取得
     getFormData(form) {
-        const formData = new FormData(form);
         const data = {};
         
         data.title = form.querySelector('#reservationTitle').value.trim();
         data.date = form.querySelector('#reservationDate').value;
-        data.start_time = form.querySelector('#reservationStartTime').value;
-        data.end_time = form.querySelector('#reservationEndTime').value;
+        
+        // select要素から時間・分を取得
+        const startHour = form.querySelector('#reservation-start-hour').value;
+        const startMinute = form.querySelector('#reservation-start-minute').value;
+        const endHour = form.querySelector('#reservation-end-hour').value;
+        const endMinute = form.querySelector('#reservation-end-minute').value;
+        
         data.description = form.querySelector('#reservationDescription').value.trim();
         data.is_company_wide = form.querySelector('#reservationCompanyWide').checked;
+        
+        // 時間文字列を作成
+        data.start_time = `${startHour.padStart(2, '0')}:${startMinute.padStart(2, '0')}`;
+        data.end_time = `${endHour.padStart(2, '0')}:${endMinute.padStart(2, '0')}`;
         
         // 日時文字列を作成
         data.start_datetime = `${data.date}T${data.start_time}:00`;
@@ -381,6 +458,7 @@ class ReservationManager {
 
     // 予約作成
     async createReservation(data) {
+        console.log('送信データ:', data); // デバッグ用
         const response = await post('api/reservations.php', data);
         showSuccessMessage('予約を作成しました', document.querySelector('.main-content'));
         return response;
@@ -395,13 +473,12 @@ class ReservationManager {
 
     // 予約削除
     async deleteReservation(id) {
-        const confirmed = await confirm('この予約を削除してもよろしいですか？');
-        if (!confirmed) return;
-        
         try {
+            // モーダルをすぐに閉じる
+            hideModal('reservationModal');
+            
             await del('api/reservations.php', { id });
             showSuccessMessage('予約を削除しました', document.querySelector('.main-content'));
-            hideModal('reservationModal');
             await this.loadReservations();
         } catch (error) {
             showErrorMessage(error.message, document.querySelector('.main-content'));
@@ -420,6 +497,44 @@ class ReservationManager {
     getLastDayOfWeek(date) {
         const firstDay = this.getFirstDayOfWeek(date);
         return new Date(firstDay.getTime() + 6 * 24 * 60 * 60 * 1000);
+    }
+
+    // 日本時間取得
+    getJapanTime() {
+        const now = new Date();
+        // JST (UTC+9)
+        const jstOffset = 9 * 60 * 60 * 1000;
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+        return new Date(utc + jstOffset);
+    }
+
+    // 営業時間内に調整
+    adjustToBusinessHours(date) {
+        const adjustedDate = new Date(date);
+        const hours = adjustedDate.getHours();
+        
+        if (hours < 9) {
+            adjustedDate.setHours(9, 0, 0, 0);
+        } else if (hours >= 18) {
+            adjustedDate.setHours(17, 0, 0, 0);
+        }
+        
+        return adjustedDate;
+    }
+
+    // 15分単位に丸める
+    roundToQuarter(date) {
+        const roundedDate = new Date(date);
+        const minutes = roundedDate.getMinutes();
+        const roundedMinutes = Math.round(minutes / 15) * 15;
+        
+        if (roundedMinutes === 60) {
+            roundedDate.setHours(roundedDate.getHours() + 1, 0, 0, 0);
+        } else {
+            roundedDate.setMinutes(roundedMinutes, 0, 0);
+        }
+        
+        return roundedDate;
     }
 
     // 予約データ取得

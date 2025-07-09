@@ -101,12 +101,22 @@ export function formatDateTime(datetime) {
 
 // 日付文字列を取得（YYYY-MM-DD形式）
 export function getDateString(date) {
-    return date.toISOString().split('T')[0];
+    // ローカルタイムゾーンでYYYY-MM-DD形式を取得
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 // 日時文字列を取得（YYYY-MM-DDTHH:MM形式）
 export function getDateTimeString(date) {
-    return date.toISOString().slice(0, 16);
+    // ローカルタイムゾーンでYYYY-MM-DDTHH:MM形式を取得
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 // 今日の日付を取得
@@ -290,7 +300,7 @@ export function confirm(message) {
 export function showModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'block';
+        modal.style.display = 'grid';
     }
 }
 

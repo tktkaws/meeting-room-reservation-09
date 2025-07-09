@@ -152,9 +152,9 @@ class CalendarManager {
         const container = document.getElementById('monthCalendar');
         clearElement(container);
 
-        // ヘッダー作成
+        // ヘッダー作成（土日を除く）
         const header = createElement('div', 'month-header');
-        const dayNames = ['月', '火', '水', '木', '金', '土', '日'];
+        const dayNames = ['月', '火', '水', '木', '金'];
         dayNames.forEach(day => {
             const headerCell = createElement('div', 'month-header-cell', day);
             header.appendChild(headerCell);
@@ -167,14 +167,20 @@ class CalendarManager {
         const firstDay = getFirstDayOfMonth(this.currentDate);
         const lastDay = getLastDayOfMonth(this.currentDate);
         
-        // 月の最初の週の開始日を取得
+        // 月の最初の週の月曜日を取得
         const startDate = getFirstDayOfWeek(firstDay);
         
-        // 6週間分の日付を生成
+        // 6週間分の平日のみを生成
         for (let week = 0; week < 6; week++) {
-            for (let day = 0; day < 7; day++) {
+            for (let day = 0; day < 5; day++) { // 0-4 (月-金)
                 const cellDate = new Date(startDate);
                 cellDate.setDate(startDate.getDate() + (week * 7) + day);
+                
+                // 土日チェック（念のため）
+                const dayOfWeek = cellDate.getDay(); // 0=日曜日, 6=土曜日
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    continue; // 土日の場合はセルを生成しない
+                }
                 
                 const cell = this.createMonthCell(cellDate);
                 calendar.appendChild(cell);
@@ -223,7 +229,15 @@ class CalendarManager {
         // セルクリックイベント
         cell.addEventListener('click', () => {
             if (authManager.getLoginStatus().isLoggedIn) {
-                this.showNewReservationModal(date);
+                // 土日チェック
+                const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    alert('土日の予約はできません。');
+                    return;
+                }
+                // 正確な日付オブジェクトを渡す
+                const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                this.showNewReservationModal(clickedDate);
             }
         });
         
@@ -242,11 +256,11 @@ class CalendarManager {
         const emptyCell = createElement('div', 'week-time-slot');
         header.appendChild(emptyCell);
         
-        // 曜日ヘッダー
+        // 曜日ヘッダー（土日を除く）
         const weekStart = getFirstDayOfWeek(this.currentDate);
-        const dayNames = ['月', '火', '水', '木', '金', '土', '日'];
+        const dayNames = ['月', '火', '水', '木', '金'];
         
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 5; i++) { // 0-4 (月-金)
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + i);
             
@@ -278,8 +292,8 @@ class CalendarManager {
                 }
                 grid.appendChild(timeCell);
                 
-                // 各日のセル
-                for (let day = 0; day < 7; day++) {
+                // 各日のセル（土日を除く）
+                for (let day = 0; day < 5; day++) { // 0-4 (月-金)
                     const cellDate = new Date(weekStart);
                     cellDate.setDate(weekStart.getDate() + day);
                     cellDate.setHours(hour, minute, 0, 0);
@@ -310,6 +324,12 @@ class CalendarManager {
             // 空のセルの場合、新規予約作成
             cell.addEventListener('click', () => {
                 if (authManager.getLoginStatus().isLoggedIn) {
+                    // 土日チェック
+                    const dayOfWeek = datetime.getDay(); // 0=日曜日, 6=土曜日
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        alert('土日の予約はできません。');
+                        return;
+                    }
                     this.showNewReservationModal(datetime);
                 }
             });
@@ -390,7 +410,17 @@ class CalendarManager {
     // 指定日の予約取得
     getReservationsForDate(date) {
         const dateString = getDateString(date);
-        return this.reservations.filter(r => r.date === dateString);
+        const filtered = this.reservations.filter(r => r.date === dateString);
+        
+        // デバッグ用ログ（一時的）
+        if (filtered.length > 0) {
+            console.log('予約マッチング:', {
+                cellDate: dateString,
+                reservations: filtered.map(r => ({ title: r.title, date: r.date }))
+            });
+        }
+        
+        return filtered;
     }
 
     // 指定時刻の予約取得
