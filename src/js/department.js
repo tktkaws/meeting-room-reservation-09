@@ -26,15 +26,32 @@ class DepartmentManager {
     }
 
     async init() {
+        // 認証マネージャーの初期化を待つ
+        await authManager.init();
+        
         // 管理者権限チェック
         if (!authManager.getLoginStatus().isAdmin) {
-            window.location.href = 'index.html';
+            this.showAdminRequired();
             return;
         }
 
         await this.loadDepartments();
         this.setupEventListeners();
         this.renderDepartmentTable();
+    }
+
+    // 管理者権限必須メッセージ表示
+    showAdminRequired() {
+        const container = document.querySelector('.department-main') || document.body;
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <h2>管理者権限が必要です</h2>
+                <p>部署管理機能にアクセスするには管理者権限が必要です。</p>
+                <a href="index.html" style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">
+                    メイン画面に戻る
+                </a>
+            </div>
+        `;
     }
 
     // 部署一覧読み込み

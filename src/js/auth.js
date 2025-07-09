@@ -141,6 +141,11 @@ class AuthManager {
                 window.reservationManager.loadReservations();
             }
 
+            // 認証状態変更の通知
+            if (this.onAuthStateChanged) {
+                this.onAuthStateChanged();
+            }
+
         } catch (error) {
             showErrorMessage(error.message, document.querySelector('.login-section'));
         }

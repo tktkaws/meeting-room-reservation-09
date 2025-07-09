@@ -10,73 +10,106 @@
     <div class="container">
         <header>
             <h1>ユーザー設定</h1>
-            <nav>
-                <a href="index.html">予約画面に戻る</a>
-            </nav>
         </header>
         
-        <main class="config-main">
-            <section class="user-info-section">
-                <h2>ユーザー情報</h2>
-                <form id="userInfoForm">
-                    <div class="form-group">
-                        <label for="userName">名前</label>
-                        <input type="text" id="userName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userEmail">メールアドレス</label>
-                        <input type="email" id="userEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userDepartment">部署</label>
-                        <select id="userDepartment" required>
-                            <option value="">選択してください</option>
-                        </select>
-                    </div>
-                    <button type="submit">更新</button>
-                </form>
-            </section>
-            
-            <section class="password-section">
-                <h2>パスワード変更</h2>
-                <form id="passwordForm">
-                    <div class="form-group">
-                        <label for="currentPassword">現在のパスワード</label>
-                        <input type="password" id="currentPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="newPassword">新しいパスワード</label>
-                        <input type="password" id="newPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">新しいパスワード（確認）</label>
-                        <input type="password" id="confirmPassword" required>
-                    </div>
-                    <button type="submit">パスワード変更</button>
-                </form>
-            </section>
-            
-            <section class="notification-section">
-                <h2>通知設定</h2>
-                <form id="notificationForm">
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="emailNotification">
-                            メール通知を受け取る
-                        </label>
-                    </div>
-                    <button type="submit">設定を保存</button>
-                </form>
-            </section>
-            
-            <section class="color-section">
-                <h2>カラー設定</h2>
-                <div id="colorSettings">
-                    <p>各部署のデフォルトカラーを個別に設定できます</p>
-                    <div id="departmentColors"></div>
+        <aside class="sidebar">
+            <div class="login-section">
+                <div id="loginForm">
+                    <h3>ログイン</h3>
+                    <form>
+                        <input type="email" id="email" placeholder="メールアドレス" required>
+                        <input type="password" id="password" placeholder="パスワード" required>
+                        <button type="submit">ログイン</button>
+                    </form>
                 </div>
-                <button id="saveColorSettings">カラー設定を保存</button>
-            </section>
+                <div id="userInfo" style="display: none;">
+                    <h3>ユーザー情報</h3>
+                    <p id="userName"></p>
+                    <p id="userDepartment"></p>
+                    <div style="margin: 1rem 0;">
+                        <a href="config.html" style="color: #3498db; text-decoration: none;">設定</a>
+                        <span id="adminMenu" style="display: none;">
+                            | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
+                        </span>
+                    </div>
+                    <button id="logoutBtn">ログアウト</button>
+                </div>
+            </div>
+            
+            <div class="color-settings">
+                <h3>カラー設定</h3>
+                <div id="colorSettings"></div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <nav style="margin-bottom: 2rem;">
+                <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
+            </nav>
+            
+            <div class="config-main">
+                <section class="user-info-section">
+                    <h2>ユーザー情報</h2>
+                    <form id="userInfoForm">
+                        <div class="form-group">
+                            <label for="userNameInput">名前</label>
+                            <input type="text" id="userNameInput" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">メールアドレス</label>
+                            <input type="email" id="userEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userDepartmentSelect">部署</label>
+                            <select id="userDepartmentSelect" required>
+                                <option value="">選択してください</option>
+                            </select>
+                        </div>
+                        <button type="submit">更新</button>
+                    </form>
+                </section>
+                
+                <section class="password-section">
+                    <h2>パスワード変更</h2>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">現在のパスワード</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">新しいパスワード</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">新しいパスワード（確認）</label>
+                            <input type="password" id="confirmPassword" required>
+                        </div>
+                        <button type="submit">パスワード変更</button>
+                    </form>
+                </section>
+                
+                <section class="notification-section">
+                    <h2>通知設定</h2>
+                    <form id="notificationForm">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="emailNotification">
+                                メール通知を受け取る
+                            </label>
+                        </div>
+                        <button type="submit">設定を保存</button>
+                    </form>
+                </section>
+                
+                <section class="color-section">
+                    <h2>詳細カラー設定</h2>
+                    <div id="departmentColorsConfig">
+                        <p>各部署のデフォルトカラーを個別に設定できます</p>
+                        <div id="departmentColors"></div>
+                    </div>
+                    <button id="saveColorSettings">カラー設定を保存</button>
+                </section>
+            </div>
         </main>
     </div>
     

@@ -23,8 +23,12 @@ class ConfigManager {
     }
 
     async init() {
+        // 認証マネージャーの初期化を待つ
+        await authManager.init();
+        
         // ログイン状態チェック
         if (!authManager.getLoginStatus().isLoggedIn) {
+            // index.htmlに遷移
             window.location.href = 'index.html';
             return;
         }
@@ -34,6 +38,23 @@ class ConfigManager {
         this.setupEventListeners();
         this.populateForm();
         this.updateColorSettings();
+    }
+
+    // ログイン必須メッセージ表示
+    showLoginRequired() {
+        const container = document.querySelector('.config-main') || document.querySelector('.main-content');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h2>ログインが必要です</h2>
+                    <p>設定ページにアクセスするにはログインしてください。</p>
+                    <p>左側のサイドバーからログインするか、メイン画面に戻ってください。</p>
+                    <a href="index.html" style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">
+                        メイン画面に戻る
+                    </a>
+                </div>
+            `;
+        }
     }
 
     // ユーザーデータ読み込み
@@ -83,6 +104,33 @@ class ConfigManager {
         if (saveColorBtn) {
             saveColorBtn.addEventListener('click', () => this.handleColorSave());
         }
+
+        // ログアウトボタン（config.html用）
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+
+        // 認証状態変更の監視
+        authManager.onAuthStateChanged = () => {
+            if (!authManager.getLoginStatus().isLoggedIn) {
+                // ログアウトされた場合、index.htmlに遷移
+                window.location.href = 'index.html';
+            }
+        };
+    }
+
+    // ログアウト処理
+    async handleLogout() {
+        try {
+            await authManager.handleLogout();
+            // ログアウト成功後、index.htmlに遷移
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('ログアウトエラー:', error);
+            // エラーが発生してもindex.htmlに遷移
+            window.location.href = 'index.html';
+        }
     }
 
     // フォームにデータを設定
@@ -90,9 +138,9 @@ class ConfigManager {
         if (!this.currentUser) return;
 
         // ユーザー情報
-        const userNameInput = document.getElementById('userName');
+        const userNameInput = document.getElementById('userNameInput');
         const userEmailInput = document.getElementById('userEmail');
-        const userDepartmentSelect = document.getElementById('userDepartment');
+        const userDepartmentSelect = document.getElementById('userDepartmentSelect');
         const emailNotificationCheckbox = document.getElementById('emailNotification');
 
         if (userNameInput) userNameInput.value = this.currentUser.name;
@@ -168,9 +216,9 @@ class ConfigManager {
         
         const formData = new FormData(event.target);
         const data = {
-            name: formData.get('userName') || document.getElementById('userName').value,
+            name: formData.get('userNameInput') || document.getElementById('userNameInput').value,
             email: formData.get('userEmail') || document.getElementById('userEmail').value,
-            department_id: formData.get('userDepartment') || document.getElementById('userDepartment').value,
+            department_id: formData.get('userDepartmentSelect') || document.getElementById('userDepartmentSelect').value,
             email_notification: document.getElementById('emailNotification').checked
         };
 
