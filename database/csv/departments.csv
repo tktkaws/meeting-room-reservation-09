@@ -1,0 +1,8 @@
+id,name,default_color,display_order
+1,総務部,#FF6B6B,1
+2,営業部,#4ECDC4,2
+3,開発部,#45B7D1,3
+4,人事部,#96CEB4,4
+5,経理部,#FFEAA7,5
+6,企画部,#DDA0DD,6
+7,製造部,#FFB347,7
