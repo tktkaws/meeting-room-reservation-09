@@ -2,10 +2,10 @@
 require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = $_SERVER['REQUEST_URI'];
+$action = $_GET['action'] ?? '';
 
 // ログイン処理
-if ($method === 'POST' && strpos($path, '/login') !== false) {
+if ($method === 'POST' && $action === 'login') {
     $data = getJsonInput();
     
     if (!isset($data['email']) || !isset($data['password'])) {
@@ -40,13 +40,13 @@ if ($method === 'POST' && strpos($path, '/login') !== false) {
 }
 
 // ログアウト処理
-if ($method === 'POST' && strpos($path, '/logout') !== false) {
+if ($method === 'POST' && $action === 'logout') {
     session_destroy();
     jsonResponse(['message' => 'Logout successful']);
 }
 
 // 現在のユーザー情報取得
-if ($method === 'GET' && strpos($path, '/me') !== false) {
+if ($method === 'GET' && $action === 'me') {
     $user = getCurrentUser();
     if (!$user) {
         jsonResponse(['error' => 'Not logged in'], 401);
@@ -57,11 +57,12 @@ if ($method === 'GET' && strpos($path, '/me') !== false) {
 }
 
 // セッション状態確認
-if ($method === 'GET' && strpos($path, '/status') !== false) {
+if ($method === 'GET' && $action === 'status') {
+    $user = getCurrentUser();
     jsonResponse([
         'loggedIn' => isLoggedIn(),
         'admin' => isAdmin(),
-        'user' => getCurrentUser()
+        'user' => $user
     ]);
 }
 

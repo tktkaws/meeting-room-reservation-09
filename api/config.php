@@ -56,7 +56,9 @@ function verifyPassword($password, $hash) {
 }
 
 // セッション開始
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ログイン状態をチェックする関数
 function isLoggedIn() {

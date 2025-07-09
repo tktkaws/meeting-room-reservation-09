@@ -80,7 +80,7 @@ class ReservationManager {
                 params = '?view_type=list';
             }
             
-            const response = await get(`/api/reservations.php${params}`);
+            const response = await get(`api/reservations.php${params}`);
             this.reservations = response.reservations;
             
             // カレンダーに反映
@@ -99,7 +99,7 @@ class ReservationManager {
             const pastDate = new Date(today.getFullYear(), today.getMonth() - 3, 1); // 3ヶ月前
             
             const params = `?start_date=${getDateString(pastDate)}&end_date=${getDateString(today)}`;
-            const response = await get(`/api/reservations.php${params}`);
+            const response = await get(`api/reservations.php${params}`);
             
             this.reservations = response.reservations;
             this.calendarManager.setReservations(this.reservations);
@@ -381,14 +381,14 @@ class ReservationManager {
 
     // 予約作成
     async createReservation(data) {
-        const response = await post('/api/reservations.php', data);
+        const response = await post('api/reservations.php', data);
         showSuccessMessage('予約を作成しました', document.querySelector('.main-content'));
         return response;
     }
 
     // 予約更新
     async updateReservation(id, data) {
-        const response = await put('/api/reservations.php', { id, ...data });
+        const response = await put('api/reservations.php', { id, ...data });
         showSuccessMessage('予約を更新しました', document.querySelector('.main-content'));
         return response;
     }
@@ -399,7 +399,7 @@ class ReservationManager {
         if (!confirmed) return;
         
         try {
-            await del('/api/reservations.php', { id });
+            await del('api/reservations.php', { id });
             showSuccessMessage('予約を削除しました', document.querySelector('.main-content'));
             hideModal('reservationModal');
             await this.loadReservations();

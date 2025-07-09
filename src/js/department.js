@@ -40,7 +40,7 @@ class DepartmentManager {
     // 部署一覧読み込み
     async loadDepartments() {
         try {
-            const response = await get('/api/departments.php');
+            const response = await get('api/departments.php');
             this.departments = response.departments;
         } catch (error) {
             console.error('部署情報の取得に失敗しました:', error);
@@ -198,21 +198,21 @@ class DepartmentManager {
 
     // 部署作成
     async createDepartment(data) {
-        const response = await post('/api/departments.php', data);
+        const response = await post('api/departments.php', data);
         showSuccessMessage('部署を作成しました', document.querySelector('.department-form-section'));
         return response;
     }
 
     // 部署更新
     async updateDepartment(id, data) {
-        const response = await put('/api/departments.php', { id, ...data });
+        const response = await put('api/departments.php', { id, ...data });
         showSuccessMessage('部署を更新しました', document.querySelector('.department-form-section'));
         return response;
     }
 
     // 部署削除
     async deleteDepartment(id) {
-        const response = await del('/api/departments.php', { id });
+        const response = await del('api/departments.php', { id });
         showSuccessMessage('部署を削除しました', document.querySelector('.department-list-section'));
         return response;
     }

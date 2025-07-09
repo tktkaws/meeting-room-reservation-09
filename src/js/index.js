@@ -50,17 +50,17 @@ window.addEventListener('beforeunload', (event) => {
     }
 });
 
-// Service Worker登録（オフライン対応）
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-        try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            console.log('ServiceWorker登録成功:', registration);
-        } catch (error) {
-            console.log('ServiceWorker登録失敗:', error);
-        }
-    });
-}
+// Service Worker登録は無効化
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', async () => {
+//         try {
+//             const registration = await navigator.serviceWorker.register('/sw.js');
+//             console.log('ServiceWorker登録成功:', registration);
+//         } catch (error) {
+//             console.log('ServiceWorker登録失敗:', error);
+//         }
+//     });
+// }
 
 // キーボードショートカット
 document.addEventListener('keydown', (event) => {

@@ -1,6 +1,6 @@
 // 認証関連の機能
 
-import { get, post, showErrorMessage, showSuccessMessage, showLoading } from './utils.js';
+import { get, post, put, showErrorMessage, showSuccessMessage, showLoading } from './utils.js';
 
 class AuthManager {
     constructor() {
@@ -155,7 +155,7 @@ class AuthManager {
             this.userColorSettings[departmentId] = color;
             
             try {
-                await post('api/users.php?action=colors', {
+                await put('api/users.php?action=colors', {
                     color_settings: this.userColorSettings
                 });
                 

@@ -39,7 +39,7 @@ class ConfigManager {
     // ユーザーデータ読み込み
     async loadUserData() {
         try {
-            const response = await get('/api/auth.php?action=me');
+            const response = await get('api/auth.php?action=me');
             this.currentUser = response.user;
         } catch (error) {
             console.error('ユーザー情報の取得に失敗しました:', error);
@@ -50,7 +50,7 @@ class ConfigManager {
     // 部署一覧読み込み
     async loadDepartments() {
         try {
-            const response = await get('/api/departments.php');
+            const response = await get('api/departments.php');
             this.departments = response.departments;
         } catch (error) {
             console.error('部署情報の取得に失敗しました:', error);
@@ -185,7 +185,7 @@ class ConfigManager {
         const hideLoading = showLoading(submitBtn);
 
         try {
-            const response = await put('/api/users.php?action=profile', data);
+            const response = await put('api/users.php?action=profile', data);
             this.currentUser = response.user;
             showSuccessMessage('ユーザー情報を更新しました', event.target);
             
@@ -218,7 +218,7 @@ class ConfigManager {
         const hideLoading = showLoading(submitBtn);
 
         try {
-            await put('/api/users.php?action=password', {
+            await put('api/users.php?action=password', {
                 current_password: currentPassword,
                 new_password: newPassword
             });
@@ -243,7 +243,7 @@ class ConfigManager {
         const hideLoading = showLoading(submitBtn);
 
         try {
-            await put('/api/users.php?action=profile', {
+            await put('api/users.php?action=profile', {
                 name: this.currentUser.name,
                 email: this.currentUser.email,
                 department_id: this.currentUser.department_id,
@@ -280,7 +280,7 @@ class ConfigManager {
         const hideLoading = showLoading(saveBtn);
 
         try {
-            await put('/api/users.php?action=colors', {
+            await put('api/users.php?action=colors', {
                 color_settings: colorSettings
             });
             

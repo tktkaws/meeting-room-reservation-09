@@ -2,10 +2,10 @@
 require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = $_SERVER['REQUEST_URI'];
+$action = $_GET['action'] ?? '';
 
 // ユーザー情報更新
-if ($method === 'PUT' && strpos($path, '/profile') !== false) {
+if ($method === 'PUT' && $action === 'profile') {
     if (!isLoggedIn()) {
         jsonResponse(['error' => 'Login required'], 401);
     }
@@ -76,7 +76,7 @@ if ($method === 'PUT' && strpos($path, '/profile') !== false) {
 }
 
 // パスワード変更
-if ($method === 'PUT' && strpos($path, '/password') !== false) {
+if ($method === 'PUT' && $action === 'password') {
     if (!isLoggedIn()) {
         jsonResponse(['error' => 'Login required'], 401);
     }
@@ -119,7 +119,7 @@ if ($method === 'PUT' && strpos($path, '/password') !== false) {
 }
 
 // カラー設定更新
-if ($method === 'PUT' && strpos($path, '/colors') !== false) {
+if ($method === 'PUT' && $action === 'colors') {
     if (!isLoggedIn()) {
         jsonResponse(['error' => 'Login required'], 401);
     }

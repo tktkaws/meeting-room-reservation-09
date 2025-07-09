@@ -16,12 +16,35 @@ export async function apiRequest(url, options = {}) {
         const response = await fetch(url, config);
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (jsonError) {
+                // JSONパースエラーの場合はHTMLレスポンスの可能性
+                const textResponse = await response.text();
+                if (textResponse.includes('<!DOCTYPE')) {
+                    errorMessage = 'Server error: Invalid response format';
+                } else {
+                    errorMessage = textResponse;
+                }
+            }
+            throw new Error(errorMessage);
         }
         
-        return await response.json();
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        } else {
+            // HTMLレスポンスなどの場合
+            const text = await response.text();
+            throw new Error('Invalid response format: ' + text.substring(0, 100));
+        }
     } catch (error) {
+        if (error.name === 'SyntaxError') {
+            // JSONパースエラー
+            throw new Error('Invalid JSON response from server');
+        }
         console.error('API request failed:', error);
         throw error;
     }
