@@ -325,7 +325,7 @@ class AuthManager {
         // 管理者メニューの表示/非表示
         const adminMenu = document.getElementById('adminMenu');
         if (adminMenu) {
-            adminMenu.style.display = this.isAdmin ? 'inline' : 'none';
+            adminMenu.style.display = this.isAdmin ? 'flex' : 'none';
         }
     }
 
@@ -334,55 +334,66 @@ class AuthManager {
         const colorSettings = document.getElementById('colorSettings');
         if (!colorSettings) return;
 
-        colorSettings.innerHTML = '';
+        // 全社カラー設定
+        const companyColor = this.userColorSettings['company'] || this.companyDefaultColor;
+        const companyColorHtml = `
+            <div class="color-item">
+                <label>全社</label>
+                <div class="color-input-group">
+                    <input type="text" 
+                           value="${companyColor}" 
+                           data-department-id="company"
+                           placeholder="#FFFFFF" 
+                           class="color-setting-text">
+                    <input type="color" 
+                           value="${companyColor}" 
+                           data-department-id="company">
+                    
+                </div>
+            </div>
+        `;
 
-        // 全社の項目を一番上に追加（個人設定）
-        const companyColorItem = document.createElement('div');
-        companyColorItem.className = 'color-item';
-        
-        const companyLabel = document.createElement('label');
-        companyLabel.textContent = '全社';
-        
-        const companyColorInput = document.createElement('input');
-        companyColorInput.type = 'color';
-        companyColorInput.value = this.userColorSettings['company'] || this.companyDefaultColor;
-        companyColorInput.dataset.departmentId = 'company';
-        
-        companyColorItem.appendChild(companyLabel);
-        companyColorItem.appendChild(companyColorInput);
-        colorSettings.appendChild(companyColorItem);
+        // 部署カラー設定
+        const departmentColorsHtml = this.departments.map(department => {
+            const departmentColor = this.userColorSettings[department.id] || department.default_color;
+            return `
+                <div class="color-item">
+                    <label>${department.name}</label>
+                    <div class="color-input-group">
+                        <input type="text" 
+                               value="${departmentColor}" 
+                               data-department-id="${department.id}"
+                               placeholder="#FFFFFF" 
+                               class="color-setting-text">
+                        <input type="color" 
+                               value="${departmentColor}" 
+                               data-department-id="${department.id}">
+                        
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-        // 各部署の項目を追加
-        this.departments.forEach(department => {
-            const colorItem = document.createElement('div');
-            colorItem.className = 'color-item';
-            
-            const label = document.createElement('label');
-            label.textContent = department.name;
-            
-            const colorInput = document.createElement('input');
-            colorInput.type = 'color';
-            colorInput.value = this.userColorSettings[department.id] || department.default_color;
-            colorInput.dataset.departmentId = department.id;
-            
-            colorItem.appendChild(label);
-            colorItem.appendChild(colorInput);
-            colorSettings.appendChild(colorItem);
-        });
+        // デフォルトに戻すボタン
+        const resetButtonHtml = `
+            <div>
+                <button id="resetBtn" class="sidebar-btn">
+                    <img src="/meeting-room-reservation-09/src/images/refresh.svg" alt="" class="material-icon">
+                    <span class="sidebar-btn-text">デフォルトに戻す</span>
+                </button>
+            </div>
+        `;
 
-        // デフォルトに戻すボタンを追加
-        const resetButtonContainer = document.createElement('div');
-        resetButtonContainer.style.marginTop = '1rem';
-        resetButtonContainer.style.textAlign = 'center';
-        
-        const resetButton = document.createElement('button');
-        resetButton.id = 'resetBtn';
-        resetButton.className = 'sidebar-btn';
-        resetButton.innerHTML = '<img src="/meeting-room-reservation-09/src/images/refresh.svg" alt="" class="material-icon"><span class="sidebar-btn-text">デフォルトに戻す</span>';
-        resetButton.addEventListener('click', () => this.resetColorsToDefault());
-        
-        resetButtonContainer.appendChild(resetButton);
-        colorSettings.appendChild(resetButtonContainer);
+        colorSettings.innerHTML = companyColorHtml + departmentColorsHtml + resetButtonHtml;
+
+        // リセットボタンのイベントリスナーを追加
+        const resetButton = document.getElementById('resetBtn');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => this.resetColorsToDefault());
+        }
+
+        // color inputとtext inputの連動処理を追加
+        this.setupColorInputSync();
     }
 
     // カラー情報表示（非ログイン時）
@@ -390,49 +401,25 @@ class AuthManager {
         const colorInfo = document.getElementById('colorInfo');
         if (!colorInfo) return;
 
-        colorInfo.innerHTML = '';
+        // 全社カラー設定
+        const companyColorHtml = `
+            <div class="color-item">
+                <label>全社</label>
+                <span style="background-color: ${this.companyDefaultColor}; width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; display: inline-block; margin-left: 0.5rem;"></span>
+            </div>
+        `;
 
-        // 全社の項目を一番上に追加（デフォルト値のみ表示）
-        const companyColorItem = document.createElement('div');
-        companyColorItem.className = 'color-item';
-        
-        const companyLabel = document.createElement('label');
-        companyLabel.textContent = '全社';
-        
-        const companyColorSpan = document.createElement('span');
-        companyColorSpan.style.backgroundColor = this.companyDefaultColor;
-        companyColorSpan.style.width = '20px';
-        companyColorSpan.style.height = '20px';
-        companyColorSpan.style.borderRadius = '3px';
-        companyColorSpan.style.border = '1px solid #ccc';
-        companyColorSpan.style.display = 'inline-block';
-        companyColorSpan.style.marginLeft = '0.5rem';
-        
-        companyColorItem.appendChild(companyLabel);
-        companyColorItem.appendChild(companyColorSpan);
-        colorInfo.appendChild(companyColorItem);
+        // 部署カラー設定
+        const departmentColorsHtml = this.departments.map(department => {
+            return `
+                <div class="color-item">
+                    <label>${department.name}</label>
+                    <span style="background-color: ${department.default_color}; width: 20px; height: 20px; border-radius: 3px; border: 1px solid #ccc; display: inline-block; margin-left: 0.5rem;"></span>
+                </div>
+            `;
+        }).join('');
 
-        // 各部署の項目を追加（デフォルト値のみ表示）
-        this.departments.forEach(department => {
-            const colorItem = document.createElement('div');
-            colorItem.className = 'color-item';
-            
-            const label = document.createElement('label');
-            label.textContent = department.name;
-            
-            const colorSpan = document.createElement('span');
-            colorSpan.style.backgroundColor = department.default_color;
-            colorSpan.style.width = '20px';
-            colorSpan.style.height = '20px';
-            colorSpan.style.borderRadius = '3px';
-            colorSpan.style.border = '1px solid #ccc';
-            colorSpan.style.display = 'inline-block';
-            colorSpan.style.marginLeft = '0.5rem';
-            
-            colorItem.appendChild(label);
-            colorItem.appendChild(colorSpan);
-            colorInfo.appendChild(colorItem);
-        });
+        colorInfo.innerHTML = companyColorHtml + departmentColorsHtml;
     }
 
     // 権限チェック
@@ -508,6 +495,47 @@ class AuthManager {
         
         
         return objectSettings;
+    }
+
+    // color inputとtext inputの連動処理設定
+    setupColorInputSync() {
+        const colorSettings = document.getElementById('colorSettings');
+        if (!colorSettings) return;
+
+        // 各color-input-groupの連動処理を設定
+        const colorInputGroups = colorSettings.querySelectorAll('.color-input-group');
+        colorInputGroups.forEach(group => {
+            const colorInput = group.querySelector('input[type="color"]');
+            const textInput = group.querySelector('input[type="text"]');
+            
+            if (colorInput && textInput) {
+                // color inputが変更された時にtext inputを更新
+                colorInput.addEventListener('input', (e) => {
+                    textInput.value = e.target.value.toLowerCase();
+                });
+
+                // text inputが変更された時にcolor inputを更新
+                textInput.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    // 有効なカラーコードかチェック（#で始まる6桁の16進数）
+                    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                        colorInput.value = value.toLowerCase();
+                        // カラー設定を保存
+                        const changeEvent = { target: colorInput };
+                        this.handleColorChange(changeEvent);
+                    }
+                });
+
+                // text inputのフォーカスアウト時に正規化
+                textInput.addEventListener('blur', (e) => {
+                    const value = e.target.value;
+                    if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                        // 無効な場合はcolor inputの値に戻す
+                        e.target.value = colorInput.value;
+                    }
+                });
+            }
+        });
     }
 
     // カラー設定をデフォルトに戻す
