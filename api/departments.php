@@ -7,7 +7,17 @@ $path = $_SERVER['REQUEST_URI'];
 // 部署一覧取得
 if ($method === 'GET') {
     $pdo = getDB();
-    $stmt = $pdo->prepare("SELECT * FROM departments ORDER BY display_order ASC, name ASC");
+    $stmt = $pdo->prepare("
+        SELECT d.*, 
+               COALESCE(u.user_count, 0) as user_count
+        FROM departments d
+        LEFT JOIN (
+            SELECT department_id, COUNT(*) as user_count
+            FROM users
+            GROUP BY department_id
+        ) u ON d.id = u.department_id
+        ORDER BY d.display_order ASC, d.name ASC
+    ");
     $stmt->execute();
     $departments = $stmt->fetchAll();
     

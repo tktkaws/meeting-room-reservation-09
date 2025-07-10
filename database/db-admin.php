@@ -253,7 +253,7 @@ function getTableData() {
         // ユーザーデータ（パスワードは除外）
         $stmt = $pdo->query("
             SELECT u.id, u.name, u.email, u.admin, d.name as department_name, 
-                   u.email_notification, u.created_at 
+                   u.email_notification, u.color_setting, u.created_at 
             FROM users u 
             LEFT JOIN departments d ON u.department_id = d.id 
             ORDER BY u.id DESC LIMIT 50
@@ -432,7 +432,6 @@ $tableData = getTableData();
             max-width: 150px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
         }
     </style>
 </head>
@@ -528,6 +527,7 @@ $tableData = getTableData();
                                 <th>管理者</th>
                                 <th>部署</th>
                                 <th>メール通知</th>
+                                <th>カラー設定</th>
                                 <th>作成日時</th>
                             </tr>
                         </thead>
@@ -547,6 +547,13 @@ $tableData = getTableData();
                                         <span class="<?php echo $user['email_notification'] ? 'bool-true' : 'bool-false'; ?>">
                                             <?php echo $user['email_notification'] ? 'はい' : 'いいえ'; ?>
                                         </span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <?php if ($user['color_setting']): ?>
+                                            <code><?php echo htmlspecialchars($user['color_setting']); ?></code>
+                                        <?php else: ?>
+                                            <span style="color: #999;">未設定</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td><?php echo htmlspecialchars($user['created_at']); ?></td>
                                 </tr>

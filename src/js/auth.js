@@ -9,6 +9,7 @@ class AuthManager {
         this.isAdmin = false;
         this.departments = [];
         this.userColorSettings = {};
+        this.companyDefaultColor = '#3498db';
         this.initialized = false;
         this.init();
     }
@@ -20,6 +21,7 @@ class AuthManager {
         
         await this.checkAuthStatus();
         await this.loadDepartments();
+        await this.loadCompanyColor();
         this.setupEventListeners();
         this.initialized = true;
     }
@@ -65,6 +67,18 @@ class AuthManager {
             this.updateColorSettings();
         } catch (error) {
             console.error('部署情報の取得に失敗しました:', error);
+        }
+    }
+
+    // 全社のデフォルトカラー取得
+    async loadCompanyColor() {
+        try {
+            console.log('全社カラー設定を取得します');
+            const response = await get('api/company-color.php');
+            console.log('全社カラー設定の取得結果:', response);
+            this.companyDefaultColor = response.color || '#3498db';
+        } catch (error) {
+            console.error('全社カラー設定の取得に失敗しました:', error);
         }
     }
 
@@ -295,7 +309,7 @@ class AuthManager {
 
         colorSettings.innerHTML = '';
 
-        // 全社の項目を一番上に追加
+        // 全社の項目を一番上に追加（個人設定）
         const companyColorItem = document.createElement('div');
         companyColorItem.className = 'color-item';
         
@@ -304,7 +318,7 @@ class AuthManager {
         
         const companyColorInput = document.createElement('input');
         companyColorInput.type = 'color';
-        companyColorInput.value = this.userColorSettings['company'] || '#3498db';
+        companyColorInput.value = this.userColorSettings['company'] || this.companyDefaultColor;
         companyColorInput.dataset.departmentId = 'company';
         
         companyColorItem.appendChild(companyLabel);
@@ -335,15 +349,9 @@ class AuthManager {
         resetButtonContainer.style.textAlign = 'center';
         
         const resetButton = document.createElement('button');
-        resetButton.textContent = 'デフォルトに戻す';
-        resetButton.className = 'reset-colors-btn';
-        resetButton.style.padding = '0.5rem 1rem';
-        resetButton.style.backgroundColor = '#95a5a6';
-        resetButton.style.color = 'white';
-        resetButton.style.border = 'none';
-        resetButton.style.borderRadius = '4px';
-        resetButton.style.cursor = 'pointer';
-        resetButton.style.fontSize = '0.9rem';
+        resetButton.id = 'resetBtn';
+        resetButton.className = 'sidebar-btn';
+        resetButton.innerHTML = '<img src="/meeting-room-reservation-09/src/images/refresh.svg" alt="" class="material-icon"><span class="sidebar-btn-text">デフォルトに戻す</span>';
         resetButton.addEventListener('click', () => this.resetColorsToDefault());
         
         resetButtonContainer.appendChild(resetButton);
@@ -393,9 +401,9 @@ class AuthManager {
         // 全社の場合
         if (reservation.is_company_wide) {
             if (this.isLoggedIn) {
-                return this.userColorSettings['company'] || '#3498db';
+                return this.userColorSettings['company'] || this.companyDefaultColor;
             } else {
-                return '#3498db'; // ログインしていない場合の全社デフォルトカラー
+                return this.companyDefaultColor; // ログインしていない場合の全社デフォルトカラー
             }
         }
         
@@ -431,9 +439,12 @@ class AuthManager {
             // ユーザー設定をクリア
             this.userColorSettings = {};
             
-            // サーバーに空の設定を保存
+            // 全社カラーをデフォルトカラーに設定
+            this.userColorSettings['company'] = this.companyDefaultColor;
+            
+            // サーバーに設定を保存
             await put('api/users.php?action=colors', {
-                color_settings: {}
+                color_settings: this.userColorSettings
             });
             
             // UI更新

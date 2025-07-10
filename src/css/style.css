@@ -5,80 +5,57 @@
     box-sizing: border-box;
 }
 
+:root {
+    --list-view-height: calc(100vh - 120px);
+    --calendar-day-height: calc((var(--list-view-height) - 40px) / 5);
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f5f5f5;
+    background-color: #F8FAFD;
 }
 
 /* コンテナレイアウト */
 .container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    grid-auto-flow: column;
     min-height: 100vh;
-    max-width: 1400px;
     margin: 0 auto;
-    background-color: #fff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-/* ヘッダー */
-header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 1rem 2rem;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-header nav {
-    margin-top: 0.5rem;
-}
-
-header nav a {
-    color: #ecf0f1;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-header nav a:hover {
-    background-color: #34495e;
 }
 
 /* サイドバー */
 .sidebar {
-    width: 300px;
-    background-color: #ecf0f1;
-    padding: 2rem 1rem;
+    top: 0;
+    left: -250px;
+    width: 250px;
     height: 100vh;
+    background: #F8FAFD;
+    color: #333;
     overflow-y: auto;
-    border-right: 1px solid #bdc3c7;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    /* box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15); */
 }
 
-.sidebar h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
+.sidebar h1 {
+    display: grid;
+    place-items: center;
+    height: 5rem;
+    font-size: 1.2rem;
     font-weight: 600;
+}
+.sidebar h1 a {
+    color: #333;
+    text-decoration: none;
 }
 
 .login-section {
-    margin-bottom: 2rem;
+    border-top: 1px solid #E2E8F0;
     padding: 1rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-section input {
@@ -90,7 +67,7 @@ header nav a:hover {
     font-size: 0.9rem;
 }
 
-.login-section button {
+/* .login-section button {
     width: 100%;
     padding: 0.75rem;
     background-color: #3498db;
@@ -104,7 +81,7 @@ header nav a:hover {
 
 .login-section button:hover {
     background-color: #2980b9;
-}
+} */
 
 #userInfo {
     text-align: center;
@@ -115,7 +92,7 @@ header nav a:hover {
     color: #2c3e50;
 }
 
-#logoutBtn {
+/* #logoutBtn {
     background-color: #e74c3c;
     width: 100%;
     padding: 0.5rem;
@@ -128,13 +105,12 @@ header nav a:hover {
 
 #logoutBtn:hover {
     background-color: #c0392b;
-}
+} */
 
 .color-settings {
-    background-color: #fff;
+    border-top: 1px solid #E2E8F0;
     padding: 1rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .color-item {
@@ -186,6 +162,51 @@ header nav a:hover {
     color: #721c24;
     border: 1px solid #f5c6cb;
     display: block;
+}
+
+/* カラー入力グループ */
+.color-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.color-input-group input[type="color"] {
+    width: 50px;
+    height: 40px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.color-input-group input[type="text"] {
+    width: 100px;
+    padding: 0.5rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+/* ボタンスタイル */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
 }
 
 /* メインコンテンツ */
@@ -323,39 +344,36 @@ header nav a:hover {
 .calendar-view {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
 }
 
 /* 月間カレンダー */
 .month-calendar {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1px;
-    background-color: #bdc3c7;
-    border-radius: 4px;
+    row-gap: 1px;
+    background-color: #e2e8f0;
+    border-radius: 8px;
     overflow: hidden;
 }
 
 .month-header {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 1px;
-    background-color: #bdc3c7;
     margin-bottom: 1px;
 }
 
 .month-header-cell {
-    background-color: #34495e;
-    color: white;
-    padding: 1rem;
+        padding: 0.5rem;
     text-align: center;
     font-weight: 600;
+    color: #4a5568;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .month-cell {
     background-color: white;
     min-height: 120px;
+    min-height: var(--calendar-day-height);
     padding: 0.5rem;
     cursor: pointer;
     position: relative;
@@ -367,19 +385,25 @@ header nav a:hover {
 }
 
 .month-cell.other-month {
-    background-color: #ecf0f1;
-    color: #7f8c8d;
+    color: #a0aec0;
+    background: #f9f9f9;
 }
 
 .month-cell.today {
-    background-color: #e8f5e8;
-    border: 2px solid #27ae60;
+    /* background-color: #e8f5e8;
+    border: 2px solid #27ae60; */
 }
 
 .cell-date {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+    text-align: center;
+    font-weight: 400;
+    margin-bottom: .5rem;
     font-size: 0.9rem;
+}
+
+.month-cell.today .cell-date {
+    font-weight: 600;
+    color: #27ae60;
 }
 
 .cell-reservations {
@@ -408,20 +432,19 @@ header nav a:hover {
 /* 週間カレンダー */
 .week-view-container {
     display: flex;
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     border-radius: 4px;
     overflow: hidden;
 }
 
 .week-time-axis {
     width: 80px;
-    background-color: #ecf0f1;
-    border-right: 1px solid #bdc3c7;
+    /* background-color: #ecf0f1; */
 }
 
 .time-axis-header {
-    height: 40px;
-    background-color: #34495e;
+    height: 60px;
+    /* background-color: #34495e; */
     border-bottom: 1px solid #bdc3c7;
 }
 
@@ -433,13 +456,14 @@ header nav a:hover {
     font-size: 0.9rem;
     font-weight: 500;
     color: #2c3e50;
+    border-right: 1px solid #bdc3c7;
     border-bottom: 1px solid #bdc3c7;
 }
 
 .day-column {
     flex: 1;
     position: relative;
-    border-right: 1px solid #bdc3c7;
+    /* border-right: 1px solid #bdc3c7; */
 }
 
 .day-column:last-child {
@@ -447,9 +471,8 @@ header nav a:hover {
 }
 
 .day-header {
-    height: 40px;
-    background-color: #34495e;
-    color: white;
+    height: 60px;
+    padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -460,12 +483,14 @@ header nav a:hover {
 }
 
 .day-header.today {
-    background-color: #3498db;
+    /* background-color: #3498db; */
 }
 
 .time-grid {
     display: grid;
     grid-template-rows: repeat(36, 20px); /* 9時間 × 4スロット = 36スロット */
+    border-right: 1px solid #bdc3c7;
+
 }
 
 .time-slot {
@@ -827,6 +852,10 @@ header nav a:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.company-color-section {
+    max-width: 400px;
+}
+
 .department-main h2 {
     color: #2c3e50;
     margin-bottom: 1.5rem;
@@ -1049,4 +1078,21 @@ table tr:hover {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.sidebar-btn {
+        display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    padding-left: 0;
+    background: none;
+    border: none;
+    color: #4A5568;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    gap: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
 }

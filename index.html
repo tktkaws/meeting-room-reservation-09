@@ -5,17 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会議室予約システム</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
     <link rel="stylesheet" href="src/css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <!-- <header>
-            <h1>会議室予約システム</h1>
-        </header> -->
-
-        <aside class="sidebar">
-            <h1>会議室予約システム</h1>
+        <header class="sidebar">
+            <h1>
+                <a href="/meeting-room-reservation-09/">会議室予約システム</a>
+            </h1>
             <div class="login-section">
                 <div id="loginForm">
                     <h3>ログイン</h3>
@@ -35,7 +42,7 @@
                     </p>
                 </div>
                 <div id="userInfo" style="display: none;">
-                    <h3>ユーザー情報</h3>
+                    <!-- <h3>ユーザー情報</h3> -->
                     <p id="userName"></p>
                     <p id="userDepartment"></p>
                     <p id="userRole" style="display: none;"></p>
@@ -45,7 +52,7 @@
                             | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
                         </span>
                     </div>
-                    <button id="logoutBtn">ログアウト</button>
+                    <button id="logoutBtn" class="sidebar-btn"><img src="/meeting-room-reservation-09/src/images/logout.svg" alt="" class="material-icon"><span class="sidebar-btn-text">ログアウト</span></button>
                 </div>
             </div>
             <div class="color-settings">
@@ -53,7 +60,7 @@
                 <div id="colorSettings"></div>
             </div>
             <div id="sidebar-message"></div>
-        </aside>
+        </header>
 
         <main class="main-content">
             <div class="content-header">
@@ -73,9 +80,9 @@
                     <button>過去の予定</button>
                 </div>
                 <div class="view-controls">
-                    <button id="monthView" class="view-btn active">月間ビュー</button>
-                    <button id="weekView" class="view-btn">週間ビュー</button>
-                    <button id="listView" class="view-btn">リストビュー</button>
+                    <button id="monthView" class="view-btn active">月</button>
+                    <button id="weekView" class="view-btn">週</button>
+                    <button id="listView" class="view-btn">リスト</button>
                 </div>
             </div>
             <div id="calendar-container">

@@ -36,6 +36,7 @@ class DepartmentManager {
         }
 
         await this.loadDepartments();
+        await this.loadCompanyColor();
         this.setupEventListeners();
         this.renderDepartmentTable();
     }
@@ -61,12 +62,18 @@ class DepartmentManager {
             this.departments = response.departments;
         } catch (error) {
             console.error('部署情報の取得に失敗しました:', error);
-            showErrorMessage('部署情報の取得に失敗しました', document.body);
+            showErrorMessage('部署情報の取得に失敗しました', document.querySelector('#sidebar-message'));
         }
     }
 
     // イベントリスナー設定
     setupEventListeners() {
+        // 新規追加ボタン
+        const addDepartmentBtn = document.getElementById('addDepartmentBtn');
+        if (addDepartmentBtn) {
+            addDepartmentBtn.addEventListener('click', () => this.showAddModal());
+        }
+
         // 部署フォーム
         const departmentForm = document.getElementById('departmentForm');
         if (departmentForm) {
@@ -76,7 +83,65 @@ class DepartmentManager {
         // キャンセルボタン
         const cancelBtn = document.getElementById('cancelBtn');
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => this.resetForm());
+            cancelBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        // モーダルの閉じるボタン
+        const closeBtn = document.querySelector('#departmentModal .close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        // モーダル外クリックで閉じる
+        const departmentModal = document.getElementById('departmentModal');
+        if (departmentModal) {
+            departmentModal.addEventListener('click', (e) => {
+                if (e.target === departmentModal) {
+                    this.hideModal();
+                }
+            });
+        }
+
+        // カラー入力の連動
+        const colorInput = document.getElementById('defaultColor');
+        const colorTextInput = document.getElementById('defaultColorText');
+        if (colorInput && colorTextInput) {
+            colorInput.addEventListener('input', (e) => {
+                colorTextInput.value = e.target.value.toUpperCase();
+            });
+            colorTextInput.addEventListener('input', (e) => {
+                const color = e.target.value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                    colorInput.value = color;
+                }
+            });
+        }
+
+        // 全社カラー入力の連動
+        const companyColorInput = document.getElementById('companyDefaultColor');
+        const companyColorTextInput = document.getElementById('companyDefaultColorText');
+        if (companyColorInput && companyColorTextInput) {
+            companyColorInput.addEventListener('input', (e) => {
+                companyColorTextInput.value = e.target.value.toUpperCase();
+            });
+            companyColorTextInput.addEventListener('input', (e) => {
+                const color = e.target.value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                    companyColorInput.value = color;
+                }
+            });
+        }
+
+        // 全社カラー設定フォーム
+        const companyColorForm = document.getElementById('companyColorForm');
+        if (companyColorForm) {
+            companyColorForm.addEventListener('submit', (e) => this.handleCompanyColorSubmit(e));
+        }
+
+        // 全社カラーリセットボタン
+        const resetCompanyColorBtn = document.getElementById('resetCompanyColorBtn');
+        if (resetCompanyColorBtn) {
+            resetCompanyColorBtn.addEventListener('click', () => this.resetCompanyColor());
         }
 
         // 削除確認モーダル
@@ -89,6 +154,29 @@ class DepartmentManager {
         if (cancelDeleteBtn) {
             cancelDeleteBtn.addEventListener('click', () => hideModal('deleteModal'));
         }
+
+        // 削除モーダルの閉じるボタン
+        const deleteModalCloseBtn = document.querySelector('#deleteModal .close');
+        if (deleteModalCloseBtn) {
+            deleteModalCloseBtn.addEventListener('click', () => hideModal('deleteModal'));
+        }
+
+        // 削除モーダル外クリックで閉じる
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) {
+                    hideModal('deleteModal');
+                }
+            });
+        }
+
+        // ログアウト時のリダイレクト
+        authManager.onAuthStateChanged = () => {
+            if (!authManager.getLoginStatus().isLoggedIn) {
+                window.location.href = 'index.html';
+            }
+        };
     }
 
     // 部署テーブル描画
@@ -125,6 +213,10 @@ class DepartmentManager {
         const orderCell = createElement('td', '', department.display_order);
         row.appendChild(orderCell);
         
+        // 所属ユーザー数
+        const userCountCell = createElement('td', '', department.user_count || 0);
+        row.appendChild(userCountCell);
+        
         // 作成日
         const createdCell = createElement('td', '', new Date(department.created_at).toLocaleDateString('ja-JP'));
         row.appendChild(createdCell);
@@ -134,17 +226,71 @@ class DepartmentManager {
         const actionButtons = createElement('div', 'action-buttons-table');
         
         const editBtn = createElement('button', 'edit-btn', '編集');
-        editBtn.addEventListener('click', () => this.editDepartment(department));
-        
-        const deleteBtn = createElement('button', 'delete-btn', '削除');
-        deleteBtn.addEventListener('click', () => this.showDeleteConfirmation(department));
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showEditModal(department);
+        });
         
         actionButtons.appendChild(editBtn);
-        actionButtons.appendChild(deleteBtn);
+        
+        // 所属ユーザーがいない場合のみ削除ボタンを表示
+        if (!department.user_count || department.user_count === 0) {
+            const deleteBtn = createElement('button', 'delete-btn', '削除');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showDeleteConfirmation(department);
+            });
+            actionButtons.appendChild(deleteBtn);
+        }
+        
         actionCell.appendChild(actionButtons);
         row.appendChild(actionCell);
         
+        // 行クリックで編集モーダルを開く
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', () => this.showEditModal(department));
+        
         return row;
+    }
+
+    // 新規追加モーダル表示
+    showAddModal() {
+        this.currentEditingDepartment = null;
+        document.getElementById('modalTitle').textContent = '新規部署追加';
+        document.getElementById('submitBtn').textContent = '追加';
+        this.resetForm();
+        showModal('departmentModal');
+    }
+
+    // 編集モーダル表示
+    showEditModal(department) {
+        this.currentEditingDepartment = department;
+        document.getElementById('modalTitle').textContent = '部署編集';
+        document.getElementById('submitBtn').textContent = '更新';
+        
+        // フォームに値を設定
+        document.getElementById('departmentId').value = department.id;
+        document.getElementById('departmentName').value = department.name;
+        document.getElementById('defaultColor').value = department.default_color;
+        document.getElementById('defaultColorText').value = department.default_color.toUpperCase();
+        document.getElementById('displayOrder').value = department.display_order;
+        
+        showModal('departmentModal');
+    }
+
+    // モーダルを閉じる
+    hideModal() {
+        hideModal('departmentModal');
+        this.resetForm();
+    }
+
+    // フォームリセット
+    resetForm() {
+        document.getElementById('departmentForm').reset();
+        document.getElementById('departmentId').value = '';
+        document.getElementById('defaultColor').value = '#718096';
+        document.getElementById('defaultColorText').value = '#718096';
+        document.getElementById('displayOrder').value = '0';
     }
 
     // フォーム送信処理
@@ -172,6 +318,7 @@ class DepartmentManager {
             
             await this.loadDepartments();
             this.renderDepartmentTable();
+            this.hideModal();
             this.resetForm();
             
         } catch (error) {
@@ -203,7 +350,7 @@ class DepartmentManager {
         // 重複チェック（編集時は自分以外）
         const existingDept = this.departments.find(dept => 
             dept.name === data.name && 
-            (!this.currentEditingDepartment || dept.id !== this.currentEditingDepartment.id)
+            (!this.currentEditingDepartment || parseInt(dept.id) !== parseInt(this.currentEditingDepartment.id))
         );
         
         if (existingDept) {
@@ -216,21 +363,21 @@ class DepartmentManager {
     // 部署作成
     async createDepartment(data) {
         const response = await post('api/departments.php', data);
-        showSuccessMessage('部署を作成しました', document.querySelector('.department-form-section'));
+        showSuccessMessage('部署を作成しました', document.querySelector('#sidebar-message'));
         return response;
     }
 
     // 部署更新
     async updateDepartment(id, data) {
         const response = await put('api/departments.php', { id, ...data });
-        showSuccessMessage('部署を更新しました', document.querySelector('.department-form-section'));
+        showSuccessMessage('部署を更新しました', document.querySelector('#sidebar-message'));
         return response;
     }
 
     // 部署削除
     async deleteDepartment(id) {
         const response = await del('api/departments.php', { id });
-        showSuccessMessage('部署を削除しました', document.querySelector('.department-list-section'));
+        showSuccessMessage('部署を削除しました', document.querySelector('#sidebar-message'));
         return response;
     }
 
@@ -322,11 +469,58 @@ class DepartmentManager {
     getDepartment(id) {
         return this.departments.find(dept => dept.id === id);
     }
+
+    // 全社カラー設定読み込み
+    async loadCompanyColor() {
+        try {
+            const response = await get('api/company-color.php');
+            if (response.color) {
+                document.getElementById('companyDefaultColor').value = response.color;
+                document.getElementById('companyDefaultColorText').value = response.color.toUpperCase();
+            }
+        } catch (error) {
+            console.error('全社カラー設定の取得に失敗しました:', error);
+        }
+    }
+
+    // 全社カラー設定保存
+    async handleCompanyColorSubmit(event) {
+        event.preventDefault();
+        
+        const color = document.getElementById('companyDefaultColor').value;
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        const hideLoading = showLoading(submitBtn);
+
+        try {
+            await post('api/company-color.php', { color });
+            showSuccessMessage('全社カラー設定を保存しました', document.querySelector('#sidebar-message'));
+        } catch (error) {
+            showErrorMessage(error.message, event.target);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // 全社カラーリセット
+    async resetCompanyColor() {
+        const defaultColor = '#3498db';
+        
+        try {
+            await post('api/company-color.php', { color: defaultColor });
+            document.getElementById('companyDefaultColor').value = defaultColor;
+            document.getElementById('companyDefaultColorText').value = defaultColor.toUpperCase();
+            showSuccessMessage('全社カラー設定をリセットしました', document.querySelector('#sidebar-message'));
+        } catch (error) {
+            showErrorMessage(error.message, document.querySelector('#sidebar-message'));
+        }
+    }
 }
 
 // DOM読み込み完了時の処理
 document.addEventListener('DOMContentLoaded', () => {
-    new DepartmentManager();
+    if (!window.departmentManager) {
+        window.departmentManager = new DepartmentManager();
+    }
 });
 
 // エラーハンドリング
@@ -356,12 +550,16 @@ document.addEventListener('keydown', (event) => {
     // Ctrl+N: 新規追加
     if (event.ctrlKey && event.key === 'n') {
         event.preventDefault();
-        document.getElementById('departmentName').focus();
+        const departmentName = document.getElementById('departmentName');
+        if (departmentName) {
+            departmentName.focus();
+        }
     }
     
     // Esc: 編集キャンセル
     if (event.key === 'Escape') {
-        if (document.getElementById('cancelBtn').style.display !== 'none') {
+        const cancelBtn = document.getElementById('cancelBtn');
+        if (cancelBtn && cancelBtn.style.display !== 'none') {
             const departmentManager = window.departmentManager;
             if (departmentManager) {
                 departmentManager.resetForm();
@@ -375,8 +573,5 @@ document.addEventListener('keydown', (event) => {
         }
     }
 });
-
-// グローバルインスタンス
-window.departmentManager = new DepartmentManager();
 
 export default DepartmentManager;
