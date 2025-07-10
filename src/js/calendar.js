@@ -279,54 +279,75 @@ class CalendarManager {
 
     // 月間セル作成
     createMonthCell(date) {
-        const cell = createElement('div', 'month-cell');
+        // 日付が現在の月でない場合のクラス
+        const otherMonthClass = date.getMonth() !== this.currentDate.getMonth() ? ' other-month' : '';
         
-        // 日付が現在の月でない場合
-        if (date.getMonth() !== this.currentDate.getMonth()) {
-            cell.classList.add('other-month');
-        }
-        
-        // 今日の場合
+        // 今日の場合のクラス
         const today = new Date();
-        if (date.toDateString() === today.toDateString()) {
-            cell.classList.add('today');
-        }
+        today.setHours(0, 0, 0, 0);
+        const cellDate = new Date(date);
+        cellDate.setHours(0, 0, 0, 0);
+        const todayClass = cellDate.getTime() === today.getTime() ? ' today' : '';
         
-        // 日付表示
-        const dateElement = createElement('div', 'cell-date', date.getDate());
-        cell.appendChild(dateElement);
+        // 過去の日付の場合のクラス
+        const pastClass = cellDate.getTime() < today.getTime() ? ' past' : '';
         
         // 予約表示
-        const reservationsContainer = createElement('div', 'cell-reservations');
         const dayReservations = this.getReservationsForDate(date);
+        const reservationsHtml = dayReservations.map(reservation => {
+            const startTime = formatTime(reservation.start_datetime);
+            const endTime = formatTime(reservation.end_datetime);
+            const timeRange = `${startTime}-${endTime}`;
+            
+            return `
+                <div class="reservation-item" style="border-color: ${authManager.getReservationColor(reservation)};" data-reservation-id="${reservation.id}">
+                    <div class="reservation-item-time">${timeRange}</div>
+                    <div class="reservation-item-title">${reservation.title}</div>
+                </div>
+            `;
+        }).join('');
         
-        dayReservations.forEach(reservation => {
-            const reservationElement = createElement('div', 'reservation-item');
-            reservationElement.textContent = reservation.title;
-            reservationElement.style.backgroundColor = authManager.getReservationColor(reservation);
+        const cellHtml = `
+            <div class="month-cell${otherMonthClass}${todayClass}${pastClass}" data-date="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}">
+                <div class="cell-date"><span>${date.getDate()}</span></div>
+                <div class="cell-reservations">
+                    ${reservationsHtml}
+                </div>
+            </div>
+        `;
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = cellHtml;
+        const cell = tempDiv.firstElementChild;
+        
+        // 予約クリックイベント
+        cell.querySelectorAll('.reservation-item').forEach(reservationElement => {
             reservationElement.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showReservationDetails(reservation);
-            });
-            reservationsContainer.appendChild(reservationElement);
-        });
-        
-        cell.appendChild(reservationsContainer);
-        
-        // セルクリックイベント
-        cell.addEventListener('click', () => {
-            if (authManager.getLoginStatus().isLoggedIn) {
-                // 土日チェック
-                const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    alert('土日の予約はできません。');
-                    return;
+                const reservationId = reservationElement.dataset.reservationId;
+                const reservation = dayReservations.find(r => r.id == reservationId);
+                if (reservation) {
+                    this.showReservationDetails(reservation);
                 }
-                // 正確な日付オブジェクトを渡す
-                const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                this.showNewReservationModal(clickedDate);
-            }
+            });
         });
+        
+        // セルクリックイベント（今日以降のみ）
+        if (cellDate.getTime() >= today.getTime()) {
+            cell.addEventListener('click', () => {
+                if (authManager.getLoginStatus().isLoggedIn) {
+                    // 土日チェック
+                    const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        alert('土日の予約はできません。');
+                        return;
+                    }
+                    // 正確な日付オブジェクトを渡す
+                    const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                    this.showNewReservationModal(clickedDate);
+                }
+            });
+        }
         
         return cell;
     }

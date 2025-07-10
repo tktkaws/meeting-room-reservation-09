@@ -361,7 +361,7 @@ body {
 /* 月間カレンダー */
 .month-calendar {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 20%);
     row-gap: 1px;
     background-color: #e2e8f0;
     border-radius: 8px;
@@ -370,7 +370,7 @@ body {
 
 .month-header {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 20%);
     margin-bottom: 1px;
 }
 
@@ -405,20 +405,46 @@ body {
     /* background-color: #e8f5e8;
     border: 2px solid #27ae60; */
 }
+.month-cell.past {
+    cursor: default;
+}
+.month-cell.past:hover {
+    background-color: white;
+}
+
+
 
 .cell-date {
+    display: grid;
     text-align: center;
     font-weight: 400;
     margin-bottom: .5rem;
     font-size: 0.9rem;
+    
 }
 
-.month-cell.today .cell-date {
-    font-weight: 600;
-    color: #3498db;
+.month-cell.today .cell-date{
+    color: #FFF;
+    width: fit-content;
+    margin-inline: auto;
+    display: grid;
 }
-.month-cell.other-month .cell-date {
-    color: #a0aec0;
+
+.month-cell.today .cell-date::before {
+        grid-area: 1 / 1;
+    display: block;
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: #667eea;
+    background: #3498db;
+
+}
+
+.month-cell.today .cell-date span {
+       grid-area: 1 / 1;
+    color: #FFF;
 }
 
 .cell-reservations {
@@ -427,17 +453,31 @@ body {
     gap: 2px;
 }
 
+.month-cell.past .cell-reservations {
+    opacity: .6;
+}
+
 .reservation-item {
-    background-color: #3498db;
-    color: white;
-    padding: 2px 4px;
-    border-radius: 2px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
     transition: opacity 0.3s;
+
+    padding: 0.25rem;
+    padding-left: .5rem;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: start;
+    justify-content: start;
+    gap: 0.5rem;
+    position: relative;
+    line-height: 1;
+    border-left: 4px solid #d3dae4;
 }
 
 .reservation-item:hover {
