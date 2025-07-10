@@ -24,6 +24,7 @@ class CalendarManager {
     }
 
     init() {
+        this.loadSavedView();
         this.setupEventListeners();
         this.updateNavigationDisplay();
     }
@@ -58,6 +59,9 @@ class CalendarManager {
     // ビュー変更
     changeView(view) {
         this.currentView = view;
+        
+        // ビュー状態を保存
+        this.saveCurrentView();
         
         // ボタンのアクティブ状態更新
         document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
@@ -649,6 +653,34 @@ class CalendarManager {
         // 実装は ReservationManager で行う
         if (window.reservationManager) {
             window.reservationManager.loadPastReservations();
+        }
+    }
+
+    // ビュー状態を保存
+    saveCurrentView() {
+        try {
+            localStorage.setItem('calendarView', this.currentView);
+        } catch (error) {
+            console.error('ビュー状態の保存に失敗しました:', error);
+        }
+    }
+
+    // 保存されたビュー状態を読み込み
+    loadSavedView() {
+        try {
+            const savedView = localStorage.getItem('calendarView');
+            if (savedView && ['month', 'week', 'list'].includes(savedView)) {
+                this.currentView = savedView;
+                
+                // ボタンのアクティブ状態更新
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                const targetBtn = document.getElementById(`${savedView}View`);
+                if (targetBtn) {
+                    targetBtn.classList.add('active');
+                }
+            }
+        } catch (error) {
+            console.error('ビュー状態の読み込みに失敗しました:', error);
         }
     }
 }

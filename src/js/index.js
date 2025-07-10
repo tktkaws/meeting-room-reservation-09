@@ -50,83 +50,6 @@ window.addEventListener('beforeunload', (event) => {
     }
 });
 
-// Service Worker登録は無効化
-// if ('serviceWorker' in navigator) {
-//     window.addEventListener('load', async () => {
-//         try {
-//             const registration = await navigator.serviceWorker.register('/sw.js');
-//             console.log('ServiceWorker登録成功:', registration);
-//         } catch (error) {
-//             console.log('ServiceWorker登録失敗:', error);
-//         }
-//     });
-// }
-
-// キーボードショートカット
-document.addEventListener('keydown', (event) => {
-    // Ctrl+N: 新規予約
-    if (event.ctrlKey && event.key === 'n') {
-        event.preventDefault();
-        if (authManager.getLoginStatus().isLoggedIn) {
-            window.reservationManager.showNewReservationModal();
-        }
-    }
-    
-    // Esc: モーダルを閉じる
-    if (event.key === 'Escape') {
-        const modal = document.getElementById('reservationModal');
-        if (modal && modal.style.display === 'block') {
-            modal.style.display = 'none';
-        }
-    }
-    
-    // 矢印キーでナビゲーション
-    if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
-        switch (event.key) {
-            case 'ArrowLeft':
-                event.preventDefault();
-                window.calendarManager.navigatePrev();
-                break;
-            case 'ArrowRight':
-                event.preventDefault();
-                window.calendarManager.navigateNext();
-                break;
-            case 'Home':
-                event.preventDefault();
-                window.calendarManager.goToToday();
-                break;
-        }
-    }
-});
-
-// タッチイベント（スワイプ操作）
-let touchStartX = 0;
-let touchStartY = 0;
-
-document.addEventListener('touchstart', (event) => {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-});
-
-document.addEventListener('touchend', (event) => {
-    const touchEndX = event.changedTouches[0].clientX;
-    const touchEndY = event.changedTouches[0].clientY;
-    
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    
-    // 水平スワイプの場合
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-            // 右スワイプ（前へ）
-            window.calendarManager.navigatePrev();
-        } else {
-            // 左スワイプ（次へ）
-            window.calendarManager.navigateNext();
-        }
-    }
-});
-
 // ウィンドウサイズ変更時の処理
 let resizeTimer;
 window.addEventListener('resize', () => {
@@ -135,26 +58,6 @@ window.addEventListener('resize', () => {
         // カレンダーの再描画
         window.calendarManager.render();
     }, 250);
-});
-
-// 印刷用CSS適用
-window.addEventListener('beforeprint', () => {
-    document.body.classList.add('printing');
-});
-
-window.addEventListener('afterprint', () => {
-    document.body.classList.remove('printing');
-});
-
-// ブラウザの戻る/進むボタン対応
-window.addEventListener('popstate', (event) => {
-    if (event.state) {
-        // 状態を復元
-        const { view, date } = event.state;
-        window.calendarManager.currentView = view;
-        window.calendarManager.currentDate = new Date(date);
-        window.calendarManager.changeView(view);
-    }
 });
 
 // 状態をブラウザ履歴に保存

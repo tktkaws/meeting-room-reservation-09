@@ -20,48 +20,48 @@
 <body>
     <div class="container">
         <header class="sidebar">
-            <h1>
-                <a href="/meeting-room-reservation-09/">会議室予約システム</a>
-            </h1>
+            <h1><a href="/meeting-room-reservation-09/">会議室予約システム</a></h1>
             <div class="login-section">
                 <div id="loginForm">
-                    <h3>ログイン</h3>
+                    <h2 class="sidebar-section-heading">ログイン</h2>
                     <form>
                         <input type="email" id="email" placeholder="メールアドレス" required>
                         <input type="password" id="password" placeholder="パスワード" required>
-                        <button type="submit">ログイン</button>
+                        <button type="submit" class="btn btn-primary">ログイン</button>
                     </form>
                     <p>
-                        admin@company.com
+                        admin@example.com
                         <br>
-                        admin123
-                        <br>
-                        kato@company.com
-                        <br>
-                        password123
+                        takahashi@example.com
                     </p>
                 </div>
-                <div id="userInfo" style="display: none;">
+                <div id="userInfo" class="user-info" style="display: none;">
                     <!-- <h3>ユーザー情報</h3> -->
-                    <p id="userName"></p>
-                    <p id="userDepartment"></p>
-                    <p id="userRole" style="display: none;"></p>
-                    <div style="margin: 1rem 0;">
-                        <a href="config.html" style="color: #3498db; text-decoration: none;">設定</a>
-                        <span id="adminMenu" style="display: none;">
-                            | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
-                        </span>
+                    <div class="user-info-item">
+                        <img src="/meeting-room-reservation-09/src/images/person.svg" alt="" class="material-icon">
+                        <p id="userName"></p>
                     </div>
-                    <button id="logoutBtn" class="sidebar-btn"><img src="/meeting-room-reservation-09/src/images/logout.svg" alt="" class="material-icon"><span class="sidebar-btn-text">ログアウト</span></button>
+                    <div class="user-info-item">
+                        <img src="/meeting-room-reservation-09/src/images/groups.svg" alt="" class="material-icon">
+                        <p id="userDepartment"></p>
+                    </div>
+                    <a href="config.html" class="sidebar-btn-link"><img
+                            src="/meeting-room-reservation-09/src/images/settings.svg" alt=""
+                            class="material-icon">設定</a>
+                    <a id="adminMenu" href="department.html" class="sidebar-btn-link"><img
+                    src="/meeting-room-reservation-09/src/images/groups.svg" alt=""
+                    class="material-icon">部署管理</a>
                 </div>
+                <button id="logoutBtn" class="sidebar-btn"><img src="/meeting-room-reservation-09/src/images/logout.svg"
+                        alt="" class="material-icon"><span class="sidebar-btn-text">ログアウト</span></button>
             </div>
             <div class="color-settings">
-                <h3>カラー設定</h3>
+                <h2 class="sidebar-section-heading">テーマカラー設定</h2>
                 <div id="colorSettings"></div>
+                <div id="colorInfo"></div>
             </div>
             <div id="sidebar-message"></div>
         </header>
-
         <main class="main-content">
             <div class="content-header">
                 <button id="toggleSidebar" class="hamburger-btn">
@@ -71,13 +71,22 @@
                 </button>
                 <div class="navigation">
                     <button id="todayBtn" class="today-btn">今日</button>
-                    <button class="nav-btn" id="prevBtnMonth">&lt;</button>
-                    <button class="nav-btn" id="nextBtnMonth">&gt;</button>
-                    <span class="current-date" id="currentDate"></span>
+                    <button class="nav-btn prev" id="prevBtnMonth">
+                        <img
+                    src="/meeting-room-reservation-09/src/images/prev.svg" alt="prev">
+                    </button>
+                    <button class="nav-btn next" id="nextBtnMonth"><img
+                    src="/meeting-room-reservation-09/src/images/next.svg" alt="next"></button>
+                    <span class="current-date" id="currentDate"><img
+                    src="/meeting-room-reservation-09/src/images/next.svg" alt=""
+                    class="material-icon"></span>
                 </div>
                 <div class="list-controls" style="display: none;">
                     <button>今後の予定</button>
                     <button>過去の予定</button>
+                </div>
+                <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button id="createReservationBtn" class="btn btn-primary">新規予約</button>
                 </div>
                 <div class="view-controls">
                     <button id="monthView" class="view-btn active">月</button>
@@ -90,9 +99,7 @@
                 <div id="weekCalendar" class="calendar-view" style="display: none;"></div>
                 <div id="listCalendar" class="calendar-view" style="display: none;"></div>
             </div>
-            <div class="action-buttons" id="actionButtons" style="display: none;">
-                <button id="createReservationBtn">新規予約</button>
-            </div>
+            
         </main>
     </div>
 

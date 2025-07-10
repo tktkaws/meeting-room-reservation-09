@@ -64,7 +64,13 @@ class AuthManager {
         try {
             const response = await get('api/departments.php');
             this.departments = response.departments;
-            this.updateColorSettings();
+            
+            // ログイン状態に応じてUIを更新
+            if (this.isLoggedIn) {
+                this.updateColorSettings();
+            } else {
+                this.updateColorInfo();
+            }
         } catch (error) {
             console.error('部署情報の取得に失敗しました:', error);
         }
@@ -73,10 +79,17 @@ class AuthManager {
     // 全社のデフォルトカラー取得
     async loadCompanyColor() {
         try {
-            console.log('全社カラー設定を取得します');
+            // console.log('全社カラー設定を取得します');
             const response = await get('api/company-color.php');
-            console.log('全社カラー設定の取得結果:', response);
+            // console.log('全社カラー設定の取得結果:', response);
             this.companyDefaultColor = response.color || '#3498db';
+            
+            // ログイン状態に応じてUIを更新
+            if (this.isLoggedIn) {
+                this.updateColorSettings();
+            } else {
+                this.updateColorInfo();
+            }
         } catch (error) {
             console.error('全社カラー設定の取得に失敗しました:', error);
         }
@@ -84,7 +97,7 @@ class AuthManager {
 
     // イベントリスナー設定
     setupEventListeners() {
-        console.log('AuthManager: イベントリスナーを設定します');
+        // console.log('AuthManager: イベントリスナーを設定します');
         
         // 既存のイベントリスナーをクリア
         this.clearEventListeners();
@@ -250,6 +263,8 @@ class AuthManager {
         const userRole = document.getElementById('userRole');
         const actionButtons = document.getElementById('actionButtons');
         const colorSettingsSection = document.querySelector('.color-settings');
+        const colorSettings = document.getElementById('colorSettings');
+        const colorInfo = document.getElementById('colorInfo');
 
         if (this.isLoggedIn && this.currentUser) {
             // ログイン済み表示
@@ -272,10 +287,13 @@ class AuthManager {
             
             if (actionButtons) actionButtons.style.display = 'block';
             
-            // カラー設定を表示・更新
-            if (colorSettingsSection) {
-                colorSettingsSection.style.display = 'block';
+            // ログイン時：colorSettingsを表示、colorInfoを非表示
+            if (colorSettings) {
+                colorSettings.style.display = 'block';
                 this.updateColorSettings();
+            }
+            if (colorInfo) {
+                colorInfo.style.display = 'none';
             }
         } else {
             // 未ログイン表示
@@ -283,10 +301,19 @@ class AuthManager {
             if (userInfo) userInfo.style.display = 'none';
             if (actionButtons) actionButtons.style.display = 'none';
             
-            // カラー設定を非表示
-            if (colorSettingsSection) {
-                colorSettingsSection.style.display = 'none';
+            // 非ログイン時：colorInfoを表示、colorSettingsを非表示
+            if (colorSettings) {
+                colorSettings.style.display = 'none';
             }
+            if (colorInfo) {
+                colorInfo.style.display = 'block';
+                this.updateColorInfo();
+            }
+        }
+        
+        // color-settingsセクションは常に表示
+        if (colorSettingsSection) {
+            colorSettingsSection.style.display = 'block';
         }
 
         // 管理者メニュー
@@ -356,6 +383,56 @@ class AuthManager {
         
         resetButtonContainer.appendChild(resetButton);
         colorSettings.appendChild(resetButtonContainer);
+    }
+
+    // カラー情報表示（非ログイン時）
+    updateColorInfo() {
+        const colorInfo = document.getElementById('colorInfo');
+        if (!colorInfo) return;
+
+        colorInfo.innerHTML = '';
+
+        // 全社の項目を一番上に追加（デフォルト値のみ表示）
+        const companyColorItem = document.createElement('div');
+        companyColorItem.className = 'color-item';
+        
+        const companyLabel = document.createElement('label');
+        companyLabel.textContent = '全社';
+        
+        const companyColorSpan = document.createElement('span');
+        companyColorSpan.style.backgroundColor = this.companyDefaultColor;
+        companyColorSpan.style.width = '20px';
+        companyColorSpan.style.height = '20px';
+        companyColorSpan.style.borderRadius = '3px';
+        companyColorSpan.style.border = '1px solid #ccc';
+        companyColorSpan.style.display = 'inline-block';
+        companyColorSpan.style.marginLeft = '0.5rem';
+        
+        companyColorItem.appendChild(companyLabel);
+        companyColorItem.appendChild(companyColorSpan);
+        colorInfo.appendChild(companyColorItem);
+
+        // 各部署の項目を追加（デフォルト値のみ表示）
+        this.departments.forEach(department => {
+            const colorItem = document.createElement('div');
+            colorItem.className = 'color-item';
+            
+            const label = document.createElement('label');
+            label.textContent = department.name;
+            
+            const colorSpan = document.createElement('span');
+            colorSpan.style.backgroundColor = department.default_color;
+            colorSpan.style.width = '20px';
+            colorSpan.style.height = '20px';
+            colorSpan.style.borderRadius = '3px';
+            colorSpan.style.border = '1px solid #ccc';
+            colorSpan.style.display = 'inline-block';
+            colorSpan.style.marginLeft = '0.5rem';
+            
+            colorItem.appendChild(label);
+            colorItem.appendChild(colorSpan);
+            colorInfo.appendChild(colorItem);
+        });
     }
 
     // 権限チェック
