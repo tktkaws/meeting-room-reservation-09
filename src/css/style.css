@@ -500,19 +500,22 @@ body {
 .time-axis-header {
     height: 60px;
     /* background-color: #34495e; */
-    border-bottom: 1px solid #bdc3c7;
+    /* border-bottom: 1px solid #bdc3c7; */
 }
 
 .time-label {
     height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: right;
     font-size: 0.9rem;
     font-weight: 500;
     color: #2c3e50;
     border-right: 1px solid #bdc3c7;
-    border-bottom: 1px solid #bdc3c7;
+    /* border-bottom: 1px solid #bdc3c7; */
+}
+.time-label span {
+    display: inline-block;
+    transform: translateY(-0.9em);
+    margin-right: .5em;
 }
 
 .day-column {
@@ -575,9 +578,9 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.week-reservation:hover {
+/* .week-reservation:hover {
     opacity: 0.8;
-}
+} */
 
 /* 旧週間カレンダー（非使用） */
 .week-calendar-old {
@@ -813,7 +816,7 @@ body {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
 .form-actions button {
@@ -1157,4 +1160,40 @@ table tr:hover {
 
 .sidebar-section-heading {
         font-size: .9rem;
+}
+
+.detail-item {
+    display: flex
+;
+    margin-bottom: 0.75rem;
+    align-items: flex-start;
+}
+
+.detail-item label {
+    font-weight: 600;
+    min-width: 100px;
+    color: #555;
+    margin-right: 1rem;
+}
+
+.current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e53e3e;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.current-time-marker {
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    background: #e53e3e;
+    border-radius: 50%;
+    z-index: 5;
 }

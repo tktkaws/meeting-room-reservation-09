@@ -357,84 +357,166 @@ class CalendarManager {
         const container = document.getElementById('weekCalendar');
         clearElement(container);
 
-        // 週間ビューのメインコンテナ
-        const weekContainer = createElement('div', 'week-view-container');
-        
         // 時間軸の作成
-        const timeAxis = createElement('div', 'week-time-axis');
+        const timeLabelsHtml = Array.from({length: 9}, (_, i) => `
+            <div class="time-label"><span>${i + 9}:00</span></div>
+        `).join('');
         
-        // 時間軸のヘッダー（day-headerと同じ高さ）
-        const timeAxisHeader = createElement('div', 'time-axis-header');
-        timeAxis.appendChild(timeAxisHeader);
-        
-        // 9:00-18:00の時間ラベル（1時間刻み）
-        for (let hour = 9; hour < 18; hour++) {
-            const timeLabel = createElement('div', 'time-label');
-            timeLabel.textContent = `${hour}:00`;
-            timeAxis.appendChild(timeLabel);
-        }
-        
-        weekContainer.appendChild(timeAxis);
-        
+        const timeAxisHtml = `
+            <div class="week-time-axis">
+                <div class="time-axis-header"></div>
+                ${timeLabelsHtml}
+            </div>
+        `;
+
         // 各日のカラムを作成
         const weekStart = getFirstDayOfWeek(this.currentDate);
         const dayNames = ['月', '火', '水', '木', '金'];
+        const today = new Date();
         
-        for (let i = 0; i < 5; i++) { // 0-4 (月-金)
+        const dayColumnsHtml = Array.from({length: 5}, (_, i) => {
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + i);
             
-            const dayColumn = createElement('div', 'day-column');
-            dayColumn.dataset.date = getDateString(date);
+            const todayClass = date.toDateString() === today.toDateString() ? ' today' : '';
             
-            // 日付ヘッダー
-            const dayHeader = createElement('div', 'day-header');
-            dayHeader.innerHTML = `${dayNames[i]}<br>${date.getDate()}`;
+            // 時間スロット（15分刻み）
+            const timeSlotsHtml = Array.from({length: 36}, (_, slotIndex) => {
+                const hour = Math.floor(slotIndex / 4) + 9;
+                const minute = (slotIndex % 4) * 15;
+                return `<div class="time-slot" data-hour="${hour}" data-minute="${minute}"></div>`;
+            }).join('');
             
-            // 今日の場合
-            const today = new Date();
-            if (date.toDateString() === today.toDateString()) {
-                dayHeader.classList.add('today');
-            }
-            
-            dayColumn.appendChild(dayHeader);
-            
-            // 時間グリッド（15分刻み）
-            const timeGrid = createElement('div', 'time-grid');
-            
-            // 9:00-18:00の時間スロット（15分刻み）
-            for (let hour = 9; hour < 18; hour++) {
-                for (let minute = 0; minute < 60; minute += 15) {
-                    const timeSlot = createElement('div', 'time-slot');
-                    timeSlot.dataset.hour = hour;
-                    timeSlot.dataset.minute = minute;
+            return `
+                <div class="day-column" data-date="${getDateString(date)}">
+                    <div class="day-header${todayClass}">${dayNames[i]}<br>${date.getDate()}</div>
+                    <div class="time-grid" style="position: relative;">
+                        ${timeSlotsHtml}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const weekContainerHtml = `
+            <div class="week-view-container">
+                ${timeAxisHtml}
+                ${dayColumnsHtml}
+            </div>
+        `;
+
+        container.innerHTML = weekContainerHtml;
+        
+        // イベントリスナーの設定
+        this.setupWeekViewEventListeners();
+        
+        // 予約を配置
+        this.renderAllWeekReservations();
+        
+        // 現在時刻ラインを追加
+        this.addCurrentTimeLineToWeekView();
+    }
+
+    // 週間ビューのイベントリスナー設定
+    setupWeekViewEventListeners() {
+        const timeSlots = document.querySelectorAll('.time-slot');
+        timeSlots.forEach(slot => {
+            slot.addEventListener('click', () => {
+                if (authManager.getLoginStatus().isLoggedIn) {
+                    const hour = parseInt(slot.dataset.hour);
+                    const minute = parseInt(slot.dataset.minute);
+                    const dayColumn = slot.closest('.day-column');
+                    const dateString = dayColumn.dataset.date;
                     
-                    // 時間スロットのクリックイベント
-                    timeSlot.addEventListener('click', () => {
-                        if (authManager.getLoginStatus().isLoggedIn) {
-                            const slotDate = new Date(date);
-                            slotDate.setHours(hour, minute, 0, 0);
-                            this.showNewReservationModal(slotDate);
-                        }
-                    });
+                    const [year, month, day] = dateString.split('-').map(Number);
+                    const slotDate = new Date(year, month - 1, day, hour, minute, 0, 0);
                     
-                    timeGrid.appendChild(timeSlot);
+                    this.showNewReservationModal(slotDate);
+                }
+            });
+        });
+    }
+
+    // 全ての週間予約を配置
+    renderAllWeekReservations() {
+        const dayColumns = document.querySelectorAll('.day-column');
+        dayColumns.forEach(dayColumn => {
+            const dateString = dayColumn.dataset.date;
+            const [year, month, day] = dateString.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
+            const timeGrid = dayColumn.querySelector('.time-grid');
+            
+            this.renderDayReservations(timeGrid, date);
+        });
+    }
+
+    // 日本時間取得
+    getJapanTime() {
+        const now = new Date();
+        // JST (UTC+9)
+        const jstOffset = 9 * 60 * 60 * 1000;
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+        return new Date(utc + jstOffset);
+    }
+
+    // 週間ビューのセル高さを取得
+    getWeekTimeHeaderHeight() {
+        const timeSlot = document.querySelector('.time-slot');
+        if (timeSlot) {
+            return timeSlot.offsetHeight;
+        }
+        return 20; // デフォルト値
+    }
+
+    // 現在時刻ラインを作成
+    createCurrentTimeLine() {
+        const now = this.getJapanTime();
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+
+        // 営業時間外の場合は表示しない
+        if (currentHours < 9 || currentHours >= 18) {
+            return null;
+        }
+
+        // 現在時刻を15分単位に調整
+        const totalMinutes = (currentHours - 9) * 60 + currentMinutes;
+        const slotIndex = Math.floor(totalMinutes / 15);
+        const slotOffset = (totalMinutes % 15) / 15;
+
+        // 動的なセル高さを取得
+        const cellHeight = this.getWeekTimeHeaderHeight();
+
+        // 位置を計算（cellHeight per slot + offset）
+        const position = slotIndex * cellHeight + (slotOffset * cellHeight);
+
+        return `<div class="current-time-line" style="top: ${position}px;">
+                    <div class="current-time-marker"></div>
+                </div>`;
+    }
+
+    // 週間ビューに現在時刻ラインを追加
+    addCurrentTimeLineToWeekView() {
+        const currentTimeLineHtml = this.createCurrentTimeLine();
+        if (!currentTimeLineHtml) return;
+
+        // 今日の日付を取得
+        const today = new Date();
+        const todayString = getDateString(today);
+        
+        // 今日の日付に対応するday-columnを探す
+        const dayColumns = document.querySelectorAll('.day-column');
+        dayColumns.forEach(dayColumn => {
+            if (dayColumn.dataset.date === todayString) {
+                const timeGrid = dayColumn.querySelector('.time-grid');
+                if (timeGrid) {
+                    timeGrid.insertAdjacentHTML('beforeend', currentTimeLineHtml);
                 }
             }
-            
-            dayColumn.appendChild(timeGrid);
-            
-            // 予約を絶対配置で重ねる
-            this.renderDayReservations(dayColumn, date);
-            
-            weekContainer.appendChild(dayColumn);
-        }
-        
-        container.appendChild(weekContainer);
+        });
     }
 
     // 各日の予約を絶対配置で重ねる
-    renderDayReservations(dayColumn, date) {
+    renderDayReservations(timeGrid, date) {
         const dateString = getDateString(date);
         const dayReservations = this.getReservationsForDate(date);
         
@@ -452,13 +534,12 @@ class CalendarManager {
             reservationElement.style.backgroundColor = authManager.getReservationColor(reservation);
             reservationElement.style.color = 'white';
             
-            // 絶対配置で位置を設定
+            // 絶対配置で位置を設定（9時基準でtop: 0pxから開始）
             const slotHeight = 20; // 各スロットの高さ（px）
-            const headerHeight = 40; // ヘッダーの高さ（px）
             
             reservationElement.style.position = 'absolute';
-            reservationElement.style.top = `${headerHeight + (startSlot * slotHeight)}px`;
-            reservationElement.style.height = `${(endSlot - startSlot) * slotHeight}px`;
+            reservationElement.style.top = `${startSlot * slotHeight}px`;
+            reservationElement.style.height = `${(endSlot - startSlot) * slotHeight - 2}px`;
             reservationElement.style.left = '2px';
             reservationElement.style.right = '2px';
             reservationElement.style.zIndex = '10';
@@ -469,7 +550,7 @@ class CalendarManager {
                 this.showReservationDetails(reservation);
             });
             
-            dayColumn.appendChild(reservationElement);
+            timeGrid.appendChild(reservationElement);
         });
     }
     
@@ -593,23 +674,23 @@ class CalendarManager {
         modalTitle.textContent = '予約詳細';
         
         const content = `
-            <div class="form-group">
+            <div class="detail-item">
                 <label>タイトル</label>
                 <div>${reservation.title}</div>
             </div>
-            <div class="form-group">
+            <div class="detail-item">
                 <label>日付</label>
                 <div>${formatDate(reservation.date)}</div>
             </div>
-            <div class="form-group">
+            <div class="detail-item">
                 <label>時間</label>
                 <div>${formatTime(reservation.start_datetime)} - ${formatTime(reservation.end_datetime)}</div>
             </div>
-            <div class="form-group">
+            <div class="detail-item">
                 <label>予約者</label>
                 <div>${reservation.user_name} (${reservation.department_name})</div>
             </div>
-            <div class="form-group">
+            <div class="detail-item">
                 <label>詳細</label>
                 <div>${reservation.description || 'なし'}</div>
             </div>
