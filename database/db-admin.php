@@ -34,6 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = $result['message'];
                 }
                 break;
+                
+            case 'import_new_reserve_csv':
+                $result = importNewReserveCsv();
+                if ($result['success']) {
+                    $message = $result['message'];
+                } else {
+                    $error = $result['message'];
+                }
+                break;
+                
         }
     }
 }
@@ -63,25 +73,25 @@ function initializeDatabase() {
         $pdo->exec($sql);
         
         // 初期部署データの投入
-        $departments = [
-            [1, '総務部', '#FF6B6B', 1],
-            [2, '営業部', '#4ECDC4', 2],
-            [3, '開発部', '#45B7D1', 3],
-            [4, '人事部', '#96CEB4', 4],
-            [5, '経理部', '#FFEAA7', 5]
-        ];
+        // $departments = [
+        //     [1, '総務部', '#FF6B6B', 1],
+        //     [2, '営業部', '#4ECDC4', 2],
+        //     [3, '開発部', '#45B7D1', 3],
+        //     [4, '人事部', '#96CEB4', 4],
+        //     [5, '経理部', '#FFEAA7', 5]
+        // ];
         
-        $stmt = $pdo->prepare("INSERT OR REPLACE INTO departments (id, name, default_color, display_order) VALUES (?, ?, ?, ?)");
-        foreach ($departments as $dept) {
-            $stmt->execute($dept);
-        }
+        // $stmt = $pdo->prepare("INSERT OR REPLACE INTO departments (id, name, default_color, display_order) VALUES (?, ?, ?, ?)");
+        // foreach ($departments as $dept) {
+        //     $stmt->execute($dept);
+        // }
         
         // 管理者ユーザーの作成
-        $adminEmail = 'admin@company.com';
-        $adminPassword = hashPassword('admin123');
+        // $adminEmail = 'admin@company.com';
+        // $adminPassword = hashPassword('admin123');
         
-        $stmt = $pdo->prepare("INSERT OR REPLACE INTO users (id, name, email, password, admin, department_id, email_notification) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([1, '管理者', $adminEmail, $adminPassword, true, 1, false]);
+        // $stmt = $pdo->prepare("INSERT OR REPLACE INTO users (id, name, email, password, admin, department_id, email_notification) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        // $stmt->execute([1, '管理者', $adminEmail, $adminPassword, true, 1, false]);
         
         return ['success' => true, 'message' => 'データベースを初期化しました。管理者ユーザー: admin@company.com / admin123'];
     } catch (Exception $e) {
@@ -209,6 +219,86 @@ function importReservations($pdo, $csvFile) {
     fclose($handle);
     return "予約データ {$count}件をインポートしました。";
 }
+
+// 新形式予約データCSVインポート
+function importNewReserveCsv() {
+    try {
+        $pdo = getDB();
+        $results = [];
+        
+        // new_reserve_csv.csvの処理
+        if (isset($_FILES['new_reserve_csv']) && $_FILES['new_reserve_csv']['error'] === UPLOAD_ERR_OK) {
+            $result = importNewReserveFromCsv($pdo, $_FILES['new_reserve_csv']['tmp_name']);
+            $results[] = $result;
+        }
+        
+        if (empty($results)) {
+            return ['success' => false, 'message' => 'CSVファイルが選択されていません。'];
+        }
+        
+        $message = implode('<br>', $results);
+        return ['success' => true, 'message' => $message];
+        
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => '新形式予約CSVインポートエラー: ' . $e->getMessage()];
+    }
+}
+
+// 新形式予約CSVインポート処理
+function importNewReserveFromCsv($pdo, $csvFile) {
+    $handle = fopen($csvFile, 'r');
+    if (!$handle) {
+        return '新形式予約CSVファイルを開けませんでした。';
+    }
+    
+    $header = fgetcsv($handle); // ヘッダー行をスキップ
+    $count = 0;
+    $errorCount = 0;
+    
+    $stmt = $pdo->prepare("INSERT INTO reservations (id, user_id, title, description, date, start_datetime, end_datetime, is_company_wide) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    
+    while (($data = fgetcsv($handle)) !== false) {
+        try {
+            // CSVの構造: id,user_id,title,is_company_wide,年,月,日,開始時,開始分,終了時,終了分
+            $id = $data[0];
+            $userId = $data[1];
+            $title = $data[2];
+            $isCompanyWide = ($data[3] === 'TRUE' || $data[3] === '1') ? true : false;
+            $year = $data[4];
+            $month = $data[5];
+            $day = $data[6];
+            $startHour = $data[7];
+            $startMinute = $data[8];
+            $endHour = $data[9];
+            $endMinute = $data[10];
+            
+            // 日付の作成
+            $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
+            $startDatetime = sprintf('%04d-%02d-%02d %02d:%02d:00', $year, $month, $day, $startHour, $startMinute);
+            $endDatetime = sprintf('%04d-%02d-%02d %02d:%02d:00', $year, $month, $day, $endHour, $endMinute);
+            
+            // 説明は空にする（必要に応じて後で追加可能）
+            $description = '';
+            
+            $stmt->execute([$id, $userId, $title, $description, $date, $startDatetime, $endDatetime, $isCompanyWide]);
+            $count++;
+            
+        } catch (Exception $e) {
+            $errorCount++;
+            error_log("新形式予約データインポートエラー（行 " . ($count + $errorCount + 2) . "）: " . $e->getMessage());
+        }
+    }
+    
+    fclose($handle);
+    
+    $message = "新形式予約データ {$count}件をインポートしました。";
+    if ($errorCount > 0) {
+        $message .= " （エラー: {$errorCount}件）";
+    }
+    
+    return $message;
+}
+
 
 // データベース状態取得
 function getDatabaseStatus() {
@@ -654,6 +744,38 @@ $tableData = getTableData();
                 <p><strong>reservations.csv:</strong></p>
                 <code>id,user_id,title,description,date,start_datetime,end_datetime,is_company_wide</code><br>
                 <code>1,1,会議,定例会議,2025-07-15,2025-07-15T10:00:00,2025-07-15T11:00:00,FALSE</code>
+            </div>
+        </div>
+        
+        <!-- 新形式予約データCSVインポート -->
+        <div class="section">
+            <h2>新形式予約データCSVインポート</h2>
+            <p>reserve_0710_new.csv形式の予約データをインポートします。</p>
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="import_new_reserve_csv">
+                
+                <div class="form-group">
+                    <label for="new_reserve_csv">新形式予約データCSV (reserve_0710_new.csv形式)</label>
+                    <input type="file" id="new_reserve_csv" name="new_reserve_csv" accept=".csv" required>
+                </div>
+                
+                <button type="submit" class="btn">新形式予約CSVインポート実行</button>
+            </form>
+            
+            <div class="csv-format">
+                <h3>CSVファイル形式（新形式）</h3>
+                <p><strong>reserve_0710_new.csv:</strong></p>
+                <code>id,user_id,title,is_company_wide,年,月,日,開始時,開始分,終了時,終了分</code><br>
+                <code>1,26,営業推進会議,FALSE,2025,7,10,9,0,11,30</code>
+                
+                <h4>フィールド説明</h4>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li><strong>id</strong>: 予約ID（ユニーク）</li>
+                    <li><strong>user_id</strong>: 予約者のユーザーID</li>
+                    <li><strong>title</strong>: 予約タイトル</li>
+                    <li><strong>is_company_wide</strong>: 全社共通かどうか（TRUE/FALSE）</li>
+                    <li><strong>年月日・時分</strong>: 予約の日時として結合</li>
+                </ul>
             </div>
         </div>
         
