@@ -336,6 +336,7 @@ class AuthManager {
                             <button type="submit" class="btn btn-primary">ログイン</button>
                         </form>
                     </div>
+                    
                 </div>
                 
                 <div class="sidebar-section color-settings">
@@ -350,6 +351,9 @@ class AuthManager {
                             takahashi@example.com
                         </p>
                     </div>
+                    <a id="adminMenu" href="signup.html" class="sidebar-btn-link">
+                           ※ 新規登録はこちら
+                        </a>
                 </div>
             `
             }

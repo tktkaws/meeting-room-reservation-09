@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規登録 - 会議室予約システム</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header id="sidebar" class="sidebar">
+            <!-- JavaScriptで動的に生成 -->
+        </header>
+
+        <main class="main-content">
+            <div class="config-main">
+                <nav style="margin-bottom: 2rem;">
+                    <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
+                </nav>
+                <section class="user-info-section">
+                    <h2>新規ユーザー登録</h2>
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="userName">名前</label>
+                            <input type="text" id="userName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">メールアドレス</label>
+                            <input type="email" id="userEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">パスワード</label>
+                            <input type="password" id="userPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="userPasswordConfirm">パスワード（確認）</label>
+                            <input type="password" id="userPasswordConfirm" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="userDepartmentSelect">部署</label>
+                            <select id="userDepartmentSelect" required>
+                                <option value="">選択してください</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailNotification">メール通知設定</label>
+                            <select id="emailNotification" required>
+                                <option value="true">メール通知を受信する</option>
+                                <option value="false">メール通知を受信しない</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">新規登録</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="src/js/signup.js"></script>
+</body>
+
+</html>
