@@ -141,11 +141,11 @@ class ConfigManager {
         const userNameInput = document.getElementById('userNameInput');
         const userEmailInput = document.getElementById('userEmail');
         const userDepartmentSelect = document.getElementById('userDepartmentSelect');
-        const emailNotificationCheckbox = document.getElementById('emailNotification');
+        const emailNotificationSelect = document.getElementById('emailNotification');
 
         if (userNameInput) userNameInput.value = this.currentUser.name;
         if (userEmailInput) userEmailInput.value = this.currentUser.email;
-        if (emailNotificationCheckbox) emailNotificationCheckbox.checked = this.currentUser.email_notification;
+        if (emailNotificationSelect) emailNotificationSelect.value = this.currentUser.email_notification ? 'true' : 'false';
 
         // 部署選択肢を設定
         if (userDepartmentSelect) {
@@ -219,7 +219,7 @@ class ConfigManager {
             name: formData.get('userNameInput') || document.getElementById('userNameInput').value,
             email: formData.get('userEmail') || document.getElementById('userEmail').value,
             department_id: formData.get('userDepartmentSelect') || document.getElementById('userDepartmentSelect').value,
-            email_notification: document.getElementById('emailNotification').checked
+            email_notification: document.getElementById('emailNotification').value === 'true'
         };
 
         // バリデーション
@@ -285,7 +285,7 @@ class ConfigManager {
     async handleNotificationSubmit(event) {
         event.preventDefault();
         
-        const emailNotification = document.getElementById('emailNotification').checked;
+        const emailNotification = document.getElementById('emailNotification').value === 'true';
         
         const submitBtn = event.target.querySelector('button[type="submit"]');
         const hideLoading = showLoading(submitBtn);
@@ -412,18 +412,18 @@ window.addEventListener('unhandledrejection', (event) => {
     showErrorMessage('通信エラーが発生しました', document.body);
 });
 
-// ページを離れる前の確認
-window.addEventListener('beforeunload', (event) => {
-    // フォームが変更されている場合は確認
-    const forms = document.querySelectorAll('form');
-    for (const form of forms) {
-        if (form.checkValidity && form.checkValidity() === false) {
-            event.preventDefault();
-            event.returnValue = '変更が保存されていません。本当にページを離れますか？';
-            break;
-        }
-    }
-});
+// ページを離れる前の確認（無効化）
+// window.addEventListener('beforeunload', (event) => {
+//     // フォームが変更されている場合は確認
+//     const forms = document.querySelectorAll('form');
+//     for (const form of forms) {
+//         if (form.checkValidity && form.checkValidity() === false) {
+//             event.preventDefault();
+//             event.returnValue = '変更が保存されていません。本当にページを離れますか？';
+//             break;
+//         }
+//     }
+// });
 
 // キーボードショートカット
 document.addEventListener('keydown', (event) => {

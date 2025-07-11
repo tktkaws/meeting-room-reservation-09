@@ -535,15 +535,15 @@ window.addEventListener('unhandledrejection', (event) => {
     showErrorMessage('通信エラーが発生しました', document.body);
 });
 
-// ページを離れる前の確認
-window.addEventListener('beforeunload', (event) => {
-    // フォームが編集中の場合は確認
-    const form = document.getElementById('departmentForm');
-    if (form && document.getElementById('cancelBtn').style.display !== 'none') {
-        event.preventDefault();
-        event.returnValue = '編集中の内容が失われます。本当にページを離れますか？';
-    }
-});
+// ページを離れる前の確認（無効化）
+// window.addEventListener('beforeunload', (event) => {
+//     // フォームが編集中の場合は確認
+//     const form = document.getElementById('departmentForm');
+//     if (form && document.getElementById('cancelBtn').style.display !== 'none') {
+//         event.preventDefault();
+//         event.returnValue = '編集中の内容が失われます。本当にページを離れますか？';
+//     }
+// });
 
 // キーボードショートカット
 document.addEventListener('keydown', (event) => {

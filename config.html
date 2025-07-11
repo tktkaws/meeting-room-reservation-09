@@ -13,11 +13,10 @@
         </header>
         
         <main class="main-content">
-            <nav style="margin-bottom: 2rem;">
+            <div class="config-main">
+                <nav style="margin-bottom: 2rem;">
                 <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
             </nav>
-            
-            <div class="config-main">
                 <section class="user-info-section">
                     <h2>ユーザー情報</h2>
                     <form id="userInfoForm">
@@ -35,11 +34,18 @@
                                 <option value="">選択してください</option>
                             </select>
                         </div>
-                        <button type="submit">更新</button>
+                        <div class="form-group">
+                            <label for="emailNotification">メール通知設定</label>
+                            <select id="emailNotification" required>
+                                <option value="true">メール通知を受信する</option>
+                                <option value="false">メール通知を受信しない</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">更新</button>
                     </form>
                 </section>
                 
-                <section class="password-section">
+                <!-- <section class="password-section">
                     <h2>パスワード変更</h2>
                     <form id="passwordForm">
                         <div class="form-group">
@@ -56,29 +62,17 @@
                         </div>
                         <button type="submit">パスワード変更</button>
                     </form>
-                </section>
+                </section> -->
                 
-                <section class="notification-section">
-                    <h2>通知設定</h2>
-                    <form id="notificationForm">
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="emailNotification">
-                                メール通知を受け取る
-                            </label>
-                        </div>
-                        <button type="submit">設定を保存</button>
-                    </form>
-                </section>
                 
-                <section class="color-section">
+                <!-- <section class="color-section">
                     <h2>詳細カラー設定</h2>
                     <div id="departmentColorsConfig">
                         <p>各部署のデフォルトカラーを個別に設定できます</p>
                         <div id="departmentColors"></div>
                     </div>
                     <button id="saveColorSettings">カラー設定を保存</button>
-                </section>
+                </section> -->
             </div>
         </main>
     </div>
