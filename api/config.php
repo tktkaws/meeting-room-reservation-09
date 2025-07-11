@@ -110,8 +110,73 @@ function validateBusinessHours($datetime) {
         return false;
     }
     
-    // 9時から18時までのチェック
+    // 9時から18時までのチェック（18時00分は許可）
+    if ($hour < 9 || $hour > 18) {
+        return false;
+    }
+    
+    // 18時の場合は00分のみ許可
+    if ($hour === 18 && $minute !== 0) {
+        return false;
+    }
+    
+    // 15分単位チェック
+    if ($minute % 15 !== 0) {
+        return false;
+    }
+    
+    return true;
+}
+
+// 開始時刻バリデーション関数
+function validateStartTime($datetime) {
+    $date = new DateTime($datetime);
+    $dayOfWeek = $date->format('N'); // 1=月曜日, 7=日曜日
+    $hour = $date->format('H');
+    $minute = $date->format('i');
+    
+    // 土日チェック（土曜日=6, 日曜日=7）
+    if ($dayOfWeek >= 6) {
+        return false;
+    }
+    
+    // 9時から17時59分までのチェック（開始時刻は18時開始不可）
     if ($hour < 9 || $hour >= 18) {
+        return false;
+    }
+    
+    // 15分単位チェック
+    if ($minute % 15 !== 0) {
+        return false;
+    }
+    
+    return true;
+}
+
+// 終了時刻バリデーション関数
+function validateEndTime($datetime) {
+    $date = new DateTime($datetime);
+    $dayOfWeek = $date->format('N'); // 1=月曜日, 7=日曜日
+    $hour = $date->format('H');
+    $minute = $date->format('i');
+    
+    // 土日チェック（土曜日=6, 日曜日=7）
+    if ($dayOfWeek >= 6) {
+        return false;
+    }
+    
+    // 9時15分から18時00分までのチェック（終了時刻は18時00分まで可）
+    if ($hour < 9 || $hour > 18) {
+        return false;
+    }
+    
+    // 18時00分の場合は分が00分でなければならない
+    if ($hour === 18 && $minute !== 0) {
+        return false;
+    }
+    
+    // 9時00分終了は不可（最低15分の予約時間が必要）
+    if ($hour === 9 && $minute === 0) {
         return false;
     }
     

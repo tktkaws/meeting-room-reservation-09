@@ -160,7 +160,12 @@ export function isBusinessHours(date) {
     const minutes = date.getMinutes();
     
     // 9:00-18:00の範囲
-    if (hours < 9 || hours >= 18) {
+    if (hours < 9 || hours > 18) {
+        return false;
+    }
+
+    // 18時の場合は00分のみ許可
+    if (hours === 18 && minutes !== 0) {
         return false;
     }
     
@@ -215,7 +220,7 @@ export function validateReservationTime(startTime, endTime) {
     
     // 営業時間チェック
     if (!isBusinessHours(start) || !isBusinessHours(end)) {
-        return { valid: false, message: '予約は9:00-18:00の間で15分単位で行ってください' };
+        return { valid: false, message: '予約は9:00-18:00の間で行ってください' };
     }
     
     return { valid: true };

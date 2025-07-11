@@ -48,7 +48,7 @@ if ($method === 'GET') {
 // 予約作成
 if ($method === 'POST') {
     if (!isLoggedIn()) {
-        jsonResponse(['error' => 'Login required'], 401);
+        jsonResponse(['error' => 'ログインが必要です'], 401);
     }
     
     $data = getJsonInput();
@@ -58,7 +58,9 @@ if ($method === 'POST') {
     $required_fields = ['title', 'date', 'start_datetime', 'end_datetime'];
     foreach ($required_fields as $field) {
         if (!isset($data[$field]) || empty(trim($data[$field]))) {
-            jsonResponse(['error' => ucfirst($field) . ' is required'], 400);
+            $field_names = ['title' => 'タイトル', 'date' => '日付', 'start_datetime' => '開始時刻', 'end_datetime' => '終了時刻'];
+            $field_name = $field_names[$field] ?? $field;
+            jsonResponse(['error' => $field_name . 'は必須です'], 400);
         }
     }
     
@@ -71,32 +73,32 @@ if ($method === 'POST') {
     
     // タイトルの文字数チェック
     if (mb_strlen($title) > 50) {
-        jsonResponse(['error' => 'Title must be 50 characters or less'], 400);
+        jsonResponse(['error' => 'タイトルは50文字以内で入力してください'], 400);
     }
     
     // 詳細の文字数チェック
     if (mb_strlen($description) > 300) {
-        jsonResponse(['error' => 'Description must be 300 characters or less'], 400);
+        jsonResponse(['error' => '詳細は300文字以内で入力してください'], 400);
     }
     
     // 土日チェック
     if (!validateWeekday($date)) {
-        jsonResponse(['error' => 'Reservations are not allowed on weekends'], 400);
+        jsonResponse(['error' => '土日の予約はできません'], 400);
     }
     
     // 営業時間チェック
-    if (!validateBusinessHours($start_datetime) || !validateBusinessHours($end_datetime)) {
-        jsonResponse(['error' => 'Reservations must be between 9:00 AM and 6:00 PM on weekdays, in 15-minute intervals'], 400);
+    if (!validateStartTime($start_datetime) || !validateEndTime($end_datetime)) {
+        jsonResponse(['error' => '予約は平日の9:00-18:00の間で15分単位で行ってください'], 400);
     }
     
     // 時間の整合性チェック
     if (strtotime($start_datetime) >= strtotime($end_datetime)) {
-        jsonResponse(['error' => 'End time must be after start time'], 400);
+        jsonResponse(['error' => '終了時刻は開始時刻より後に設定してください'], 400);
     }
     
     // 重複チェック
     if (checkReservationConflict($start_datetime, $end_datetime)) {
-        jsonResponse(['error' => 'Time slot is already reserved'], 409);
+        jsonResponse(['error' => '指定の時間帯は既に予約されています'], 409);
     }
     
     $pdo = getDB();
@@ -133,25 +135,25 @@ if ($method === 'POST') {
         // sendReservationNotification('created', $reservation);
         
         jsonResponse([
-            'message' => 'Reservation created successfully',
+            'message' => '予約を作成しました',
             'reservation' => $reservation
         ], 201);
         
     } catch (PDOException $e) {
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => 'データベースエラー: ' . $e->getMessage()], 500);
     }
 }
 
 // 予約更新
 if ($method === 'PUT') {
     if (!isLoggedIn()) {
-        jsonResponse(['error' => 'Login required'], 401);
+        jsonResponse(['error' => 'ログインが必要です'], 401);
     }
     
     $data = getJsonInput();
     
     if (!isset($data['id'])) {
-        jsonResponse(['error' => 'Reservation ID is required'], 400);
+        jsonResponse(['error' => '予約IDが必要です'], 400);
     }
     
     $id = $data['id'];
@@ -168,7 +170,7 @@ if ($method === 'PUT') {
     $existing_reservation = $stmt->fetch();
     
     if (!$existing_reservation) {
-        jsonResponse(['error' => 'Reservation not found'], 404);
+        jsonResponse(['error' => '予約が見つかりません'], 404);
     }
     
     $current_user = getCurrentUser();
@@ -177,7 +179,7 @@ if ($method === 'PUT') {
     if (!isAdmin()) {
         if ($existing_reservation['user_id'] != $current_user['id'] && 
             $existing_reservation['department_id'] != $current_user['department_id']) {
-            jsonResponse(['error' => 'Permission denied'], 403);
+            jsonResponse(['error' => '権限がありません'], 403);
         }
     }
     
@@ -185,7 +187,9 @@ if ($method === 'PUT') {
     $required_fields = ['title', 'date', 'start_datetime', 'end_datetime'];
     foreach ($required_fields as $field) {
         if (!isset($data[$field]) || empty(trim($data[$field]))) {
-            jsonResponse(['error' => ucfirst($field) . ' is required'], 400);
+            $field_names = ['title' => 'タイトル', 'date' => '日付', 'start_datetime' => '開始時刻', 'end_datetime' => '終了時刻'];
+            $field_name = $field_names[$field] ?? $field;
+            jsonResponse(['error' => $field_name . 'は必須です'], 400);
         }
     }
     
@@ -198,29 +202,29 @@ if ($method === 'PUT') {
     
     // バリデーション
     if (mb_strlen($title) > 50) {
-        jsonResponse(['error' => 'Title must be 50 characters or less'], 400);
+        jsonResponse(['error' => 'タイトルは50文字以内で入力してください'], 400);
     }
     
     if (mb_strlen($description) > 300) {
-        jsonResponse(['error' => 'Description must be 300 characters or less'], 400);
+        jsonResponse(['error' => '詳細は300文字以内で入力してください'], 400);
     }
     
     // 土日チェック
     if (!validateWeekday($date)) {
-        jsonResponse(['error' => 'Reservations are not allowed on weekends'], 400);
+        jsonResponse(['error' => '土日の予約はできません'], 400);
     }
     
-    if (!validateBusinessHours($start_datetime) || !validateBusinessHours($end_datetime)) {
-        jsonResponse(['error' => 'Reservations must be between 9:00 AM and 6:00 PM on weekdays, in 15-minute intervals'], 400);
+    if (!validateStartTime($start_datetime) || !validateEndTime($end_datetime)) {
+        jsonResponse(['error' => '予約は平日の9:00-18:00の間で15分単位で行ってください'], 400);
     }
     
     if (strtotime($start_datetime) >= strtotime($end_datetime)) {
-        jsonResponse(['error' => 'End time must be after start time'], 400);
+        jsonResponse(['error' => '終了時刻は開始時刻より後に設定してください'], 400);
     }
     
     // 重複チェック（自分の予約は除外）
     if (checkReservationConflict($start_datetime, $end_datetime, $id)) {
-        jsonResponse(['error' => 'Time slot is already reserved'], 409);
+        jsonResponse(['error' => '指定の時間帯は既に予約されています'], 409);
     }
     
     try {
@@ -254,25 +258,25 @@ if ($method === 'PUT') {
         // sendReservationNotification('updated', $reservation);
         
         jsonResponse([
-            'message' => 'Reservation updated successfully',
+            'message' => '予約を更新しました',
             'reservation' => $reservation
         ]);
         
     } catch (PDOException $e) {
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => 'データベースエラー: ' . $e->getMessage()], 500);
     }
 }
 
 // 予約削除
 if ($method === 'DELETE') {
     if (!isLoggedIn()) {
-        jsonResponse(['error' => 'Login required'], 401);
+        jsonResponse(['error' => 'ログインが必要です'], 401);
     }
     
     $data = getJsonInput();
     
     if (!isset($data['id'])) {
-        jsonResponse(['error' => 'Reservation ID is required'], 400);
+        jsonResponse(['error' => '予約IDが必要です'], 400);
     }
     
     $id = $data['id'];
@@ -289,7 +293,7 @@ if ($method === 'DELETE') {
     $existing_reservation = $stmt->fetch();
     
     if (!$existing_reservation) {
-        jsonResponse(['error' => 'Reservation not found'], 404);
+        jsonResponse(['error' => '予約が見つかりません'], 404);
     }
     
     $current_user = getCurrentUser();
@@ -298,7 +302,7 @@ if ($method === 'DELETE') {
     if (!isAdmin()) {
         if ($existing_reservation['user_id'] != $current_user['id'] && 
             $existing_reservation['department_id'] != $current_user['department_id']) {
-            jsonResponse(['error' => 'Permission denied'], 403);
+            jsonResponse(['error' => '権限がありません'], 403);
         }
     }
     
@@ -320,10 +324,10 @@ if ($method === 'DELETE') {
         // メール通知の送信（一時的に無効化）
         // sendReservationNotification('deleted', $reservation);
         
-        jsonResponse(['message' => 'Reservation deleted successfully']);
+        jsonResponse(['message' => '予約を削除しました']);
         
     } catch (PDOException $e) {
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => 'データベースエラー: ' . $e->getMessage()], 500);
     }
 }
 
@@ -361,5 +365,5 @@ function sendReservationNotification($action, $reservation) {
     }
 }
 
-jsonResponse(['error' => 'Method not allowed'], 405);
+jsonResponse(['error' => 'メソッドが許可されていません'], 405);
 ?>
