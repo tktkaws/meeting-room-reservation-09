@@ -130,8 +130,24 @@ class ReservationManager {
         
         // デフォルト日時設定
         let defaultDate = date || now;
-        let defaultStartTime = date || this.adjustToBusinessHours(now);
-        let defaultEndTime = new Date(defaultStartTime.getTime() + 60 * 60 * 1000); // 1時間後
+        let defaultStartTime;
+        
+        if (date && (date.getHours() === 0 && date.getMinutes() === 0)) {
+            // 月間ビューでのセルクリック時（時刻が00:00の場合）は現在時刻を開始時間にセット
+            defaultStartTime = this.adjustToBusinessHours(now);
+        } else {
+            // 週間ビューでのセルクリック時や新規予約ボタンクリック時
+            defaultStartTime = date || this.adjustToBusinessHours(now);
+        }
+        
+        // 終了時刻の設定（17時以降は18時固定、それ以外は1時間後）
+        let defaultEndTime;
+        if (defaultStartTime.getHours() >= 17) {
+            defaultEndTime = new Date(defaultStartTime);
+            defaultEndTime.setHours(18, 0, 0, 0);
+        } else {
+            defaultEndTime = new Date(defaultStartTime.getTime() + 60 * 60 * 1000); // 1時間後
+        }
         
         // 15分単位に調整
         defaultStartTime = this.roundToQuarter(defaultStartTime);
@@ -268,6 +284,29 @@ class ReservationManager {
         startTimeGroup.appendChild(startTimeLabel);
         startTimeGroup.appendChild(startTimeSelectGroup);
         form.appendChild(startTimeGroup);
+        
+        // 開始時刻変更時の終了時刻自動設定
+        const updateEndTime = () => {
+            const startHour = parseInt(startHourSelect.value);
+            const startMinute = parseInt(startMinuteSelect.value);
+            
+            let endHour, endMinute;
+            if (startHour >= 17) {
+                // 17時以降の場合は終了時刻を18時に設定
+                endHour = 18;
+                endMinute = 0;
+            } else {
+                // 通常は1時間後に設定
+                endHour = startHour + 1;
+                endMinute = startMinute;
+            }
+            
+            endHourSelect.value = endHour;
+            endMinuteSelect.value = endMinute;
+        };
+        
+        startHourSelect.addEventListener('change', updateEndTime);
+        startMinuteSelect.addEventListener('change', updateEndTime);
         
         // 終了時間
         const endTimeGroup = createElement('div', 'form-group');
