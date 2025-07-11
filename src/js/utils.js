@@ -336,6 +336,58 @@ export function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
+// WCAG相対輝度を計算
+function getRelativeLuminance(r, g, b) {
+    // RGB値を0-1の範囲に正規化
+    const rsRGB = r / 255;
+    const gsRGB = g / 255;
+    const bsRGB = b / 255;
+    
+    // ガンマ補正
+    const rLinear = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+    const gLinear = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+    const bLinear = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+    
+    // 相対輝度計算
+    return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
+}
+
+// コントラスト比を計算
+function getContrastRatio(luminance1, luminance2) {
+    const lighter = Math.max(luminance1, luminance2);
+    const darker = Math.min(luminance1, luminance2);
+    return (lighter + 0.05) / (darker + 0.05);
+}
+
+// WCAG 4.5:1基準で適切な文字色を返す関数
+export function getContrastColor(backgroundColor, departmentName = '') {
+    // 色をRGBに変換
+    const rgb = hexToRgb(backgroundColor);
+    if (!rgb) return '#000'; // 変換失敗時はデフォルト黒
+    
+    // 背景色の相対輝度を計算
+    const bgLuminance = getRelativeLuminance(rgb.r, rgb.g, rgb.b);
+    
+    // 白（#FFF）と黒（#000）の相対輝度
+    const whiteLuminance = 1; // 白の相対輝度は1
+    const blackLuminance = 0; // 黒の相対輝度は0
+    
+    // それぞれのコントラスト比を計算
+    const whiteContrast = getContrastRatio(bgLuminance, whiteLuminance);
+    const blackContrast = getContrastRatio(bgLuminance, blackLuminance);
+    
+    // WCAG AA基準（4.5:1）検証用で変更
+    const wcagThreshold = 4.5;
+    
+    const selectedColor = whiteContrast >= wcagThreshold && blackContrast >= wcagThreshold ? '#FFF' : 
+                         whiteContrast > blackContrast ? '#FFF' : '#000';
+    
+    // コンソール出力
+    // console.log(`${departmentName ? `[${departmentName}] ` : ''}背景色: ${backgroundColor}, 白コントラスト: ${whiteContrast.toFixed(2)}, 黒コントラスト: ${blackContrast.toFixed(2)}, 選択色: ${selectedColor}`);
+    
+    return selectedColor;
+}
+
 // 部署カラー取得
 export function getDepartmentColor(department, userColorSettings = {}) {
     if (userColorSettings[department.id]) {

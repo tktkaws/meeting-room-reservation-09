@@ -12,7 +12,8 @@ import {
     createElement,
     clearElement,
     showModal,
-    hideModal
+    hideModal,
+    getContrastColor
 } from './utils.js';
 import authManager from './auth.js';
 
@@ -537,8 +538,10 @@ class CalendarManager {
             // 予約要素を作成
             const reservationElement = createElement('div', 'week-reservation');
             reservationElement.textContent = reservation.title;
-            reservationElement.style.backgroundColor = authManager.getReservationColor(reservation);
-            reservationElement.style.color = 'white';
+            const backgroundColor = authManager.getReservationColor(reservation);
+            const departmentName = reservation.department_name || reservation.user_department_name || '部署不明';
+            reservationElement.style.backgroundColor = backgroundColor;
+            reservationElement.style.color = getContrastColor(backgroundColor, departmentName);
             
             // 絶対配置で位置を設定（9時基準でtop: 0pxから開始）
             const slotHeight = 20; // 各スロットの高さ（px）
