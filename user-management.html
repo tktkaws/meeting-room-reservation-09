@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー管理 - 会議室予約システム</title>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header id="sidebar" class="sidebar">
+            <!-- JavaScriptで動的に生成 -->
+        </header>
+
+        <main class="main-content">
+            <div class="config-main user-management">
+                <div class="user-management-header">
+                    <h2>ユーザー管理</h2>
+                    <div class="bulk-action-controls">
+                        <button id="bulkDeleteBtn" class="btn btn-danger" disabled>選択したユーザーを削除</button>
+                        <button id="bulkEditBtn" class="btn btn-secondary" disabled>一括編集</button>
+                        <button id="selectAllBtn" class="btn btn-outline">全選択</button>
+                        <button id="deselectAllBtn" class="btn btn-outline">全解除</button>
+                    </div>
+                </div>
+
+                <div class="user-table-container">
+                    <div class="user-table-header">
+                        <div class="table-cell checkbox-cell">
+                            <input type="checkbox" id="selectAllCheckbox">
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="name">
+                            名前
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="email">
+                            メールアドレス
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="department_name">
+                            部署
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="email_notification">
+                            メール通知
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="admin">
+                            管理者
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell sortable-header" data-sort="created_at">
+                            作成日
+                            <span class="sort-indicator"></span>
+                        </div>
+                        <div class="table-cell">操作</div>
+                    </div>
+                    <div id="userTableBody" class="user-table-body">
+                        <!-- JavaScriptで動的に生成 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 個人ユーザー編集モーダル -->
+    <div id="userEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userEditModalTitle">ユーザー編集</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="userEditModalContent">
+                <form id="userEditForm">
+                    <div class="form-group">
+                        <label for="editUserName">名前</label>
+                        <input type="text" id="editUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserEmail">メールアドレス</label>
+                        <input type="email" id="editUserEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserDepartment">部署</label>
+                        <select id="editUserDepartment" required>
+                            <option value="">選択してください</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserEmailNotification">メール通知</label>
+                        <select id="editUserEmailNotification" required>
+                            <option value="true">受信する</option>
+                            <option value="false">受信しない</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserAdmin">管理者権限</label>
+                        <select id="editUserAdmin" required>
+                            <option value="true">管理者</option>
+                            <option value="false">一般ユーザー</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelUserEdit" class="btn btn-secondary">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 一括操作モーダル -->
+    <div id="bulkEditModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bulkEditModalTitle">一括編集</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="bulkEditModalContent">
+                <form id="bulkEditForm">
+                    <div class="form-group">
+                        <label for="bulkOperation">操作</label>
+                        <select id="bulkOperation" required>
+                            <option value="">選択してください</option>
+                            <option value="department">部署を変更</option>
+                            <option value="email_notification">メール通知設定を変更</option>
+                            <option value="admin">管理者権限を変更</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bulkDepartmentGroup" style="display: none;">
+                        <label for="bulkDepartment">変更先部署</label>
+                        <select id="bulkDepartment">
+                            <option value="">選択してください</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bulkEmailNotificationGroup" style="display: none;">
+                        <label for="bulkEmailNotification">メール通知設定</label>
+                        <select id="bulkEmailNotification">
+                            <option value="true">受信する</option>
+                            <option value="false">受信しない</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bulkAdminGroup" style="display: none;">
+                        <label for="bulkAdmin">管理者権限</label>
+                        <select id="bulkAdmin">
+                            <option value="true">管理者</option>
+                            <option value="false">一般ユーザー</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelBulkEdit" class="btn btn-secondary">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">実行</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 削除確認モーダル -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>削除確認</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="deleteConfirmContent">
+                <p>選択したユーザーを削除しますか？</p>
+                <p>削除されたユーザーが作成した予約は、同じ部署のユーザーまたは管理者に引き継がれます。</p>
+                <div class="form-actions">
+                    <button type="button" id="cancelDelete" class="btn btn-secondary">キャンセル</button>
+                    <button type="button" id="confirmDelete" class="btn btn-danger">削除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/js/user-management.js"></script>
+</body>
+
+</html>

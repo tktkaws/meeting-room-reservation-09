@@ -5,6 +5,85 @@
     box-sizing: border-box;
 }
 
+/* ユーザー管理ページのスタイル */
+.user-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-action-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.user-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.user-table-header {
+    display: grid;
+    grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-table-body {
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.user-table-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 1fr 120px 100px 120px 100px;
+    grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
+    gap: 1rem;
+    padding: .5rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.user-table-row:hover {
+    background: #f8f9fa;
+}
+
+.table-cell {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0;
+}
+
+.checkbox-cell {
+    justify-content: center;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.sortable-header:hover {
+    background-color: #e9ecef;
+}
+
+.sort-indicator {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
 :root {
     --list-view-height: calc(100vh - 120px);
     --calendar-day-height: calc((var(--list-view-height) - 40px) / 5);
@@ -367,6 +446,12 @@ body {
     background-color: #3498db;
     border: solid 2px #3498db;
     color: white;
+}
+.today-btn:focus-visible {
+    border: solid 2px #3498db;
+    color: white;
+    background-color: #3498db;
+    outline: 2px solid #3498db;
 }
 
 /* ナビゲーション */
@@ -971,6 +1056,14 @@ body {
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #ecf0f1;
+}
+
+
+/* ユーザー管理ページ */
+.config-main.user-management {
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 100%;
 }
 
 /* 部署管理ページ */

@@ -3,118 +3,211 @@ require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
+$id = $_GET['id'] ?? '';
 
-// ユーザー情報更新
-if ($method === 'PUT' && $action === 'profile') {
-    if (!isLoggedIn()) {
-        jsonResponse(['error' => 'Login required'], 401);
-    }
-    
-    $data = getJsonInput();
-    
-    if (!isset($data['name']) || empty(trim($data['name']))) {
-        jsonResponse(['error' => 'Name is required'], 400);
-    }
-    
-    if (!isset($data['email']) || empty(trim($data['email']))) {
-        jsonResponse(['error' => 'Email is required'], 400);
-    }
-    
-    if (!isset($data['department_id']) || empty($data['department_id'])) {
-        jsonResponse(['error' => 'Department is required'], 400);
-    }
-    
-    $name = trim($data['name']);
-    $email = trim($data['email']);
-    $department_id = $data['department_id'];
-    $email_notification = $data['email_notification'] ?? false;
-    
-    $pdo = getDB();
-    
-    try {
-        // メールアドレスの重複チェック（自分以外）
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-        $stmt->execute([$email, $_SESSION['user_id']]);
-        if ($stmt->fetch()) {
-            jsonResponse(['error' => 'Email already exists'], 409);
-        }
-        
-        // 部署の存在確認
-        $stmt = $pdo->prepare("SELECT id FROM departments WHERE id = ?");
-        $stmt->execute([$department_id]);
-        if (!$stmt->fetch()) {
-            jsonResponse(['error' => 'Invalid department'], 400);
-        }
-        
-        $stmt = $pdo->prepare("
-            UPDATE users 
-            SET name = ?, email = ?, department_id = ?, email_notification = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ");
-        $stmt->execute([$name, $email, $department_id, $email_notification, $_SESSION['user_id']]);
-        
-        // 更新されたユーザー情報を取得
-        $stmt = $pdo->prepare("
-            SELECT u.*, d.name as department_name 
-            FROM users u 
-            JOIN departments d ON u.department_id = d.id 
-            WHERE u.id = ?
-        ");
-        $stmt->execute([$_SESSION['user_id']]);
-        $user = $stmt->fetch();
-        
-        unset($user['password']);
-        
-        jsonResponse([
-            'message' => 'Profile updated successfully',
-            'user' => $user
-        ]);
-        
-    } catch (PDOException $e) {
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+// 管理者権限チェック
+function requireAdmin() {
+    if (!isLoggedIn() || !isAdmin()) {
+        jsonResponse(['error' => 'Unauthorized'], 401);
     }
 }
 
-// パスワード変更
-if ($method === 'PUT' && $action === 'password') {
-    if (!isLoggedIn()) {
-        jsonResponse(['error' => 'Login required'], 401);
+// ユーザー一覧取得
+if ($method === 'GET' && empty($action)) {
+    requireAdmin();
+    
+    $pdo = getDB();
+    $stmt = $pdo->prepare("
+        SELECT u.*, d.name as department_name 
+        FROM users u 
+        JOIN departments d ON u.department_id = d.id 
+        ORDER BY u.created_at DESC
+    ");
+    $stmt->execute();
+    $users = $stmt->fetchAll();
+    
+    // パスワードは返さない
+    foreach ($users as &$user) {
+        unset($user['password']);
     }
+    
+    jsonResponse(['users' => $users]);
+}
+
+// ユーザー更新
+if ($method === 'PUT' && !empty($id)) {
+    requireAdmin();
     
     $data = getJsonInput();
     
-    if (!isset($data['current_password']) || !isset($data['new_password'])) {
-        jsonResponse(['error' => 'Current password and new password are required'], 400);
+    if (!isset($data['name']) || !isset($data['email']) || !isset($data['department_id'])) {
+        jsonResponse(['error' => '名前、メールアドレス、部署は必須です'], 400);
     }
     
-    $current_password = $data['current_password'];
-    $new_password = $data['new_password'];
+    $pdo = getDB();
     
-    if (strlen($new_password) < 6) {
-        jsonResponse(['error' => 'New password must be at least 6 characters'], 400);
+    // メールアドレスの重複チェック（自分以外）
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+    $stmt->execute([$data['email'], $id]);
+    if ($stmt->fetch()) {
+        jsonResponse(['error' => 'このメールアドレスは既に使用されています'], 400);
+    }
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE users 
+            SET name = ?, email = ?, department_id = ?, email_notification = ?, admin = ?
+            WHERE id = ?
+        ");
+        $stmt->execute([
+            $data['name'],
+            $data['email'],
+            $data['department_id'],
+            isset($data['email_notification']) ? ($data['email_notification'] ? 1 : 0) : 0,
+            isset($data['admin']) ? ($data['admin'] ? 1 : 0) : 0,
+            $id
+        ]);
+        
+        jsonResponse(['message' => 'ユーザー情報を更新しました']);
+        
+    } catch (PDOException $e) {
+        jsonResponse(['error' => 'ユーザー情報の更新に失敗しました: ' . $e->getMessage()], 500);
+    }
+}
+
+// 一括編集
+if ($method === 'POST' && $action === 'bulk_edit') {
+    requireAdmin();
+    
+    $data = getJsonInput();
+    
+    if (!isset($data['user_ids']) || !isset($data['operation'])) {
+        jsonResponse(['error' => 'ユーザーIDと操作が必要です'], 400);
+    }
+    
+    $userIds = $data['user_ids'];
+    $operation = $data['operation'];
+    
+    if (empty($userIds)) {
+        jsonResponse(['error' => 'ユーザーを選択してください'], 400);
     }
     
     $pdo = getDB();
     
     try {
-        // 現在のパスワードを確認
-        $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
-        $stmt->execute([$_SESSION['user_id']]);
-        $user = $stmt->fetch();
+        $placeholders = str_repeat('?,', count($userIds) - 1) . '?';
         
-        if (!$user || !verifyPassword($current_password, $user['password'])) {
-            jsonResponse(['error' => 'Current password is incorrect'], 400);
+        if ($operation === 'department') {
+            if (!isset($data['department_id'])) {
+                jsonResponse(['error' => '部署を選択してください'], 400);
+            }
+            
+            $stmt = $pdo->prepare("UPDATE users SET department_id = ? WHERE id IN ($placeholders)");
+            $stmt->execute(array_merge([$data['department_id']], $userIds));
+            
+        } elseif ($operation === 'email_notification') {
+            if (!isset($data['email_notification'])) {
+                jsonResponse(['error' => 'メール通知設定を選択してください'], 400);
+            }
+            
+            $stmt = $pdo->prepare("UPDATE users SET email_notification = ? WHERE id IN ($placeholders)");
+            $stmt->execute(array_merge([$data['email_notification'] ? 1 : 0], $userIds));
+            
+        } elseif ($operation === 'admin') {
+            if (!isset($data['admin'])) {
+                jsonResponse(['error' => '管理者権限を選択してください'], 400);
+            }
+            
+            $stmt = $pdo->prepare("UPDATE users SET admin = ? WHERE id IN ($placeholders)");
+            $stmt->execute(array_merge([$data['admin'] ? 1 : 0], $userIds));
+            
+        } else {
+            jsonResponse(['error' => '無効な操作です'], 400);
         }
         
-        $new_password_hash = hashPassword($new_password);
-        
-        $stmt = $pdo->prepare("UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        $stmt->execute([$new_password_hash, $_SESSION['user_id']]);
-        
-        jsonResponse(['message' => 'Password updated successfully']);
+        jsonResponse(['message' => '一括編集が完了しました']);
         
     } catch (PDOException $e) {
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => '一括編集に失敗しました: ' . $e->getMessage()], 500);
+    }
+}
+
+// 一括削除
+if ($method === 'POST' && $action === 'bulk_delete') {
+    requireAdmin();
+    
+    $data = getJsonInput();
+    
+    if (!isset($data['user_ids'])) {
+        jsonResponse(['error' => 'ユーザーIDが必要です'], 400);
+    }
+    
+    $userIds = $data['user_ids'];
+    
+    if (empty($userIds)) {
+        jsonResponse(['error' => 'ユーザーを選択してください'], 400);
+    }
+    
+    $pdo = getDB();
+    
+    try {
+        $pdo->beginTransaction();
+        
+        $placeholders = str_repeat('?,', count($userIds) - 1) . '?';
+        
+        foreach ($userIds as $userId) {
+            // 削除対象ユーザーの情報を取得
+            $stmt = $pdo->prepare("SELECT department_id FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            
+            if (!$user) continue;
+            
+            // 該当ユーザーが作成した予約を取得
+            $stmt = $pdo->prepare("SELECT id FROM reservations WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $reservations = $stmt->fetchAll();
+            
+            if (!empty($reservations)) {
+                // 同じ部署の他のユーザーを探す
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE department_id = ? AND id != ? LIMIT 1");
+                $stmt->execute([$user['department_id'], $userId]);
+                $replacementUser = $stmt->fetch();
+                
+                if (!$replacementUser) {
+                    // 同じ部署のユーザーがいない場合、管理者を探す
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE admin = 1 AND id != ? LIMIT 1");
+                    $stmt->execute([$userId]);
+                    $replacementUser = $stmt->fetch();
+                }
+                
+                if ($replacementUser) {
+                    // 予約の作成者を変更
+                    $reservationIds = array_column($reservations, 'id');
+                    $reservationPlaceholders = str_repeat('?,', count($reservationIds) - 1) . '?';
+                    $stmt = $pdo->prepare("UPDATE reservations SET user_id = ? WHERE id IN ($reservationPlaceholders)");
+                    $stmt->execute(array_merge([$replacementUser['id']], $reservationIds));
+                } else {
+                    // 引き継ぎ先がない場合、予約を削除
+                    $reservationIds = array_column($reservations, 'id');
+                    $reservationPlaceholders = str_repeat('?,', count($reservationIds) - 1) . '?';
+                    $stmt = $pdo->prepare("DELETE FROM reservations WHERE id IN ($reservationPlaceholders)");
+                    $stmt->execute($reservationIds);
+                }
+            }
+        }
+        
+        // ユーザーを削除
+        $stmt = $pdo->prepare("DELETE FROM users WHERE id IN ($placeholders)");
+        $stmt->execute($userIds);
+        
+        $pdo->commit();
+        
+        jsonResponse(['message' => '選択したユーザーを削除しました']);
+        
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        jsonResponse(['error' => 'ユーザー削除に失敗しました: ' . $e->getMessage()], 500);
     }
 }
 
@@ -132,114 +225,15 @@ if ($method === 'PUT' && $action === 'colors') {
     
     $color_settings = json_encode($data['color_settings']);
     
-    // デバッグログ
-    error_log("カラー設定保存: ユーザーID " . $_SESSION['user_id'] . ", 設定: " . $color_settings);
-    
     $pdo = getDB();
     
     try {
         $stmt = $pdo->prepare("UPDATE users SET color_setting = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute([$color_settings, $_SESSION['user_id']]);
         
-        // 保存確認のために再取得
-        $stmt = $pdo->prepare("SELECT color_setting FROM users WHERE id = ?");
-        $stmt->execute([$_SESSION['user_id']]);
-        $saved_settings = $stmt->fetch();
-        
-        error_log("保存確認: " . $saved_settings['color_setting']);
-        
-        jsonResponse(['message' => 'Color settings updated successfully', 'saved_settings' => $saved_settings['color_setting']]);
+        jsonResponse(['message' => 'Color settings updated successfully']);
         
     } catch (PDOException $e) {
-        error_log("カラー設定保存エラー: " . $e->getMessage());
-        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
-    }
-}
-
-// ユーザー一覧取得（管理者のみ）
-if ($method === 'GET') {
-    if (!isAdmin()) {
-        jsonResponse(['error' => 'Admin access required'], 403);
-    }
-    
-    $pdo = getDB();
-    $stmt = $pdo->prepare("
-        SELECT u.id, u.name, u.email, u.admin, u.email_notification, u.created_at, d.name as department_name
-        FROM users u
-        JOIN departments d ON u.department_id = d.id
-        ORDER BY u.name ASC
-    ");
-    $stmt->execute();
-    $users = $stmt->fetchAll();
-    
-    jsonResponse(['users' => $users]);
-}
-
-// 新規ユーザー作成（管理者のみ）
-if ($method === 'POST') {
-    if (!isAdmin()) {
-        jsonResponse(['error' => 'Admin access required'], 403);
-    }
-    
-    $data = getJsonInput();
-    
-    $required_fields = ['name', 'email', 'password', 'department_id'];
-    foreach ($required_fields as $field) {
-        if (!isset($data[$field]) || empty(trim($data[$field]))) {
-            jsonResponse(['error' => ucfirst($field) . ' is required'], 400);
-        }
-    }
-    
-    $name = trim($data['name']);
-    $email = trim($data['email']);
-    $password = $data['password'];
-    $department_id = $data['department_id'];
-    $admin = $data['admin'] ?? false;
-    $email_notification = $data['email_notification'] ?? false;
-    
-    if (strlen($password) < 6) {
-        jsonResponse(['error' => 'Password must be at least 6 characters'], 400);
-    }
-    
-    $pdo = getDB();
-    
-    try {
-        // 部署の存在確認
-        $stmt = $pdo->prepare("SELECT id FROM departments WHERE id = ?");
-        $stmt->execute([$department_id]);
-        if (!$stmt->fetch()) {
-            jsonResponse(['error' => 'Invalid department'], 400);
-        }
-        
-        $password_hash = hashPassword($password);
-        
-        $stmt = $pdo->prepare("
-            INSERT INTO users (name, email, password, admin, department_id, email_notification)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([$name, $email, $password_hash, $admin, $department_id, $email_notification]);
-        
-        $user_id = $pdo->lastInsertId();
-        
-        // 作成されたユーザー情報を取得
-        $stmt = $pdo->prepare("
-            SELECT u.id, u.name, u.email, u.admin, u.email_notification, u.created_at, d.name as department_name
-            FROM users u
-            JOIN departments d ON u.department_id = d.id
-            WHERE u.id = ?
-        ");
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-        
-        jsonResponse([
-            'message' => 'User created successfully',
-            'user' => $user
-        ], 201);
-        
-    } catch (PDOException $e) {
-        if ($e->errorInfo[1] === 19) { // UNIQUE constraint failed
-            jsonResponse(['error' => 'Email already exists'], 409);
-        }
         jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
     }
 }

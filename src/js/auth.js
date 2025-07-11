@@ -316,8 +316,12 @@ class AuthManager {
                       this.isAdmin
                         ? `
                         <a id="adminMenu" href="department.html" class="sidebar-btn-link">
-                            <img src="/meeting-room-reservation-09/src/images/groups.svg" alt="" class="material-icon">部署管理
+                            <img src="/meeting-room-reservation-09/src/images/manage.svg" alt="" class="material-icon">部署管理
                         </a>
+                        <a id="adminMenu" href="user-management.html" class="sidebar-btn-link">
+                            <img src="/meeting-room-reservation-09/src/images/manage.svg" alt="" class="material-icon">ユーザー管理
+                        </a>
+                        
                     `
                         : ""
                     }
