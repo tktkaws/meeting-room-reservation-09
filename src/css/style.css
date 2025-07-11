@@ -48,6 +48,7 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
 }
+
 .sidebar h1 a {
     color: #4A5568;
     text-decoration: none;
@@ -61,6 +62,8 @@ body {
 .login-section input {
     width: 100%;
     padding: 0.75rem;
+    padding: 0.5rem 1rem;
+    height: 40px;
     margin-bottom: 1rem;
     border: 1px solid #bdc3c7;
     border-radius: 4px;
@@ -88,14 +91,17 @@ body {
     text-align: left;
 
 }
+
 .user-info-item {
     display: grid;
     align-items: center;
     grid-template-columns: auto 1fr;
     grid-auto-flow: column;
     gap: 1rem;
-            padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
     padding-left: 0;
+    color: #4A5568;
+    text-decoration: none;
 }
 
 /* #logoutBtn {
@@ -123,16 +129,69 @@ body {
 .color-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
     padding: 0.5rem 0;
     background-color: #f8f9fa;
     border-radius: 4px;
 }
 
+.color-setting-text {
+
+}
 .color-item label {
     font-size: 0.9rem;
     color: #2c3e50;
 }
+
+/* カラー入力グループ */
+.color-input-group {
+    display: flex;
+    gap: 0.1rem;
+    align-items: center;
+    /* border: 1px solid #bdc3c7; */
+}
+
+.color-item input[type="color"] {
+    width: 21px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.color-item input[type="text"] {
+    width: 4.5rem;
+    height: 20px;
+    padding-inline: .1rem;
+    border: none;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: #F8FAFD;
+    visibility: hidden;
+}
+
+.color-item:hover .color-item input[type="text"] {
+    visibility: visible;
+    border: 1px solid #bdc3c7;
+}
+
+#colorSettings:hover .color-item input[type="text"] {
+    visibility: visible;
+    border: 1px solid #bdc3c7;
+}
+
+.colorInfo-block {
+        width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+
 
 /* サイドバーメッセージ */
 #sidebar-message {
@@ -158,42 +217,7 @@ body {
     display: block;
 }
 
-/* カラー入力グループ */
-.color-input-group {
-    display: flex;
-    gap: 0.1rem;
-    align-items: center;
-    /* border: 1px solid #bdc3c7; */
-}
 
-.color-input-group input[type="color"] {
-    width: 21px;
-    height: 24px;
-    padding: 0;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.color-input-group input[type="text"] {
-    width: 4.5rem;
-    height: 20px;
-    padding-inline: .1rem;
-    border: none;
-    border-radius: 4px;
-    text-transform: uppercase;
-    background: #F8FAFD;
-    visibility: hidden;
-}
-
-.color-item:hover .color-input-group input[type="text"]{
-    visibility: visible;
-    border: 1px solid #bdc3c7;
-}
-#colorSettings:hover .color-input-group input[type="text"]{
-    visibility: visible;
-    border: 1px solid #bdc3c7;
-}
 
 
 
@@ -308,19 +332,20 @@ body {
 }
 
 .today-btn {
-        border: solid 1px #4A5568;
+    border: solid 2px #4A5568;
     color: #4A5568;
     padding: 0.5rem 1.5rem;
     border-radius: 1.2rem;
     font-size: 0.875rem;
     cursor: pointer;
     background-color: inherit;
+    font-weight: 600;
 }
 
 .today-btn:hover {
     background-color: #667eea;
     background-color: #3498db;
-    border: solid 1px #3498db;
+    border: solid 2px #3498db;
     color: white;
 }
 
@@ -332,6 +357,7 @@ body {
     width: fit-content;
     align-items: center;
 }
+
 .nav-btn {
     width: 40px;
     height: 40px;
@@ -342,9 +368,11 @@ body {
     transition: background-color 0.3s;
     background: none;
 }
+
 .nav-btn.prev img {
     transform: translateX(5px);
 }
+
 .nav-btn.next img {
     transform: translateX(1px);
 }
@@ -379,7 +407,7 @@ body {
 }
 
 .month-header-cell {
-        padding: 0.5rem;
+    padding: 0.5rem;
     text-align: center;
     font-weight: 600;
     color: #4a5568;
@@ -409,9 +437,11 @@ body {
     /* background-color: #e8f5e8;
     border: 2px solid #27ae60; */
 }
+
 .month-cell.past {
     cursor: default;
 }
+
 .month-cell.past:hover {
     background-color: white;
 }
@@ -424,10 +454,10 @@ body {
     font-weight: 400;
     margin-bottom: .5rem;
     font-size: 0.9rem;
-    
+
 }
 
-.month-cell.today .cell-date{
+.month-cell.today .cell-date {
     color: #FFF;
     width: fit-content;
     margin-inline: auto;
@@ -435,7 +465,7 @@ body {
 }
 
 .month-cell.today .cell-date::before {
-        grid-area: 1 / 1;
+    grid-area: 1 / 1;
     display: block;
     content: '';
     width: 1.5rem;
@@ -447,7 +477,7 @@ body {
 }
 
 .month-cell.today .cell-date span {
-       grid-area: 1 / 1;
+    grid-area: 1 / 1;
     color: #FFF;
 }
 
@@ -516,6 +546,7 @@ body {
     border-right: 1px solid #bdc3c7;
     /* border-bottom: 1px solid #bdc3c7; */
 }
+
 .time-label span {
     display: inline-block;
     transform: translateY(-0.9em);
@@ -550,7 +581,8 @@ body {
 
 .time-grid {
     display: grid;
-    grid-template-rows: repeat(36, 20px); /* 9時間 × 4スロット = 36スロット */
+    grid-template-rows: repeat(36, 20px);
+    /* 9時間 × 4スロット = 36スロット */
     border-right: 1px solid #bdc3c7;
 
 }
@@ -739,17 +771,13 @@ body {
     border-radius: 2px;
 }
 
-.reservation-time {
-}
+.reservation-time {}
 
-.reservation-title {
-}
+.reservation-title {}
 
-.reservation-user {
-}
+.reservation-user {}
 
-.reservation-time {
-}
+.reservation-time {}
 
 /* アクションボタン */
 .action-buttons {
@@ -1024,7 +1052,7 @@ table tr:hover {
     .hamburger-btn {
         display: flex;
     }
-    
+
     .sidebar {
         position: fixed;
         left: -300px;
@@ -1033,15 +1061,15 @@ table tr:hover {
         z-index: 1500;
         transition: left 0.3s ease;
     }
-    
+
     .sidebar.active {
         left: 0;
     }
-    
+
     .main-content {
         width: 100%;
     }
-    
+
     .content-header {
         justify-content: flex-start;
     }
@@ -1087,6 +1115,7 @@ table tr:hover {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -1163,13 +1192,14 @@ table tr:hover {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
 
 .sidebar-btn {
-        display: flex;
+    display: flex;
     align-items: center;
     width: 100%;
     padding: 0.5rem 1rem;
@@ -1184,9 +1214,10 @@ table tr:hover {
     border-radius: 6px;
     font-size: 0.9rem;
 }
+
 .sidebar-btn-link {
     text-decoration: none;
-        display: flex;
+    display: flex;
     align-items: center;
     width: 100%;
     padding: 0.5rem 1rem;
@@ -1206,12 +1237,11 @@ table tr:hover {
 /* ------------------- */
 
 .sidebar-section-heading {
-        font-size: .9rem;
+    font-size: .9rem;
 }
 
 .detail-item {
-    display: flex
-;
+    display: flex;
     margin-bottom: 0.75rem;
     align-items: flex-start;
 }
