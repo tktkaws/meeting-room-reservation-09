@@ -269,7 +269,7 @@ class AuthManager {
         if (this.isLoggedIn && this.currentUser) {
             // ログイン済み表示
             if (loginForm) loginForm.style.display = 'none';
-            if (userInfo) userInfo.style.display = 'block';
+            if (userInfo) userInfo.style.display = 'grid';
             if (userName) userName.textContent = this.currentUser.name;
             if (userDepartment) userDepartment.textContent = this.currentUser.department_name;
             
