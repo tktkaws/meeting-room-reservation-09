@@ -11,40 +11,10 @@
         <header id="sidebar" class="sidebar">
             <!-- JavaScriptで動的に生成 -->
         </header>
-
-        <!-- <aside class="sidebar">
-            <div class="login-section">
-                <div id="loginForm">
-                    <h3>ログイン</h3>
-                    <form>
-                        <input type="email" id="email" placeholder="メールアドレス" required>
-                        <input type="password" id="password" placeholder="パスワード" required>
-                        <button type="submit">ログイン</button>
-                    </form>
-                </div>
-                <div id="userInfo" style="display: none;">
-                    <h3>ユーザー情報</h3>
-                    <p id="userName"></p>
-                    <p id="userDepartment"></p>
-                    <p id="userRole" style="display: none;"></p>
-                    <div style="margin: 1rem 0;">
-                        <a href="config.html" style="color: #3498db; text-decoration: none;">設定</a>
-                        <span id="adminMenu" style="display: none;">
-                            | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
-                        </span>
-                    </div>
-                    <button id="logoutBtn">ログアウト</button>
-                </div>
-            </div>
-            
-            <div class="color-settings">
-                <h3>カラー設定</h3>
-                <div id="colorSettings"></div>
-            </div>
-            <div id="sidebar-message"></div>
-        </aside> -->
-        
         <main class="department-main">
+            <nav style="margin-bottom: 2rem;">
+                    <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
+                </nav>
             <section class="department-form-section">
                 <h2>全社共通設定</h2>
                 <div class="company-color-section">
@@ -58,7 +28,6 @@
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">保存</button>
-                            <button type="button" id="resetCompanyColorBtn" class="btn">リセット</button>
                         </div>
                     </form>
                 </div>

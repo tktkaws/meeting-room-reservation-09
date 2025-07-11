@@ -138,12 +138,6 @@ class DepartmentManager {
             companyColorForm.addEventListener('submit', (e) => this.handleCompanyColorSubmit(e));
         }
 
-        // 全社カラーリセットボタン
-        const resetCompanyColorBtn = document.getElementById('resetCompanyColorBtn');
-        if (resetCompanyColorBtn) {
-            resetCompanyColorBtn.addEventListener('click', () => this.resetCompanyColor());
-        }
-
         // 削除確認モーダル
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         if (confirmDeleteBtn) {
@@ -498,20 +492,6 @@ class DepartmentManager {
             showErrorMessage(error.message, event.target);
         } finally {
             hideLoading();
-        }
-    }
-
-    // 全社カラーリセット
-    async resetCompanyColor() {
-        const defaultColor = '#3498db';
-        
-        try {
-            await post('api/company-color.php', { color: defaultColor });
-            document.getElementById('companyDefaultColor').value = defaultColor;
-            document.getElementById('companyDefaultColorText').value = defaultColor.toUpperCase();
-            showSuccessMessage('全社カラー設定をリセットしました', document.querySelector('#sidebar-message'));
-        } catch (error) {
-            showErrorMessage(error.message, document.querySelector('#sidebar-message'));
         }
     }
 }

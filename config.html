@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ユーザー設定 - 会議室予約システム</title>
     <link rel="stylesheet" href="src/css/style.css">
 </head>
+
 <body>
     <div class="container">
         <header id="sidebar" class="sidebar">
             <!-- JavaScriptで動的に生成 -->
         </header>
-        
+
         <main class="main-content">
             <div class="config-main">
                 <nav style="margin-bottom: 2rem;">
-                <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
-            </nav>
+                    <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
+                </nav>
                 <section class="user-info-section">
                     <h2>ユーザー情報</h2>
                     <form id="userInfoForm">
@@ -44,39 +46,11 @@
                         <button type="submit" class="btn btn-primary">更新</button>
                     </form>
                 </section>
-                
-                <!-- <section class="password-section">
-                    <h2>パスワード変更</h2>
-                    <form id="passwordForm">
-                        <div class="form-group">
-                            <label for="currentPassword">現在のパスワード</label>
-                            <input type="password" id="currentPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="newPassword">新しいパスワード</label>
-                            <input type="password" id="newPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">新しいパスワード（確認）</label>
-                            <input type="password" id="confirmPassword" required>
-                        </div>
-                        <button type="submit">パスワード変更</button>
-                    </form>
-                </section> -->
-                
-                
-                <!-- <section class="color-section">
-                    <h2>詳細カラー設定</h2>
-                    <div id="departmentColorsConfig">
-                        <p>各部署のデフォルトカラーを個別に設定できます</p>
-                        <div id="departmentColors"></div>
-                    </div>
-                    <button id="saveColorSettings">カラー設定を保存</button>
-                </section> -->
             </div>
         </main>
     </div>
-    
+
     <script type="module" src="src/js/config.js"></script>
 </body>
+
 </html>
