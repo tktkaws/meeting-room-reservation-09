@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(sqlite3:*)",
+      "Bash(php:*)",
+      "Bash(rm:*)",
+      "Bash(rg:*)"
+    ],
+    "deny": []
+  }
+}

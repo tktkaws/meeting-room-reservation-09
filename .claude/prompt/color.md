@@ -1,0 +1,43 @@
+/* 各色の背景色を設定 */
+        .navy { background-color: #1e3a8a; }
+        .royal-blue { background-color: #1e40af; }
+        .forest-green { background-color: #166534; }
+        .emerald { background-color: #059669; }
+        .crimson { background-color: #b91c1c; }
+        .burgundy { background-color: #991b1b; }
+        .dark-purple { background-color: #6b21a8; }
+        .dark-orange { background-color: #c2410c; }
+        .dark-brown { background-color: #92400e; }
+        .charcoal { background-color: #374151; }
+        
+        /* 追加の20色 */
+        .midnight-blue { background-color: #1e293b; }
+        .steel-blue { background-color: #1e40af; }
+        .sapphire { background-color: #1d4ed8; }
+        .cobalt { background-color: #1e3a8a; }
+        .deep-teal { background-color: #115e59; }
+        .pine-green { background-color: #14532d; }
+        .jade { background-color: #047857; }
+        .sea-green { background-color: #065f46; }
+        .olive { background-color: #365314; }
+        .moss-green { background-color: #166534; }
+        .wine-red { background-color: #7c2d12; }
+        .maroon { background-color: #881337; }
+        .brick-red { background-color: #991b1b; }
+        .cherry { background-color: #be123c; }
+        .rose-red { background-color: #be185d; }
+        .plum { background-color: #581c87; }
+        .violet { background-color: #7c3aed; }
+        .indigo { background-color: #4338ca; }
+        .slate { background-color: #334155; }
+        .graphite { background-color: #1f2937; }
+        .coffee { background-color: #78350f; }
+        .chocolate { background-color: #92400e; }
+        .copper { background-color: #c2410c; }
+        .rust { background-color: #dc2626; }
+        .amber-dark { background-color: #d97706; }
+        .golden-brown { background-color: #a16207; }
+        .espresso { background-color: #451a03; }
+        .mahogany { background-color: #7c2d12; }
+        .dark-olive { background-color: #3f6212; }
+        .hunter-green { background-color: #14532d; }
