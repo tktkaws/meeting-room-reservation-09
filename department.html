@@ -8,47 +8,8 @@
 </head>
 <body>
     <div class="container">
-        <header class="sidebar">
-            <h1>
-                <a href="/meeting-room-reservation-09/">会議室予約システム</a>
-            </h1>
-            <div class="login-section">
-                <div id="loginForm">
-                    <h3>ログイン</h3>
-                    <form>
-                        <input type="email" id="email" placeholder="メールアドレス" required>
-                        <input type="password" id="password" placeholder="パスワード" required>
-                        <button type="submit">ログイン</button>
-                    </form>
-                    <p>
-                        admin@company.com
-                        <br>
-                        admin123
-                        <br>
-                        kato@company.com
-                        <br>
-                        password123
-                    </p>
-                </div>
-                <div id="userInfo" style="display: none;">
-                    <!-- <h3>ユーザー情報</h3> -->
-                    <p id="userName"></p>
-                    <p id="userDepartment"></p>
-                    <p id="userRole" style="display: none;"></p>
-                    <div style="margin: 1rem 0;">
-                        <a href="config.html" style="color: #3498db; text-decoration: none;">設定</a>
-                        <span id="adminMenu" style="display: none;">
-                            | <a href="department.html" style="color: #3498db; text-decoration: none;">部署管理</a>
-                        </span>
-                    </div>
-                    <button id="logoutBtn" class="sidebar-btn"><img src="/meeting-room-reservation-09/src/images/logout.svg" alt="" class="material-icon"><span class="sidebar-btn-text">ログアウト</span></button>
-                </div>
-            </div>
-            <div class="color-settings">
-                <h3>カラー設定</h3>
-                <div id="colorSettings"></div>
-            </div>
-            <div id="sidebar-message"></div>
+        <header id="sidebar" class="sidebar">
+            <!-- JavaScriptで動的に生成 -->
         </header>
 
         <!-- <aside class="sidebar">

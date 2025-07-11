@@ -256,68 +256,95 @@ class AuthManager {
 
     // UI更新
     updateUI() {
-        const loginForm = document.getElementById('loginForm');
-        const userInfo = document.getElementById('userInfo');
-        const userName = document.getElementById('userName');
-        const userDepartment = document.getElementById('userDepartment');
-        const userRole = document.getElementById('userRole');
-        const actionButtons = document.getElementById('actionButtons');
-        const colorSettingsSection = document.querySelector('.color-settings');
-        const colorSettings = document.getElementById('colorSettings');
-        const colorInfo = document.getElementById('colorInfo');
+        console.log('Rendering sidebar...');
+        console.log('isLoggedIn:', this.isLoggedIn);
+        console.log('isAdmin:', this.isAdmin);
+        
+        const sidebarHTML = `
+            <h1><a href="/meeting-room-reservation-09/">会議室予約システム</a></h1>
+            
+            ${this.isLoggedIn ? `
+                <div class="sidebar-section login-section">
+                    <div id="userInfo" class="user-info">
+                        <div class="user-info-item">
+                            <img src="/meeting-room-reservation-09/src/images/person.svg" alt="" class="material-icon">
+                            <p id="userName">${this.currentUser.name}</p>
+                        </div>
+                        <div class="user-info-item">
+                            <img src="/meeting-room-reservation-09/src/images/groups.svg" alt="" class="material-icon">
+                            <p id="userDepartment">${this.currentUser.department_name}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section color-settings">
+                    <div id="colorSettings"></div>
+                    <div id="colorInfo"></div>
+                </div>
+                
+                <nav class="sidebar-section nav-section">
+                    <a href="config.html" class="sidebar-btn-link">
+                        <img src="/meeting-room-reservation-09/src/images/settings.svg" alt="" class="material-icon">設定
+                    </a>
+                    ${this.isAdmin ? `
+                        <a id="adminMenu" href="department.html" class="sidebar-btn-link">
+                            <img src="/meeting-room-reservation-09/src/images/groups.svg" alt="" class="material-icon">部署管理
+                        </a>
+                    ` : ''}
+                    <button id="logoutBtn" class="sidebar-btn">
+                        <img src="/meeting-room-reservation-09/src/images/logout.svg" alt="" class="material-icon">
+                        <span class="sidebar-btn-text">ログアウト</span>
+                    </button>
+                </nav>
+            ` : `
+                <div class="sidebar-section login-section">
+                    <div id="loginForm">
+                        <form>
+                            <input type="email" id="email" placeholder="メールアドレス" required>
+                            <input type="password" id="password" placeholder="パスワード" required>
+                            <button type="submit" class="btn btn-primary">ログイン</button>
+                        </form>
+                        <p>
+                            admin@example.com
+                            <br>
+                            takahashi@example.com
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section color-settings">
+                    <div id="colorSettings"></div>
+                    <div id="colorInfo"></div>
+                </div>
+            `}
+            
+            <div id="sidebar-message"></div>
+        `;
 
+        const sidebarElement = document.querySelector('#sidebar');
+        if (sidebarElement) {
+            sidebarElement.innerHTML = sidebarHTML;
+        }
+
+        // UI更新後の処理
         if (this.isLoggedIn && this.currentUser) {
-            // ログイン済み表示
-            if (loginForm) loginForm.style.display = 'none';
-            if (userInfo) userInfo.style.display = 'grid';
-            if (userName) userName.textContent = this.currentUser.name;
-            if (userDepartment) userDepartment.textContent = this.currentUser.department_name;
+            // カラー設定更新
+            this.updateColorSettings();
             
-            // 管理者権限表示
-            if (userRole) {
-                if (this.isAdmin) {
-                    userRole.textContent = '管理者';
-                    userRole.style.display = 'block';
-                    userRole.style.color = '#e74c3c';
-                    userRole.style.fontWeight = 'bold';
-                } else {
-                    userRole.style.display = 'none';
-                }
-            }
-            
+            // アクションボタン表示
+            const actionButtons = document.getElementById('actionButtons');
             if (actionButtons) actionButtons.style.display = 'grid';
-            
-            // ログイン時：colorSettingsを表示、colorInfoを非表示
-            if (colorSettings) {
-                colorSettings.style.display = 'block';
-                this.updateColorSettings();
-            }
-            if (colorInfo) {
-                colorInfo.style.display = 'none';
-            }
         } else {
-            // 未ログイン表示
-            if (loginForm) loginForm.style.display = 'block';
-            if (userInfo) userInfo.style.display = 'none';
-            if (actionButtons) actionButtons.style.display = 'none';
+            // カラー情報更新
+            this.updateColorInfo();
             
-            // 非ログイン時：colorInfoを表示、colorSettingsを非表示
-            if (colorSettings) {
-                colorSettings.style.display = 'none';
-            }
-            if (colorInfo) {
-                colorInfo.style.display = 'block';
-                this.updateColorInfo();
-            }
+            // アクションボタン非表示
+            const actionButtons = document.getElementById('actionButtons');
+            if (actionButtons) actionButtons.style.display = 'none';
         }
         
-        // color-settingsセクションは常に表示
-        if (colorSettingsSection) {
-            colorSettingsSection.style.display = 'block';
-        }
-
-        // 管理者メニュー
-        this.updateAdminMenu();
+        // イベントリスナー再設定
+        this.setupEventListeners();
     }
 
     // 管理者メニュー更新
