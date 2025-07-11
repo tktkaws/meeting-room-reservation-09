@@ -7,6 +7,7 @@ import {
     getLastDayOfWeek,
     getDateString,
     formatDate,
+    formatDateJapanese,
     formatTime,
     createElement,
     clearElement,
@@ -75,6 +76,11 @@ class CalendarManager {
         
         // ナビゲーション表示更新
         this.updateNavigationDisplay();
+        
+        // リストビューの場合、コントロールを設定
+        if (view === 'list') {
+            this.setupListViewControls();
+        }
         
         // カレンダー表示更新
         this.render();
@@ -150,9 +156,9 @@ class CalendarManager {
         
         if (this.currentView === 'list') {
             navigation.style.display = 'none';
-            listControls.style.display = 'flex';
+            listControls.style.display = 'grid';
         } else {
-            navigation.style.display = 'flex';
+            navigation.style.display = 'grid';
             listControls.style.display = 'none';
         }
     }
@@ -169,7 +175,7 @@ class CalendarManager {
             case 'week':
                 const weekStart = getFirstDayOfWeek(this.currentDate);
                 const weekEnd = getLastDayOfWeek(this.currentDate);
-                currentDateElement.textContent = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+                currentDateElement.textContent = `${formatDateJapanese(weekStart)} - ${formatDateJapanese(weekEnd)}`;
                 break;
             case 'list':
                 // リストビューではナビゲーション表示なし
@@ -571,38 +577,63 @@ class CalendarManager {
         const container = document.getElementById('listCalendar');
         clearElement(container);
 
-        // コントロール作成
-        const controls = createElement('div', 'list-controls');
-        
-        const currentBtn = createElement('button', '', '今後の予定');
-        currentBtn.addEventListener('click', () => this.loadCurrentReservations());
-        
-        const pastBtn = createElement('button', '', '過去の予定');
-        pastBtn.addEventListener('click', () => this.loadPastReservations());
-        
-        controls.appendChild(currentBtn);
-        controls.appendChild(pastBtn);
-        container.appendChild(controls);
+        // 予約の表示（フィルタリングなし - 既にloadReservationsで適切にフィルタリング済み）
+        const displayReservations = this.reservations.slice();
+        displayReservations.sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime));
 
-        // 予約リスト作成
-        const listContainer = createElement('div', 'reservation-list');
+        // リストアイテムのHTML生成（Grid形式）
+        const listItemsHtml = displayReservations.map(reservation => {
+            const borderColor = authManager.getReservationColor(reservation);
+            const startTime = formatTime(reservation.start_datetime);
+            const endTime = formatTime(reservation.end_datetime);
+            const dateFormatted = formatDate(reservation.date);
+            
+            return `
+                <li class="reservation-list-item" data-reservation-id="${reservation.id}">
+                    <span class="theme-color-icon" style="background-color: ${borderColor};">■</span>
+                    <div class="reservation-date">
+                        ${dateFormatted}
+                    </div>
+                    <div class="reservation-time">${startTime} - ${endTime}</div>
+                    <div class="reservation-title">${reservation.title}</div>
+                    <div class="reservation-user">${reservation.user_name} (${reservation.department_name})</div>
+                </li>
+            `;
+        }).join('');
+
+        const listHtml = `
+            <div class="reservation-list">
+                <div class="reservation-list-header">
+                    <div class="header-icon"></div>
+                    <div class="header-date">日付</div>
+                    <div class="header-time">時間</div>
+                    <div class="header-title">タイトル</div>
+                    <div class="header-user">予約者</div>
+                </div>
+                <ul class="reservation-list-items">
+                    ${listItemsHtml}
+                </ul>
+            </div>
+        `;
+
+        container.innerHTML = listHtml;
         
-        // 今日以降の予約を表示
-        const futureReservations = this.reservations.filter(r => {
-            const reservationDate = new Date(r.date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return reservationDate >= today;
+        // イベントリスナーを設定
+        this.setupListViewEventListeners();
+    }
+
+    // リストビューのイベントリスナー設定
+    setupListViewEventListeners() {
+        const listItems = document.querySelectorAll('.reservation-list-item');
+        listItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const reservationId = item.dataset.reservationId;
+                const reservation = this.reservations.find(r => r.id == reservationId);
+                if (reservation) {
+                    this.showReservationDetails(reservation);
+                }
+            });
         });
-
-        futureReservations.sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime));
-
-        futureReservations.forEach(reservation => {
-            const item = this.createListItem(reservation);
-            listContainer.appendChild(item);
-        });
-        
-        container.appendChild(listContainer);
     }
 
     // リストアイテム作成
@@ -758,6 +789,36 @@ class CalendarManager {
         }
     }
 
+    // リストビューのコントロール設定
+    setupListViewControls() {
+        const currentBtn = document.querySelector('#current-btn');
+        const pastBtn = document.querySelector('#past-btn');
+        
+        // 初期状態では今後の予定をアクティブに
+        if (currentBtn) {
+            currentBtn.classList.add('active');
+        }
+        if (pastBtn) {
+            pastBtn.classList.remove('active');
+        }
+        
+        if (currentBtn) {
+            currentBtn.addEventListener('click', () => {
+                currentBtn.classList.add('active');
+                pastBtn.classList.remove('active');
+                this.loadCurrentReservations();
+            });
+        }
+        
+        if (pastBtn) {
+            pastBtn.addEventListener('click', () => {
+                pastBtn.classList.add('active');
+                currentBtn.classList.remove('active');
+                this.loadPastReservations();
+            });
+        }
+    }
+
     // ビュー状態を保存
     saveCurrentView() {
         try {
@@ -779,6 +840,14 @@ class CalendarManager {
                 const targetBtn = document.getElementById(`${savedView}View`);
                 if (targetBtn) {
                     targetBtn.classList.add('active');
+                }
+                
+                // コントロール表示を更新
+                this.updateControlsVisibility();
+                
+                // リストビューの場合はコントロール設定
+                if (savedView === 'list') {
+                    this.setupListViewControls();
                 }
             }
         } catch (error) {

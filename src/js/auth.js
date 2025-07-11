@@ -285,7 +285,7 @@ class AuthManager {
                 }
             }
             
-            if (actionButtons) actionButtons.style.display = 'block';
+            if (actionButtons) actionButtons.style.display = 'grid';
             
             // ログイン時：colorSettingsを表示、colorInfoを非表示
             if (colorSettings) {

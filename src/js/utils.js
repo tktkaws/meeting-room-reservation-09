@@ -84,6 +84,11 @@ export function formatDate(date) {
     return new Date(date).toLocaleDateString('ja-JP');
 }
 
+export function formatDateJapanese(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
 export function formatTime(datetime) {
     return new Date(datetime).toLocaleTimeString('ja-JP', {
         hour: '2-digit',

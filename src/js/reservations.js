@@ -98,7 +98,11 @@ class ReservationManager {
             const today = new Date();
             const pastDate = new Date(today.getFullYear(), today.getMonth() - 3, 1); // 3ヶ月前
             
-            const params = `?start_date=${getDateString(pastDate)}&end_date=${getDateString(today)}`;
+            // 今日を含まない過去の予定を取得（todayの前日まで）
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            
+            const params = `?start_date=${getDateString(pastDate)}&end_date=${getDateString(yesterday)}`;
             const response = await get(`api/reservations.php${params}`);
             
             this.reservations = response.reservations;
