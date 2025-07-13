@@ -43,20 +43,7 @@ class CalendarManager {
         // ナビゲーションボタン
         document.getElementById('prevBtnMonth').addEventListener('click', () => this.navigatePrev());
         document.getElementById('nextBtnMonth').addEventListener('click', () => this.navigateNext());
-
-        // サイドバートグル
-        const toggleSidebarBtn = document.getElementById('toggleSidebar');
-        if (toggleSidebarBtn) {
-            toggleSidebarBtn.addEventListener('click', () => this.toggleSidebar());
-        }
     }
-
-    // サイドバートグル
-    toggleSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        sidebar.classList.toggle('active');
-    }
-    
 
     // ビュー変更
     changeView(view) {

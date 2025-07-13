@@ -26,6 +26,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     authManager.onAuthStateChanged = () => {
         reservationManager.loadReservations();
     };
+
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    toggleSidebarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.add('active');
+    });
+
+    mainContent.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    });
     
     // console.log('会議室予約システムが初期化されました');
 });
