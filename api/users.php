@@ -211,6 +211,57 @@ if ($method === 'POST' && $action === 'bulk_delete') {
     }
 }
 
+// プロフィール更新
+if ($method === 'PUT' && $action === 'profile') {
+    if (!isLoggedIn()) {
+        jsonResponse(['error' => 'ログインが必要です'], 401);
+    }
+    
+    $data = getJsonInput();
+    
+    if (!isset($data['name']) || !isset($data['email'])) {
+        jsonResponse(['error' => '名前とメールアドレスは必須です'], 400);
+    }
+    
+    $pdo = getDB();
+    
+    // メールアドレスの重複チェック（自分以外）
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+    $stmt->execute([$data['email'], $_SESSION['user_id']]);
+    if ($stmt->fetch()) {
+        jsonResponse(['error' => 'このメールアドレスは既に使用されています'], 400);
+    }
+    
+    try {
+        $updateFields = ['name = ?', 'email = ?'];
+        $updateValues = [$data['name'], $data['email']];
+        
+        // パスワード変更がある場合
+        if (!empty($data['password'])) {
+            $updateFields[] = 'password = ?';
+            $updateValues[] = hashPassword($data['password']);
+        }
+        
+        // メール通知設定更新
+        if (isset($data['email_notification'])) {
+            $updateFields[] = 'email_notification = ?';
+            $updateValues[] = $data['email_notification'] ? 1 : 0;
+        }
+        
+        $updateFields[] = 'updated_at = CURRENT_TIMESTAMP';
+        $updateValues[] = $_SESSION['user_id'];
+        
+        $sql = "UPDATE users SET " . implode(', ', $updateFields) . " WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($updateValues);
+        
+        jsonResponse(['message' => 'プロフィールを更新しました']);
+        
+    } catch (PDOException $e) {
+        jsonResponse(['error' => 'プロフィールの更新に失敗しました: ' . $e->getMessage()], 500);
+    }
+}
+
 // カラー設定更新
 if ($method === 'PUT' && $action === 'colors') {
     if (!isLoggedIn()) {
