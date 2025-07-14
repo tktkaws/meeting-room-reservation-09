@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'mail_template.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = $_SERVER['REQUEST_URI'];
@@ -131,8 +132,26 @@ if ($method === 'POST') {
         $stmt->execute([$reservation_id]);
         $reservation = $stmt->fetch();
         
-        // メール通知の送信（一時的に無効化）
-        // sendReservationNotification('created', $reservation);
+        // メール通知の送信
+        try {
+            writeEmailDebugLog("新規作成処理 - メール送信開始", "INFO", [
+                'reservation_id' => $reservation_id,
+                'title' => $reservation['title']
+            ]);
+            sendReservationEmailNotification($reservation, 'created');
+            writeEmailDebugLog("新規作成処理 - メール送信処理完了", "INFO", [
+                'reservation_id' => $reservation_id
+            ]);
+        } catch (Exception $e) {
+            writeEmailDebugLog("新規作成メール通知エラー", "ERROR", [
+                'error_message' => $e->getMessage(),
+                'reservation_id' => $reservation_id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            error_log("新規作成メール通知エラー: " . $e->getMessage());
+            // メール送信エラーでも予約作成処理は継続
+        }
         
         jsonResponse([
             'message' => '予約を作成しました',
@@ -254,8 +273,26 @@ if ($method === 'PUT') {
         $stmt->execute([$id]);
         $reservation = $stmt->fetch();
         
-        // メール通知の送信（一時的に無効化）
-        // sendReservationNotification('updated', $reservation);
+        // メール通知の送信
+        try {
+            writeEmailDebugLog("更新処理 - メール送信開始", "INFO", [
+                'reservation_id' => $id,
+                'title' => $reservation['title']
+            ]);
+            sendReservationEmailNotification($reservation, 'updated');
+            writeEmailDebugLog("更新処理 - メール送信処理完了", "INFO", [
+                'reservation_id' => $id
+            ]);
+        } catch (Exception $e) {
+            writeEmailDebugLog("更新メール通知エラー", "ERROR", [
+                'error_message' => $e->getMessage(),
+                'reservation_id' => $id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            error_log("更新メール通知エラー: " . $e->getMessage());
+            // メール送信エラーでも予約更新処理は継続
+        }
         
         jsonResponse([
             'message' => '予約を更新しました',
@@ -318,11 +355,29 @@ if ($method === 'DELETE') {
         $stmt->execute([$id]);
         $reservation = $stmt->fetch();
         
+        // 削除前にメール通知を送信
+        try {
+            writeEmailDebugLog("削除処理 - メール送信開始", "INFO", [
+                'reservation_id' => $id,
+                'title' => $reservation['title']
+            ]);
+            sendReservationEmailNotificationForDeleted($reservation);
+            writeEmailDebugLog("削除処理 - メール送信処理完了", "INFO", [
+                'reservation_id' => $id
+            ]);
+        } catch (Exception $e) {
+            writeEmailDebugLog("削除メール通知エラー", "ERROR", [
+                'error_message' => $e->getMessage(),
+                'reservation_id' => $id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            error_log("削除メール通知エラー: " . $e->getMessage());
+            // メール送信エラーでも削除処理は継続
+        }
+        
         $stmt = $pdo->prepare("DELETE FROM reservations WHERE id = ?");
         $stmt->execute([$id]);
-        
-        // メール通知の送信（一時的に無効化）
-        // sendReservationNotification('deleted', $reservation);
         
         jsonResponse(['message' => '予約を削除しました']);
         
