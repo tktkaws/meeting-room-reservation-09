@@ -419,7 +419,7 @@ class AuthManager {
                        placeholder="#FFFFFF" 
                        class="color-setting-text"
                        style="display: none;">
-                <label class="color-label">全社</label>
+                <label class="color-label">JAMA</label>
                 
             </form>
         `;
@@ -515,7 +515,7 @@ class AuthManager {
     const companyColorHtml = `
             <div class="color-item">
                 <span class="colorInfo-block" style="background-color: ${this.companyDefaultColor};"></span>
-                <label>全社</label>
+                <label>JAMA</label>
             </div>
         `;
 

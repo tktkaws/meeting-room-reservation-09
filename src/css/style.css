@@ -5,6 +5,35 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary-color: #3498db;
+    --primary-hover-color: #2980b9;
+    --danger-color: #e74c3c;
+    --danger-hover-color: #c0392b;
+    --warning-color: #f39c12;
+    --warning-hover-color: #e67e22;
+    --background-color: #F8FAFD;
+    --text-color-main: #2c3e50;
+    --text-color-light: #4A5568;
+    --text-color-muted: #7f8c8d;
+    --white-color: #fff;
+    --border-color: #e2e8f0;
+    --border-color-dark: #bdc3c7;
+    --light-gray-bg: #f8f9fa;
+    --medium-gray-bg: #ecf0f1;
+    --medium-gray-hover-bg: #d5dbdb;
+    --success-bg: #d4edda;
+    --success-bg: #ffffff;
+    --success-text: #155724;
+    --success-border: #c3e6cb;
+    --error-bg: #f8d7da;
+    --error-text: #721c24;
+    --error-border: #f5c6cb;
+
+    --list-view-height: calc(100vh - 120px);
+    --calendar-day-height: calc((var(--list-view-height) - 40px) / 5);
+}
+
 /* ユーザー管理ページのスタイル */
 .user-management-header {
     display: flex;
@@ -18,7 +47,7 @@
 }
 
 .user-table-container {
-    background: white;
+    background: var(--white-color);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -29,7 +58,7 @@
     grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: 1rem;
-    background: #f8f9fa;
+    background: var(--light-gray-bg);
     font-weight: 600;
     border-bottom: 1px solid #e9ecef;
 }
@@ -50,7 +79,7 @@
 }
 
 .user-table-row:hover {
-    background: #f8f9fa;
+    background: var(--light-gray-bg);
 }
 
 .table-cell {
@@ -84,15 +113,12 @@
     color: #6c757d;
 }
 
-:root {
-    --list-view-height: calc(100vh - 120px);
-    --calendar-day-height: calc((var(--list-view-height) - 40px) / 5);
-}
+
 
 body {
     font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    background-color: #F8FAFD;
+    background-color: var(--background-color);
 }
 
 /* コンテナレイアウト */
@@ -133,7 +159,7 @@ body {
     left: -250px;
     width: 250px;
     height: 100vh;
-    background: #F8FAFD;
+    background: var(--background-color);
     color: #333;
     overflow-y: auto;
     transition: left 0.3s ease;
@@ -151,12 +177,12 @@ body {
 }
 
 .sidebar h1 a {
-    color: #4A5568;
+    color: var(--text-color-light);
     text-decoration: none;
 }
 
 .login-section {
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid var(--border-color);
     padding: 1rem;
 }
 
@@ -166,7 +192,7 @@ body {
     padding: 0.5rem 1rem;
     height: 40px;
     margin-bottom: 1rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
     border-radius: 4px;
     font-size: 0.9rem;
 }
@@ -174,8 +200,8 @@ body {
 /* .login-section button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -184,7 +210,7 @@ body {
 }
 
 .login-section button:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-hover-color);
 } */
 
 .user-info {
@@ -201,15 +227,15 @@ body {
     gap: 1rem;
     padding: 0.5rem 1rem;
     padding-left: 0;
-    color: #4A5568;
+    color: var(--text-color-light);
     text-decoration: none;
 }
 
 /* #logoutBtn {
-    background-color: #e74c3c;
+    background-color: var(--danger-color);
     width: 100%;
     padding: 0.5rem;
-    color: white;
+    color: var(--white-color);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -217,11 +243,11 @@ body {
 }
 
 #logoutBtn:hover {
-    background-color: #c0392b;
+    background-color: var(--danger-hover-color);
 } */
 
 .color-settings {
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid var(--border-color);
     padding: 1rem;
     border-radius: 8px;
 }
@@ -232,7 +258,7 @@ body {
     align-items: center;
     justify-content: start;
     padding: 0.5rem 0;
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
     border-radius: 4px;
 }
 
@@ -241,7 +267,7 @@ body {
 }
 .color-item label {
     font-size: 0.9rem;
-    color: #2c3e50;
+    color: var(--text-color-main);
 }
 
 /* カラー入力グループ */
@@ -249,7 +275,7 @@ body {
     display: flex;
     gap: 0.1rem;
     align-items: center;
-    /* border: 1px solid #bdc3c7; */
+    /* border: 1px solid var(--border-color-dark); */
 }
 
 .color-item input[type="color"] {
@@ -269,25 +295,25 @@ body {
     border: none;
     border-radius: 4px;
     text-transform: uppercase;
-    background: #F8FAFD;
+    background: var(--background-color);
     visibility: hidden;
 }
 
 .color-item:hover .color-item input[type="text"] {
     visibility: visible;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
 }
 
 #colorSettings:hover .color-item input[type="text"] {
     visibility: visible;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
 }
 
 .colorInfo-block {
         width: 20px;
     height: 20px;
     border-radius: 3px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color-dark);
     display: inline-block;
     margin-right: 1rem;
 }
@@ -309,7 +335,7 @@ body {
     border: none;
     border-radius: 4px;
     text-transform: uppercase;
-    background: #F8FAFD;
+    background: var(--background-color);
 }
 
 
@@ -325,16 +351,16 @@ body {
 }
 
 #sidebar-message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-border);
     display: block;
 }
 
 #sidebar-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
     display: block;
 }
 
@@ -356,12 +382,12 @@ body {
 }
 
 .btn-primary {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-hover-color);
 }
 
 /* メインコンテンツ */
@@ -410,8 +436,8 @@ body {
 
 .list-controls button {
     padding: 0.5rem 1rem;
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -419,7 +445,7 @@ body {
 }
 
 .list-controls button:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-hover-color);
 } */
 
 /* ビューコントロール */
@@ -434,8 +460,8 @@ body {
 .view-btn {
     padding: 0.75rem 1.5rem;
     padding: 0.5rem 1rem;
-    background-color: #ecf0f1;
-    color: #2c3e50;
+    background-color: var(--medium-gray-bg);
+    color: var(--text-color-main);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -444,17 +470,17 @@ body {
 }
 
 .view-btn:hover {
-    background-color: #d5dbdb;
+    background-color: var(--medium-gray-hover-bg);
 }
 
 .view-btn.active {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .today-btn {
-    border: solid 2px #4A5568;
-    color: #4A5568;
+    border: solid 2px var(--text-color-light);
+    color: var(--text-color-light);
     padding: 0.5rem 1.5rem;
     border-radius: 1.2rem;
     font-size: 0.875rem;
@@ -465,15 +491,15 @@ body {
 
 .today-btn:hover {
     background-color: #667eea;
-    background-color: #3498db;
-    border: solid 2px #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    border: solid 2px var(--primary-color);
+    color: var(--white-color);
 }
 .today-btn:focus-visible {
-    border: solid 2px #3498db;
-    color: white;
-    background-color: #3498db;
-    outline: 2px solid #3498db;
+    border: solid 2px var(--primary-color);
+    color: var(--white-color);
+    background-color: var(--primary-color);
+    outline: 2px solid var(--primary-color);
 }
 
 /* ナビゲーション */
@@ -507,13 +533,13 @@ body {
 #currentDate {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color-main);
     min-width: 200px;
 }
 
 /* カレンダー */
 .calendar-view {
-    background-color: #fff;
+    background-color: var(--white-color);
     border-radius: 8px;
 }
 
@@ -522,7 +548,7 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 20%);
     row-gap: 1px;
-    background-color: #e2e8f0;
+    background-color: var(--border-color);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -538,11 +564,11 @@ body {
     text-align: center;
     font-weight: 600;
     color: #4a5568;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .month-cell {
-    background-color: white;
+    background-color: var(--white-color);
     min-height: 120px;
     min-height: var(--calendar-day-height);
     padding: 0.5rem;
@@ -552,7 +578,7 @@ body {
 }
 
 .month-cell:hover {
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
 }
 
 .month-cell.other-month {
@@ -570,7 +596,7 @@ body {
 }
 
 .month-cell.past:hover {
-    background-color: white;
+    background-color: var(--white-color);
 }
 
 
@@ -599,7 +625,7 @@ body {
     height: 1.5rem;
     border-radius: 50%;
     background: #667eea;
-    background: #3498db;
+    background: var(--primary-color);
 
 }
 
@@ -648,20 +674,20 @@ body {
 /* 週間カレンダー */
 .week-view-container {
     display: flex;
-    /* background-color: #f8f9fa; */
+    /* background-color: var(--light-gray-bg); */
     border-radius: 4px;
     overflow: hidden;
 }
 
 .week-time-axis {
     width: 80px;
-    /* background-color: #ecf0f1; */
+    /* background-color: var(--medium-gray-bg); */
 }
 
 .time-axis-header {
     height: 60px;
     /* background-color: #34495e; */
-    /* border-bottom: 1px solid #bdc3c7; */
+    /* border-bottom: 1px solid var(--border-color-dark); */
 }
 
 .time-label {
@@ -669,9 +695,9 @@ body {
     text-align: right;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #2c3e50;
-    border-right: 1px solid #bdc3c7;
-    /* border-bottom: 1px solid #bdc3c7; */
+    color: var(--text-color-main);
+    border-right: 1px solid var(--border-color-dark);
+    /* border-bottom: 1px solid var(--border-color-dark); */
 }
 
 .time-label span {
@@ -683,7 +709,7 @@ body {
 .day-column {
     flex: 1;
     position: relative;
-    /* border-right: 1px solid #bdc3c7; */
+    /* border-right: 1px solid var(--border-color-dark); */
 }
 
 .day-column:last-child {
@@ -699,23 +725,23 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-align: center;
-    border-bottom: 1px solid #bdc3c7;
+    border-bottom: 1px solid var(--border-color-dark);
 }
 
 .day-header.today {
-    /* background-color: #3498db; */
+    /* background-color: var(--primary-color); */
 }
 
 .time-grid {
     display: grid;
     grid-template-rows: repeat(36, 20px);
     /* 9時間 × 4スロット = 36スロット */
-    border-right: 1px solid #bdc3c7;
+    border-right: 1px solid var(--border-color-dark);
 
 }
 
 .time-slot {
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid var(--medium-gray-bg);
     cursor: pointer;
     transition: background-color 0.2s;
 }
@@ -725,7 +751,7 @@ body {
 }
 
 .time-slot:nth-child(4n) {
-    border-bottom: 1px solid #bdc3c7;
+    border-bottom: 1px solid var(--border-color-dark);
 }
 
 .week-reservation {
@@ -752,20 +778,20 @@ body {
     display: grid;
     grid-template-columns: 80px repeat(7, 1fr);
     gap: 1px;
-    background-color: #bdc3c7;
+    background-color: var(--border-color-dark);
 }
 
 .week-header {
     display: grid;
     grid-template-columns: 80px repeat(7, 1fr);
     gap: 1px;
-    background-color: #bdc3c7;
+    background-color: var(--border-color-dark);
     margin-bottom: 1px;
 }
 
 .week-time-slot {
-    background-color: #34495e;
-    color: white;
+    background-color: var(--text-color-main);
+    color: var(--white-color);
     padding: 0.5rem;
     text-align: center;
     font-size: 0.8rem;
@@ -775,7 +801,7 @@ body {
 }
 
 .week-cell {
-    background-color: white;
+    background-color: var(--white-color);
     min-height: 40px;
     padding: 2px;
     cursor: pointer;
@@ -784,16 +810,16 @@ body {
 }
 
 .week-cell:hover {
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
 }
 
 .week-cell.hour-start {
-    border-top: 2px solid #bdc3c7;
+    border-top: 2px solid var(--border-color-dark);
 }
 
 /* リストビュー */
 .list-view {
-    background-color: white;
+    background-color: var(--white-color);
 }
 
 .list-controls {
@@ -808,8 +834,8 @@ body {
     width: fit-content;
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    background-color: #ecf0f1;
-    color: #2c3e50;
+    background-color: var(--medium-gray-bg);
+    color: var(--text-color-main);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -817,22 +843,22 @@ body {
 }
 
 .list-controls button:hover {
-    background-color: #d5dbdb;
+    background-color: var(--medium-gray-hover-bg);
 }
 
 .list-controls button.active {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .list-controls input[type="date"] {
     padding: 0.5rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
     border-radius: 4px;
 }
 
 .reservation-list {
-    background-color: white;
+    background-color: var(--white-color);
     display: flex;
     flex-direction: column;
     height: calc(100vh - 120px);
@@ -846,8 +872,8 @@ body {
     gap: 1rem;
     padding: 1rem;
     padding-right: calc(1rem + 15px);
-    background-color: #f8f9fa;
-    background-color: white;
+    background-color: var(--light-gray-bg);
+    background-color: var(--white-color);
     border-bottom: 1px solid #dee2e6;
     font-weight: 600;
     color: #495057;
@@ -869,14 +895,14 @@ body {
     grid-template-columns: 10px 10% 12% 1fr 24%;
     gap: 1rem;
     padding: 1rem;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid var(--medium-gray-bg);
     cursor: pointer;
     transition: background-color 0.3s;
     align-items: center;
 }
 
 .reservation-list-item:hover {
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
 }
 
 .reservation-list-item:last-child {
@@ -929,7 +955,7 @@ body {
 .modal-content {
     justify-self: center;
     align-self: center;
-    background-color: white;
+    background-color: var(--white-color);
     padding: 2rem;
     border-radius: 8px;
     width: 500px;
@@ -943,17 +969,17 @@ body {
     top: 1rem;
     font-size: 2rem;
     cursor: pointer;
-    color: #7f8c8d;
+    color: var(--text-color-muted);
     transition: color 0.3s;
 }
 
 .close:hover {
-    color: #2c3e50;
+    color: var(--text-color-main);
 }
 
 .modal h2 {
     margin-bottom: 1.5rem;
-    color: #2c3e50;
+    color: var(--text-color-main);
 }
 
 /* フォーム */
@@ -964,7 +990,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #2c3e50;
+    color: var(--text-color-main);
     font-weight: 600;
 }
 
@@ -973,7 +999,7 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
     border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.3s;
@@ -983,7 +1009,7 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
@@ -1012,7 +1038,7 @@ body {
 
 .time-separator {
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color-main);
     white-space: nowrap;
 }
 
@@ -1033,30 +1059,30 @@ body {
 }
 
 .form-actions button[type="submit"] {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .form-actions button[type="submit"]:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-hover-color);
 }
 
 .form-actions button[type="button"] {
-    background-color: #95a5a6;
-    color: white;
+    background-color: var(--text-color-muted);
+    color: var(--white-color);
 }
 
 .form-actions button[type="button"]:hover {
-    background-color: #7f8c8d;
+    background-color: var(--text-color-muted);
 }
 
 .form-actions button.danger {
-    background-color: #e74c3c;
-    color: white;
+    background-color: var(--danger-color);
+    color: var(--white-color);
 }
 
 .form-actions button.danger:hover {
-    background-color: #c0392b;
+    background-color: var(--danger-hover-color);
 }
 
 /* 設定ページ */
@@ -1067,7 +1093,7 @@ body {
 }
 
 .config-main section {
-    background-color: white;
+    background-color: var(--white-color);
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 8px;
@@ -1075,10 +1101,10 @@ body {
 }
 
 .config-main h2 {
-    color: #2c3e50;
+    color: var(--text-color-main);
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #ecf0f1;
+    border-bottom: 2px solid var(--medium-gray-bg);
 }
 
 
@@ -1098,7 +1124,7 @@ body {
 
 .department-form-section,
 .department-list-section {
-    background-color: white;
+    background-color: var(--white-color);
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 8px;
@@ -1110,10 +1136,10 @@ body {
 } */
 
 .department-main h2 {
-    color: #2c3e50;
+    color: var(--text-color-main);
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #ecf0f1;
+    border-bottom: 2px solid var(--medium-gray-bg);
 }
 
 .table-container {
@@ -1130,17 +1156,17 @@ table th,
 table td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid var(--medium-gray-bg);
 }
 
 table th {
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color-main);
 }
 
 table tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--light-gray-bg);
 }
 
 .color-display {
@@ -1148,7 +1174,7 @@ table tr:hover {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 1px solid #bdc3c7;
+    border: 1px solid var(--border-color-dark);
     margin-right: 0.5rem;
 }
 
@@ -1167,21 +1193,21 @@ table tr:hover {
 }
 
 .edit-btn {
-    background-color: #f39c12;
-    color: white;
+    background-color: var(--warning-color);
+    color: var(--white-color);
 }
 
 .edit-btn:hover {
-    background-color: #e67e22;
+    background-color: var(--warning-hover-color);
 }
 
 .delete-btn {
-    background-color: #e74c3c;
-    color: white;
+    background-color: var(--danger-color);
+    color: var(--white-color);
 }
 
 .delete-btn:hover {
-    background-color: #c0392b;
+    background-color: var(--danger-hover-color);
 }
 
 /* レスポンシブデザイン */
@@ -1273,7 +1299,7 @@ table tr:hover {
 }
 
 .text-muted {
-    color: #7f8c8d;
+    color: var(--text-color-muted);
 }
 
 .mb-1 {
@@ -1298,21 +1324,21 @@ table tr:hover {
 
 /* エラーメッセージ */
 .error-message {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: var(--error-bg);
+    color: var(--error-text);
     padding: 0.75rem;
     border-radius: 4px;
     margin-bottom: 1rem;
-    border: 1px solid #f5c6cb;
+    border: 1px solid var(--error-border);
 }
 
 .success-message {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: var(--success-bg);
+    color: var(--success-text);
     padding: 0.75rem;
     border-radius: 4px;
     margin-bottom: 1rem;
-    border: 1px solid #c3e6cb;
+    border: 1px solid var(--success-border);
 }
 
 /* ローディング */
@@ -1321,7 +1347,7 @@ table tr:hover {
     width: 20px;
     height: 20px;
     border: 2px solid #f3f3f3;
-    border-top: 2px solid #3498db;
+    border-top: 2px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -1344,7 +1370,7 @@ table tr:hover {
     padding-left: 0;
     background: none;
     border: none;
-    color: #4A5568;
+    color: var(--text-color-light);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
@@ -1362,7 +1388,7 @@ table tr:hover {
     padding-left: 0;
     background: none;
     border: none;
-    color: #4A5568;
+    color: var(--text-color-light);
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
@@ -1387,7 +1413,7 @@ table tr:hover {
 .detail-item label {
     font-weight: 600;
     min-width: 100px;
-    color: #555;
+    color: var(--text-color-main);
     margin-right: 1rem;
 }
 
@@ -1420,7 +1446,7 @@ table tr:hover {
 
 .sidebar-section {
     margin-left: 1rem;
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid var(--border-color);
     padding: 1rem;
     padding-left: 0;
 }
