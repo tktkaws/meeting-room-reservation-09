@@ -123,10 +123,6 @@ class UserManagementManager {
             userEditForm.addEventListener('submit', (e) => this.handleUserEditSubmit(e));
         }
 
-        const cancelUserEdit = document.getElementById('cancelUserEdit');
-        if (cancelUserEdit) {
-            cancelUserEdit.addEventListener('click', () => hideModal('userEditModal'));
-        }
 
         // 一括編集モーダル
         const bulkEditForm = document.getElementById('bulkEditForm');
@@ -134,10 +130,6 @@ class UserManagementManager {
             bulkEditForm.addEventListener('submit', (e) => this.handleBulkEditSubmit(e));
         }
 
-        const cancelBulkEdit = document.getElementById('cancelBulkEdit');
-        if (cancelBulkEdit) {
-            cancelBulkEdit.addEventListener('click', () => hideModal('bulkEditModal'));
-        }
 
         // 削除確認モーダル
         const confirmDelete = document.getElementById('confirmDelete');
@@ -145,21 +137,7 @@ class UserManagementManager {
             confirmDelete.addEventListener('click', () => this.handleBulkDelete());
         }
 
-        const cancelDelete = document.getElementById('cancelDelete');
-        if (cancelDelete) {
-            cancelDelete.addEventListener('click', () => hideModal('deleteConfirmModal'));
-        }
 
-        // モーダル閉じるボタン
-        const closeButtons = document.querySelectorAll('.modal .close');
-        closeButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const modal = e.target.closest('.modal');
-                if (modal) {
-                    hideModal(modal.id);
-                }
-            });
-        });
     }
 
     // ユーザーテーブルを作成

@@ -279,9 +279,9 @@ class AuthManager {
 
   // UI更新
   updateUI() {
-    console.log("Rendering sidebar...");
-    console.log("isLoggedIn:", this.isLoggedIn);
-    console.log("isAdmin:", this.isAdmin);
+    // console.log("Rendering sidebar...");
+    // console.log("isLoggedIn:", this.isLoggedIn);
+    // console.log("isAdmin:", this.isAdmin);
 
     const sidebarHTML = `
             <h1><a href="/meeting-room-reservation-09/">会議室予約システム</a></h1>
@@ -359,6 +359,7 @@ class AuthManager {
                            ※ 新規登録はこちら
                         </a>
                 </div>
+                     
             `
             }
             

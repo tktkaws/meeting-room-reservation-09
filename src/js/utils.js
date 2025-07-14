@@ -310,15 +310,15 @@ export function confirm(message) {
 // モーダル操作
 export function showModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'grid';
+    if (modal && modal.tagName === 'DIALOG') {
+        modal.showModal();
     }
 }
 
 export function hideModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
+    if (modal && modal.tagName === 'DIALOG') {
+        modal.close();
     }
 }
 

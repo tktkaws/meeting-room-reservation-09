@@ -45,21 +45,7 @@ class ReservationManager {
             createBtn.addEventListener('click', () => this.showNewReservationModal());
         }
 
-        // モーダルの閉じるボタン
-        const closeBtn = document.querySelector('#reservationModal .close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => hideModal('reservationModal'));
-        }
 
-        // モーダル外クリックで閉じる
-        const modal = document.getElementById('reservationModal');
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    hideModal('reservationModal');
-                }
-            });
-        }
     }
 
     // 予約一覧取得
@@ -391,7 +377,8 @@ class ReservationManager {
         
         const cancelBtn = createElement('button', '', 'キャンセル');
         cancelBtn.type = 'button';
-        cancelBtn.addEventListener('click', () => hideModal('reservationModal'));
+        cancelBtn.setAttribute('commandfor', 'reservationModal');
+        cancelBtn.setAttribute('command', 'close');
         
         actions.appendChild(submitBtn);
         actions.appendChild(cancelBtn);

@@ -59,10 +59,14 @@
     </div>
     
     <!-- 部署モーダル -->
-    <div id="departmentModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modalTitle">新規部署追加</h2>
+    <dialog id="departmentModal" class="modal" closedby="any">
+        <div class="modal-content" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h1 id="modalTitle" class="modal-heading">新規部署追加</h1>
+                <button class="modal-header-close" commandfor="departmentModal" command="close"><img
+                        src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
+            </div>
+
             <form id="departmentForm">
                 <input type="hidden" id="departmentId">
                 <div class="form-group">
@@ -82,25 +86,28 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" id="submitBtn">追加</button>
-                    <button type="button" id="cancelBtn">キャンセル</button>
+                    <button type="button" commandfor="departmentModal" command="close">キャンセル</button>
                 </div>
             </form>
         </div>
-    </div>
+    </dialog>
     
     <!-- 削除確認モーダル -->
-    <div id="deleteModal" class="modal">
+    <dialog id="deleteModal" class="modal" closedby="any" aria-labelledby="modalTitle">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>部署の削除</h2>
+            <div class="modal-header">
+                <h1 id="modalTitle" class="modal-heading">部署の削除</h1>
+                <button class="modal-header-close" commandfor="reservationModal" command="close"><img
+                        src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
+            </div>
             <p>この部署を削除してもよろしいですか？</p>
             <p><strong>注意:</strong> この部署に所属するユーザーがいる場合は削除できません。</p>
             <div class="form-actions">
                 <button id="confirmDeleteBtn" class="danger">削除</button>
-                <button id="cancelDeleteBtn" type="button">キャンセル</button>
+                <button type="button" commandfor="deleteModal" command="close">キャンセル</button>
             </div>
         </div>
-    </div>
+    </dialog>
     
     <script type="module" src="src/js/department.js"></script>
 </body>

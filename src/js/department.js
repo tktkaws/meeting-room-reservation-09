@@ -80,27 +80,8 @@ class DepartmentManager {
             departmentForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
         }
 
-        // キャンセルボタン
-        const cancelBtn = document.getElementById('cancelBtn');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => this.hideModal());
-        }
 
-        // モーダルの閉じるボタン
-        const closeBtn = document.querySelector('#departmentModal .close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => this.hideModal());
-        }
 
-        // モーダル外クリックで閉じる
-        const departmentModal = document.getElementById('departmentModal');
-        if (departmentModal) {
-            departmentModal.addEventListener('click', (e) => {
-                if (e.target === departmentModal) {
-                    this.hideModal();
-                }
-            });
-        }
 
         // カラー入力の連動
         const colorInput = document.getElementById('defaultColor');
@@ -144,26 +125,8 @@ class DepartmentManager {
             confirmDeleteBtn.addEventListener('click', () => this.confirmDelete());
         }
 
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-        if (cancelDeleteBtn) {
-            cancelDeleteBtn.addEventListener('click', () => hideModal('deleteModal'));
-        }
 
-        // 削除モーダルの閉じるボタン
-        const deleteModalCloseBtn = document.querySelector('#deleteModal .close');
-        if (deleteModalCloseBtn) {
-            deleteModalCloseBtn.addEventListener('click', () => hideModal('deleteModal'));
-        }
 
-        // 削除モーダル外クリックで閉じる
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.addEventListener('click', (e) => {
-                if (e.target === deleteModal) {
-                    hideModal('deleteModal');
-                }
-            });
-        }
 
         // ログアウト時のリダイレクト
         authManager.onAuthStateChanged = () => {
