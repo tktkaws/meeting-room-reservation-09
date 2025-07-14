@@ -307,6 +307,7 @@ class ReservationManager {
             
             endHourSelect.value = endHour;
             endMinuteSelect.value = endMinute;
+            
         };
         
         startHourSelect.addEventListener('change', updateEndTime);
@@ -415,6 +416,33 @@ class ReservationManager {
             return;
         }
         
+        // 土日チェック
+        if (!this.validateWeekday(formData.date)) {
+            showErrorMessage('土日の予約はできません', event.target.querySelector('.error-container'));
+            return;
+        }
+        
+        // 重複チェック
+        try {
+            const dateReservations = await this.getReservationsForConflictCheck(formData.date);
+            const excludeId = this.currentEditingReservation ? this.currentEditingReservation.id : null;
+            const hasConflict = this.checkTimeConflict(
+                formData.start_datetime, 
+                formData.end_datetime, 
+                dateReservations, 
+                excludeId
+            );
+            
+            if (hasConflict) {
+                showErrorMessage('指定の時間帯は既に予約されています', event.target.querySelector('.error-container'));
+                return;
+            }
+        } catch (error) {
+            console.error('重複チェックに失敗しました:', error);
+            showErrorMessage('重複チェックに失敗しました', event.target.querySelector('.error-container'));
+            return;
+        }
+        
         const submitBtn = event.target.querySelector('button[type="submit"]');
         const hideLoading = showLoading(submitBtn);
         
@@ -462,7 +490,7 @@ class ReservationManager {
         return data;
     }
 
-    // フォームデータバリデーション
+    // フォームデータバリデーション（送信時の完全チェック）
     validateFormData(data) {
         // 必須項目チェック
         if (!validateRequired(data.title)) {
@@ -498,6 +526,7 @@ class ReservationManager {
         
         return { valid: true };
     }
+
 
     // 予約作成
     async createReservation(data) {
@@ -580,9 +609,57 @@ class ReservationManager {
         return roundedDate;
     }
 
+    // 重複チェック用の予約データ取得（特定の日付の予約を取得）
+    async getReservationsForConflictCheck(date) {
+        try {
+            const dateStr = typeof date === 'string' ? date : this.getDateString(date);
+            const response = await get(`api/reservations.php?start_date=${dateStr}&end_date=${dateStr}`);
+            return response.reservations || [];
+        } catch (error) {
+            console.error('重複チェック用予約データの取得に失敗しました:', error);
+            return [];
+        }
+    }
+
+    // 日付文字列を取得するヘルパー関数
+    getDateString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // 時間重複チェック
+    checkTimeConflict(newStart, newEnd, existingReservations, excludeId = null) {
+        const newStartTime = new Date(newStart);
+        const newEndTime = new Date(newEnd);
+        
+        return existingReservations.some(reservation => {
+            // 編集時は自分の予約を除外
+            if (excludeId && reservation.id == excludeId) {
+                return false;
+            }
+            
+            const existingStart = new Date(reservation.start_datetime);
+            const existingEnd = new Date(reservation.end_datetime);
+            
+            // 重複チェック：新規予約の開始時刻が既存予約の終了時刻より前かつ、
+            // 新規予約の終了時刻が既存予約の開始時刻より後の場合に重複
+            return newStartTime < existingEnd && newEndTime > existingStart;
+        });
+    }
+
+
     // 予約データ取得
     getReservations() {
         return this.reservations;
+    }
+
+    // 土日チェック
+    validateWeekday(dateString) {
+        const date = new Date(dateString);
+        const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
+        return dayOfWeek >= 1 && dayOfWeek <= 5; // 月曜日（1）から金曜日（5）のみ
     }
 
     // 特定の予約取得

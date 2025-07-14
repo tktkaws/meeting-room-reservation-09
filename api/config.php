@@ -198,16 +198,16 @@ function validateWeekday($date) {
 // 予約時間の重複チェック
 function checkReservationConflict($start_datetime, $end_datetime, $exclude_id = null) {
     $pdo = getDB();
+    
+    // 正しい重複検出ロジック：
+    // 新規予約の開始時刻が既存予約の終了時刻より前かつ、
+    // 新規予約の終了時刻が既存予約の開始時刻より後の場合に重複
     $sql = "
         SELECT id FROM reservations 
-        WHERE (
-            (start_datetime < ? AND end_datetime > ?) OR
-            (start_datetime < ? AND end_datetime > ?) OR
-            (start_datetime >= ? AND end_datetime <= ?)
-        )
+        WHERE start_datetime < ? AND end_datetime > ?
     ";
     
-    $params = [$end_datetime, $start_datetime, $start_datetime, $start_datetime, $start_datetime, $end_datetime];
+    $params = [$end_datetime, $start_datetime];
     
     if ($exclude_id) {
         $sql .= " AND id != ?";
