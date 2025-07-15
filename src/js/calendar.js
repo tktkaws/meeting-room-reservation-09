@@ -210,16 +210,16 @@ class CalendarManager {
         clearElement(container);
 
         // ヘッダー作成（土日を除く）
-        const header = createElement('div', 'month-header');
+        const header = createElement('ul', 'month-header');
         const dayNames = ['月', '火', '水', '木', '金'];
         dayNames.forEach(day => {
-            const headerCell = createElement('div', 'month-header-cell', day);
+            const headerCell = createElement('li', 'month-header-cell', day);
             header.appendChild(headerCell);
         });
         container.appendChild(header);
 
         // カレンダーグリッド作成
-        const calendar = createElement('div', 'month-calendar');
+        const calendar = createElement('ul', 'month-calendar');
         
         const firstDay = getFirstDayOfMonth(this.currentDate);
         const lastDay = getLastDayOfMonth(this.currentDate);
@@ -294,20 +294,24 @@ class CalendarManager {
             const timeRange = `${startTime}-${endTime}`;
             
             return `
-                <div class="reservation-item" style="border-color: ${authManager.getReservationColor(reservation)};" data-reservation-id="${reservation.id}">
-                    <div class="reservation-item-time">${timeRange}</div>
-                    <div class="reservation-item-title">${reservation.title}</div>
-                </div>
+                <li class="reservation-item">
+                    <button class="reservation-item-btn" style="border-color: ${authManager.getReservationColor(reservation)};" data-reservation-id="${reservation.id}">
+                        <div class="reservation-item-time">${timeRange}</div>
+                        <div class="reservation-item-title">${reservation.title}</div>
+                    </button>
+                </li>
             `;
         }).join('');
         
         const cellHtml = `
-            <div class="month-cell${otherMonthClass}${todayClass}${pastClass}" data-date="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}">
-                <div class="cell-date"><span>${date.getDate()}</span></div>
-                <div class="cell-reservations">
+            <li class="month-cell${otherMonthClass}${todayClass}${pastClass}">
+                <button class="month-cell-btn" data-date="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}">
+                    <div class="cell-date"><span>${date.getDate()}</span></div>
+                </button>
+                <ul class="cell-reservations">
                     ${reservationsHtml}
-                </div>
-            </div>
+                </ul>
+            </li>
         `;
         
         const tempDiv = document.createElement('div');
@@ -315,10 +319,10 @@ class CalendarManager {
         const cell = tempDiv.firstElementChild;
         
         // 予約クリックイベント
-        cell.querySelectorAll('.reservation-item').forEach(reservationElement => {
-            reservationElement.addEventListener('click', (e) => {
+        cell.querySelectorAll('.reservation-item-btn').forEach(reservationButton => {
+            reservationButton.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const reservationId = reservationElement.dataset.reservationId;
+                const reservationId = reservationButton.dataset.reservationId;
                 const reservation = dayReservations.find(r => r.id == reservationId);
                 if (reservation) {
                     this.showReservationDetails(reservation);
@@ -328,19 +332,22 @@ class CalendarManager {
         
         // セルクリックイベント（今日以降のみ）
         if (cellDate.getTime() >= today.getTime()) {
-            cell.addEventListener('click', () => {
-                if (authManager.getLoginStatus().isLoggedIn) {
-                    // 土日チェック
-                    const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
-                    if (dayOfWeek === 0 || dayOfWeek === 6) {
-                        alert('土日の予約はできません。');
-                        return;
+            const cellButton = cell.querySelector('.month-cell-btn');
+            if (cellButton) {
+                cellButton.addEventListener('click', () => {
+                    if (authManager.getLoginStatus().isLoggedIn) {
+                        // 土日チェック
+                        const dayOfWeek = date.getDay(); // 0=日曜日, 6=土曜日
+                        if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            alert('土日の予約はできません。');
+                            return;
+                        }
+                        // 正確な日付オブジェクトを渡す
+                        const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                        this.showNewReservationModal(clickedDate);
                     }
-                    // 正確な日付オブジェクトを渡す
-                    const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                    this.showNewReservationModal(clickedDate);
-                }
-            });
+                });
+            }
         }
         
         return cell;
