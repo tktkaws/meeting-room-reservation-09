@@ -3,6 +3,7 @@
 import authManager from './auth.js';
 import CalendarManager from './calendar.js';
 import ReservationManager from './reservations.js';
+import { ModalDrag } from './modal-drag.js';
 
 // DOM読み込み完了時の処理
 document.addEventListener('DOMContentLoaded', async () => {

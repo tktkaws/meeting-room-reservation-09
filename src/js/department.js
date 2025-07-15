@@ -17,6 +17,7 @@ import {
     createElement
 } from './utils.js';
 import authManager from './auth.js';
+import { ModalDrag } from './modal-drag.js';
 
 class DepartmentManager {
     constructor() {

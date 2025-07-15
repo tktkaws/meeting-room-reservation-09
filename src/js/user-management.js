@@ -18,6 +18,7 @@ import {
     formatDate
 } from './utils.js';
 import authManager from './auth.js';
+import { ModalDrag } from './modal-drag.js';
 
 class UserManagementManager {
     constructor() {

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>部署管理 - 会議室予約システム</title>
     <link rel="stylesheet" href="src/css/style.css">
 </head>
+
 <body>
     <div class="container">
         <header id="sidebar" class="sidebar">
@@ -13,8 +15,8 @@
         </header>
         <main class="department-main">
             <nav style="margin-bottom: 2rem;">
-                    <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
-                </nav>
+                <a href="index.html" style="color: #3498db; text-decoration: none;">← 予約画面に戻る</a>
+            </nav>
             <section class="department-form-section">
                 <h2>全社共通設定</h2>
                 <div class="company-color-section">
@@ -32,7 +34,7 @@
                     </form>
                 </div>
             </section>
-            
+
             <section class="department-list-section">
                 <h2>部署一覧</h2>
                 <div style="margin-bottom: 1rem;">
@@ -57,49 +59,47 @@
             </section>
         </main>
     </div>
-    
-    <!-- 部署モーダル -->
-    <dialog id="departmentModal" class="modal" closedby="any">
-        <div class="modal-content" aria-labelledby="modalTitle">
-            <div class="modal-header">
-                <h1 id="modalTitle" class="modal-heading">新規部署追加</h1>
-                <button class="modal-header-close" commandfor="departmentModal" command="close"><img
-                        src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
-            </div>
 
-            <form id="departmentForm">
-                <input type="hidden" id="departmentId">
-                <div class="form-group">
-                    <label for="departmentName">部署名</label>
-                    <input type="text" id="departmentName" required>
-                </div>
-                <div class="form-group">
-                    <label for="defaultColor">デフォルトカラー</label>
-                    <div class="color-input-group">
-                        <input type="color" id="defaultColor" value="#718096">
-                        <input type="text" id="defaultColorText" value="#718096" placeholder="#FFFFFF">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="displayOrder">表示順序</label>
-                    <input type="number" id="displayOrder" value="0" min="0">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" id="submitBtn">追加</button>
-                    <button type="button" commandfor="departmentModal" command="close">キャンセル</button>
-                </div>
-            </form>
+    <!-- 部署モーダル -->
+    <dialog id="departmentModal" class="modal" closedby="any" aria-labelledby="modalTitle">
+        <div class="modal-header">
+            <h1 id="modalTitle" class="modal-heading">新規部署追加</h1>
+            <button class="modal-header-close" commandfor="departmentModal" command="close"><img
+                    src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
         </div>
+
+        <form id="departmentForm" class="modal-body">
+            <input type="hidden" id="departmentId">
+            <div class="form-group">
+                <label for="departmentName">部署名</label>
+                <input type="text" id="departmentName" required>
+            </div>
+            <div class="form-group">
+                <label for="defaultColor">デフォルトカラー</label>
+                <div class="color-input-group">
+                    <input type="color" id="defaultColor" value="#718096">
+                    <input type="text" id="defaultColorText" value="#718096" placeholder="#FFFFFF">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="displayOrder">表示順序</label>
+                <input type="number" id="displayOrder" value="0" min="0">
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">追加</button>
+                <button type="button" commandfor="departmentModal" command="close">キャンセル</button>
+            </div>
+        </form>
     </dialog>
-    
+
     <!-- 削除確認モーダル -->
     <dialog id="deleteModal" class="modal" closedby="any" aria-labelledby="modalTitle">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 id="modalTitle" class="modal-heading">部署の削除</h1>
-                <button class="modal-header-close" commandfor="reservationModal" command="close"><img
-                        src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
-            </div>
+        <div class="modal-header">
+            <h1 id="modalTitle" class="modal-heading">部署の削除</h1>
+            <button class="modal-header-close" commandfor="reservationModal" command="close"><img
+                    src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
+        </div>
+        <div class="modal-body">
             <p>この部署を削除してもよろしいですか？</p>
             <p><strong>注意:</strong> この部署に所属するユーザーがいる場合は削除できません。</p>
             <div class="form-actions">
@@ -108,7 +108,8 @@
             </div>
         </div>
     </dialog>
-    
+
     <script type="module" src="src/js/department.js"></script>
 </body>
+
 </html>

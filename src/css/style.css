@@ -7,6 +7,7 @@
 
 :root {
     --primary-color: #3498db;
+    --primary-color: #0031D8;
     --primary-hover-color: #2980b9;
     --danger-color: #e74c3c;
     --danger-hover-color: #c0392b;
@@ -961,7 +962,7 @@ body {
 
 .modal-content {
     background-color: var(--white-color);
-    padding: 2rem;
+    /* padding: 2rem; */
     border-radius: 8px;
     position: relative;
     width: 100%;
@@ -1454,11 +1455,19 @@ table tr:hover {
 }
 
 .modal-header {
+    padding: 2rem;
+    padding-bottom: 0;
     display: grid;
     grid-template-columns: auto auto;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    cursor: grab;
+    user-select: none;
+}
+
+.modal-header:active {
+    cursor: grabbing;
 }
 
 .modal-header-close {
@@ -1485,4 +1494,14 @@ table tr:hover {
 
 .modal-heading {
     font-size: 1.2rem;
+}
+
+#modalContent {
+    padding: 2rem;
+    padding-top: 0;
+}
+
+.modal-body {
+    padding: 2rem;
+    padding-top: 0;
 }
