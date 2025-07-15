@@ -731,26 +731,32 @@ class CalendarManager {
         modalTitle.textContent = '予約詳細';
         
         const content = `
-            <div class="detail-item">
-                <label>タイトル</label>
-                <div>${reservation.title}</div>
-            </div>
-            <div class="detail-item">
-                <label>日付</label>
-                <div>${formatDate(reservation.date)}</div>
-            </div>
-            <div class="detail-item">
-                <label>時間</label>
-                <div>${formatTime(reservation.start_datetime)} - ${formatTime(reservation.end_datetime)}</div>
-            </div>
-            <div class="detail-item">
-                <label>予約者</label>
-                <div>${reservation.user_name} (${reservation.department_name})</div>
-            </div>
-            <div class="detail-item">
-                <label>詳細</label>
-                <div>${reservation.description || 'なし'}</div>
-            </div>
+            <dl class="reservation-details">
+                <div class="detail-row">
+                    <dt>タイトル</dt>
+                    <dd>${reservation.title}</dd>
+                </div>
+                
+                <div class="detail-row">
+                    <dt>日付</dt>
+                    <dd>${formatDate(reservation.date)}</dd>
+                </div>
+                
+                <div class="detail-row">
+                    <dt>時間</dt>
+                    <dd>${formatTime(reservation.start_datetime)} - ${formatTime(reservation.end_datetime)}</dd>
+                </div>
+                
+                <div class="detail-row">
+                    <dt>予約者</dt>
+                    <dd>${reservation.user_name} (${reservation.department_name})</dd>
+                </div>
+                
+                <div class="detail-row">
+                    <dt>詳細</dt>
+                    <dd>${reservation.description || 'なし'}</dd>
+                </div>
+            </dl>
         `;
         
         modalContent.innerHTML = content;

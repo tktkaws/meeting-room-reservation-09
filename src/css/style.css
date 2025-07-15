@@ -37,6 +37,12 @@
     scrollbar-gutter: stable;
 
 }
+body {
+    font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color-main);
+}
 
 /* ユーザー管理ページのスタイル */
 .user-management-header {
@@ -120,11 +126,7 @@
 
 
 
-body {
-    font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    background-color: var(--background-color);
-}
+
 
 /* コンテナレイアウト */
 .container {
@@ -1051,6 +1053,7 @@ body {
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0;
     border: none;
     border-radius: 8px;
@@ -1489,6 +1492,34 @@ table th {
     min-width: 100px;
     color: var(--text-color-main);
     margin-right: 1rem;
+}
+
+.reservation-details {
+    margin: 0;
+    padding: 0;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 0.75rem;
+}
+
+.reservation-details dt {
+    font-weight: 600;
+    min-width: 100px;
+    color: var(--text-color-main);
+    margin: 0;
+    margin-right: 1rem;
+}
+
+.reservation-details dd {
+    margin: 0;
+    flex: 1;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    white-space: normal;
 }
 
 .current-time-line {

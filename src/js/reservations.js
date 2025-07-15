@@ -254,7 +254,7 @@ class ReservationManager {
         // 開始時間
         const startTimeGroup = createElement('div', 'form-group');
         const startTimeLabel = createElement('label', '');
-        startTimeLabel.innerHTML = '開始時刻 <span class="required">*</span>';
+        startTimeLabel.innerHTML = '開始時刻 <span class="required"></span>';
         startTimeLabel.setAttribute('for', 'reservation-start-hour');
         
         const startTimeSelectGroup = createElement('div', 'time-select-group');
@@ -323,7 +323,7 @@ class ReservationManager {
         // 終了時間
         const endTimeGroup = createElement('div', 'form-group');
         const endTimeLabel = createElement('label', '');
-        endTimeLabel.innerHTML = '終了時刻 <span class="required">*</span>';
+        endTimeLabel.innerHTML = '終了時刻 <span class="required"></span>';
         endTimeLabel.setAttribute('for', 'reservation-end-hour');
         
         const endTimeSelectGroup = createElement('div', 'time-select-group');
