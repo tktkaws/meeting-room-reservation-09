@@ -579,14 +579,16 @@ class CalendarManager {
             const dateFormatted = formatDate(reservation.date);
             
             return `
-                <li class="reservation-list-item" data-reservation-id="${reservation.id}">
-                    <span class="theme-color-icon" style="background-color: ${borderColor};">■</span>
-                    <div class="reservation-date">
-                        ${dateFormatted}
-                    </div>
-                    <div class="reservation-time">${startTime} - ${endTime}</div>
-                    <div class="reservation-title">${reservation.title}</div>
-                    <div class="reservation-user">${reservation.user_name} (${reservation.department_name})</div>
+                <li class="reservation-list-item">
+                    <button class="reservation-list-item-btn" data-reservation-id="${reservation.id}">
+                        <span class="theme-color-icon" style="background-color: ${borderColor};">■</span>
+                        <div class="reservation-date">
+                            ${dateFormatted}
+                        </div>
+                        <div class="reservation-time">${startTime} - ${endTime}</div>
+                        <div class="reservation-title">${reservation.title}</div>
+                        <div class="reservation-user">${reservation.user_name} (${reservation.department_name})</div>
+                    </button>
                 </li>
             `;
         }).join('');
@@ -614,10 +616,10 @@ class CalendarManager {
 
     // リストビューのイベントリスナー設定
     setupListViewEventListeners() {
-        const listItems = document.querySelectorAll('.reservation-list-item');
-        listItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const reservationId = item.dataset.reservationId;
+        const listButtons = document.querySelectorAll('.reservation-list-item button');
+        listButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const reservationId = button.dataset.reservationId;
                 const reservation = this.reservations.find(r => r.id == reservationId);
                 if (reservation) {
                     this.showReservationDetails(reservation);

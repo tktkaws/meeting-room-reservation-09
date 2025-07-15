@@ -59,6 +59,7 @@
 .user-table-header {
     display: grid;
     grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
+    grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: 1rem;
     background: var(--light-gray-bg);
@@ -74,16 +75,16 @@
 .user-table-row {
     display: grid;
     grid-template-columns: 50px 1fr 1fr 1fr 120px 100px 120px 100px;
-    grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
+    grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: .5rem;
     border-bottom: 1px solid #e9ecef;
     transition: background-color 0.2s;
 }
 
-.user-table-row:hover {
+/* .user-table-row:hover {
     background: var(--light-gray-bg);
-}
+} */
 
 .table-cell {
     display: flex;
@@ -106,9 +107,9 @@
     transition: background-color 0.2s;
 }
 
-.sortable-header:hover {
+/* .sortable-header:hover {
     background-color: #e9ecef;
-}
+} */
 
 .sort-indicator {
     margin-left: 0.5rem;
@@ -388,9 +389,9 @@ body {
     color: var(--white-color);
 }
 
-.btn-primary:hover {
+/* .btn-primary:hover {
     background-color: var(--primary-hover-color);
-}
+} */
 
 /* メインコンテンツ */
 .main-content {
@@ -471,9 +472,9 @@ body {
     transition: all 0.3s;
 }
 
-.view-btn:hover {
+/* .view-btn:hover {
     background-color: var(--medium-gray-hover-bg);
-}
+} */
 
 .view-btn.active {
     background-color: var(--primary-color);
@@ -491,12 +492,12 @@ body {
     font-weight: 600;
 }
 
-.today-btn:hover {
+/* .today-btn:hover {
     background-color: #667eea;
     background-color: var(--primary-color);
     border: solid 2px var(--primary-color);
     color: var(--white-color);
-}
+} */
 
 .today-btn:focus-visible {
     border: solid 2px var(--primary-color);
@@ -670,9 +671,9 @@ body {
     border-left: 4px solid #d3dae4;
 }
 
-.reservation-item:hover {
+/* .reservation-item:hover {
     opacity: 0.8;
-}
+} */
 
 /* 週間カレンダー */
 .week-view-container {
@@ -750,7 +751,7 @@ body {
 }
 
 .time-slot:hover {
-    background-color: #e8f4fd;
+    background-color: var(--light-gray-bg);
 }
 
 .time-slot:nth-child(4n) {
@@ -803,7 +804,7 @@ body {
     justify-content: center;
 }
 
-.week-cell {
+/* .week-cell {
     background-color: var(--white-color);
     min-height: 40px;
     padding: 2px;
@@ -818,7 +819,7 @@ body {
 
 .week-cell.hour-start {
     border-top: 2px solid var(--border-color-dark);
-}
+} */
 
 /* リストビュー */
 .list-view {
@@ -845,9 +846,9 @@ body {
     transition: background-color 0.3s;
 }
 
-.list-controls button:hover {
+/* .list-controls button:hover {
     background-color: var(--medium-gray-hover-bg);
-}
+} */
 
 .list-controls button.active {
     background-color: var(--primary-color);
@@ -894,14 +895,31 @@ body {
 }
 
 .reservation-list-item {
-    display: grid;
+    /* display: grid;
     grid-template-columns: 10px 10% 12% 1fr 24%;
     gap: 1rem;
     padding: 1rem;
     border-bottom: 1px solid var(--medium-gray-bg);
     cursor: pointer;
     transition: background-color 0.3s;
+    align-items: center; */
+}
+
+.reservation-list-item-btn {
+    width: 100%;
+    border: none;
+    background: none;
+    color: inherit;
+    display: grid;
+    grid-template-columns: 10px 10% 12% 1fr 24%;
+    gap: 1rem;
+    padding: 1rem;
+    /* border-bottom: 1px solid var(--medium-gray-bg); */
+    cursor: pointer;
+    transition: background-color 0.3s;
     align-items: center;
+    font-size: 1rem;
+    text-align: left;
 }
 
 .reservation-list-item:hover {
@@ -978,12 +996,6 @@ body {
     color: var(--text-color-muted);
     transition: color 0.3s;
 }
-
-.close:hover {
-    color: var(--text-color-main);
-}
-
-
 
 /* フォーム */
 .form-group {
@@ -1066,26 +1078,14 @@ body {
     color: var(--white-color);
 }
 
-.form-actions button[type="submit"]:hover {
-    background-color: var(--primary-hover-color);
-}
-
 .form-actions button[type="button"] {
     background-color: var(--text-color-muted);
     color: var(--white-color);
 }
 
-.form-actions button[type="button"]:hover {
-    background-color: var(--text-color-muted);
-}
-
 .form-actions button.danger {
     background-color: var(--danger-color);
     color: var(--white-color);
-}
-
-.form-actions button.danger:hover {
-    background-color: var(--danger-hover-color);
 }
 
 /* 設定ページ */
@@ -1168,10 +1168,6 @@ table th {
     color: var(--text-color-main);
 }
 
-table tr:hover {
-    background-color: var(--light-gray-bg);
-}
-
 .color-display {
     display: inline-block;
     width: 20px;
@@ -1200,17 +1196,9 @@ table tr:hover {
     color: var(--white-color);
 }
 
-.edit-btn:hover {
-    background-color: var(--warning-hover-color);
-}
-
 .delete-btn {
     background-color: var(--danger-color);
     color: var(--white-color);
-}
-
-.delete-btn:hover {
-    background-color: var(--danger-hover-color);
 }
 
 /* レスポンシブデザイン */
