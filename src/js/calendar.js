@@ -29,6 +29,9 @@ class CalendarManager {
         this.loadSavedView();
         this.setupEventListeners();
         this.updateNavigationDisplay();
+        
+        // リサイズイベントリスナーを追加
+        window.addEventListener('resize', () => this.handleResize());
     }
 
     setupEventListeners() {
@@ -357,6 +360,9 @@ class CalendarManager {
     renderWeekView() {
         const container = document.getElementById('weekCalendar');
         clearElement(container);
+        
+        // 動的な time-slot の高さを計算
+        this.calculateAndSetTimeSlotHeight();
 
         // 時間軸の作成
         const timeLabelsHtml = Array.from({length: 9}, (_, i) => `
@@ -392,7 +398,10 @@ class CalendarManager {
             
             return `
                 <div class="day-column" data-date="${getDateString(date)}">
-                    <div class="day-header${todayClass}">${dayNames[i]}<br>${date.getDate()}</div>
+                    <div class="day-header${todayClass}">
+                        <div class="day-header-week"><span>${dayNames[i]}</span></div>
+                        <div class="day-header-date"><span>${date.getDate()}</span></div>
+                    </div>
                     <div class="day-body" style="position: relative;">
                         <ul class="week-reservation-list">
                         </ul>
@@ -418,6 +427,9 @@ class CalendarManager {
         
         // 予約を配置
         this.renderAllWeekReservations();
+        
+        // 初回描画後に予約位置を更新
+        setTimeout(() => this.updateWeekReservationsPositions(), 0);
         
         // 現在時刻ラインを追加
         this.addCurrentTimeLineToWeekView();
@@ -465,13 +477,11 @@ class CalendarManager {
         return new Date(utc + jstOffset);
     }
 
-    // 週間ビューのセル高さを取得
+    // 週間ビューのセル高さを取得（最適化版）
     getWeekTimeHeaderHeight() {
-        const timeSlot = document.querySelector('.time-slot');
-        if (timeSlot) {
-            return timeSlot.offsetHeight;
-        }
-        return 20; // デフォルト値
+        // CSS変数から直接取得（パフォーマンス向上）
+        const timeSlotHeight = parseInt(document.documentElement.style.getPropertyValue('--time-slot-height') || '20');
+        return timeSlotHeight;
     }
 
     // 現在時刻ラインを作成
@@ -562,7 +572,8 @@ class CalendarManager {
             reservationButton.style.color = getContrastColor(backgroundColor, departmentName);
             
             // li要素に絶対配置で位置を設定（9時基準でtop: 0pxから開始）
-            const slotHeight = 20; // 各スロットの高さ（px）
+            // --time-slot-heightから動的に高さを取得
+            const slotHeight = parseInt(document.documentElement.style.getPropertyValue('--time-slot-height') || '20');
             
             reservationElement.style.position = 'absolute';
             reservationElement.style.top = `${startSlot * slotHeight}px`;
@@ -576,6 +587,10 @@ class CalendarManager {
                 e.stopPropagation();
                 this.showReservationDetails(reservation);
             });
+            
+            // データ属性を設定（後の更新処理で使用）
+            reservationButton.dataset.startTime = `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`;
+            reservationButton.dataset.endTime = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
             
             // ボタンをli要素に追加
             reservationElement.appendChild(reservationButton);
@@ -961,6 +976,74 @@ class CalendarManager {
         } catch (error) {
             console.error('ビュー状態の読み込みに失敗しました:', error);
         }
+    }
+
+    // time-slot の高さを動的に計算・設定
+    calculateAndSetTimeSlotHeight() {
+        const viewportHeight = window.innerHeight;
+        const contentHeaderHeight = 80; // 5rem = 80px
+        const dayHeaderHeight = 60; // 60px
+        const availableHeight = viewportHeight - contentHeaderHeight - dayHeaderHeight;
+        const slotCount = 36; // 9時-18時の15分刻み
+        
+        // 最低20pxを保証
+        const calculatedHeight = Math.max(20, Math.floor(availableHeight / slotCount));
+        
+        // CSS変数として設定
+        document.documentElement.style.setProperty('--time-slot-height', `${calculatedHeight}px`);
+        
+        return calculatedHeight;
+    }
+    
+    // リサイズ時の処理
+    handleResize() {
+        if (this.currentView === 'week') {
+            this.calculateAndSetTimeSlotHeight();
+            this.updateWeekReservationsPositions();
+        }
+    }
+    
+    // 週間ビューの予約位置を更新
+    updateWeekReservationsPositions() {
+        const timeSlotHeight = parseInt(document.documentElement.style.getPropertyValue('--time-slot-height') || '20');
+        // console.log('Updating week reservations positions with slot height:', timeSlotHeight);
+        
+        // week-reservation要素の更新
+        const reservationElements = document.querySelectorAll('.week-reservation');
+        reservationElements.forEach(element => {
+            const button = element.querySelector('.week-reservation-btn');
+            if (button) {
+                const startTime = button.dataset.startTime;
+                const endTime = button.dataset.endTime;
+                
+                if (startTime && endTime) {
+                    const position = this.calculateReservationPosition(startTime, endTime, timeSlotHeight);
+                    element.style.top = `${position.top}px`;
+                    element.style.height = `${position.height - 2}px`; // -2pxで元の処理と一致
+                    element.style.position = 'absolute';
+                    element.style.left = '2px';
+                    element.style.right = '2px';
+                    element.style.zIndex = '10';
+                    // console.log('Updated reservation element:', startTime, endTime, 'top:', position.top, 'height:', position.height - 2);
+                }
+            }
+        });
+    }
+    
+    // 予約の位置計算
+    calculateReservationPosition(startTime, endTime, slotHeight) {
+        const startHour = parseInt(startTime.split(':')[0]);
+        const startMinute = parseInt(startTime.split(':')[1]);
+        const endHour = parseInt(endTime.split(':')[0]);
+        const endMinute = parseInt(endTime.split(':')[1]);
+        
+        const startSlot = (startHour - 9) * 4 + Math.floor(startMinute / 15);
+        const endSlot = (endHour - 9) * 4 + Math.floor(endMinute / 15);
+        
+        return {
+            top: startSlot * slotHeight,
+            height: (endSlot - startSlot) * slotHeight
+        };
     }
 }
 
