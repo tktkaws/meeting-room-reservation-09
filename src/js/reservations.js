@@ -63,7 +63,7 @@ class ReservationManager {
                 const weekEnd = this.getLastDayOfWeek(this.calendarManager.currentDate);
                 params = `?start_date=${getDateString(weekStart)}&end_date=${getDateString(weekEnd)}`;
             } else {
-                params = '?view_type=list';
+                params = '?view_type=list&current=true';
             }
             
             const response = await get(`api/reservations.php${params}`);
@@ -89,6 +89,27 @@ class ReservationManager {
             yesterday.setDate(today.getDate() - 1);
             
             const params = `?start_date=${getDateString(pastDate)}&end_date=${getDateString(yesterday)}`;
+            const response = await get(`api/reservations.php${params}`);
+            
+            this.reservations = response.reservations;
+            this.calendarManager.setReservations(this.reservations);
+            
+        } catch (error) {
+            console.error('過去の予約の取得に失敗しました:', error);
+            showErrorMessage('過去の予約の取得に失敗しました', document.querySelector('#sidebar-message'));
+        }
+    }
+
+    // 範囲指定での過去の予約取得
+    async loadPastReservationsWithRange(startYear, startMonth, endYear, endMonth) {
+        try {
+            // 開始日（指定月の1日）
+            const startDate = new Date(startYear, startMonth - 1, 1);
+            
+            // 終了日（指定月の最終日）
+            const endDate = new Date(endYear, endMonth, 0);
+            
+            const params = `?start_date=${getDateString(startDate)}&end_date=${getDateString(endDate)}`;
             const response = await get(`api/reservations.php${params}`);
             
             this.reservations = response.reservations;

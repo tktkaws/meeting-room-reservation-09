@@ -42,6 +42,13 @@
                 <div class="list-controls" style="display: none;">
                     <button id="past-btn">過去の予約</button>
                     <button id="current-btn">今後の予約</button>
+                    <form class="past-range-form" style="display: none;">
+                            <select id="start-year" class="past-range-form-select"></select>
+                            <select id="start-month" class="past-range-form-select"></select>
+                            <span>～</span>
+                            <select id="end-year" class="past-range-form-select"></select>
+                            <select id="end-month" class="past-range-form-select"></select>
+                    </form>
                 </div>
                 <div class="action-buttons" id="actionButtons" style="display: none;">
                     <button id="createReservationBtn" class="btn btn-primary" commandfor="reservationModal"

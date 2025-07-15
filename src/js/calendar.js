@@ -783,6 +783,8 @@ class CalendarManager {
     setupListViewControls() {
         const currentBtn = document.querySelector('#current-btn');
         const pastBtn = document.querySelector('#past-btn');
+        const pastRangeForm = document.querySelector('.past-range-form');
+        const applyRangeBtn = document.querySelector('#apply-range-btn');
         
         // 初期状態では今後の予定をアクティブに
         if (currentBtn) {
@@ -792,10 +794,14 @@ class CalendarManager {
             pastBtn.classList.remove('active');
         }
         
+        // 日付フォームの初期化
+        this.initializeDateForm();
+        
         if (currentBtn) {
             currentBtn.addEventListener('click', () => {
                 currentBtn.classList.add('active');
                 pastBtn.classList.remove('active');
+                pastRangeForm.style.display = 'none';
                 this.loadCurrentReservations();
             });
         }
@@ -804,8 +810,78 @@ class CalendarManager {
             pastBtn.addEventListener('click', () => {
                 pastBtn.classList.add('active');
                 currentBtn.classList.remove('active');
+                pastRangeForm.style.display = 'block';
                 this.loadPastReservations();
             });
+        }
+        
+        // セレクトボックスの変更イベントを監視
+        const selects = ['start-year', 'start-month', 'end-year', 'end-month'];
+        selects.forEach(selectId => {
+            const selectElement = document.getElementById(selectId);
+            if (selectElement) {
+                selectElement.addEventListener('change', () => {
+                    this.loadPastReservationsWithRange();
+                });
+            }
+        });
+    }
+
+    // 日付フォームの初期化
+    initializeDateForm() {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        
+        // 直近3ヶ月前の開始日を計算
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
+        const startYear = startDate.getFullYear();
+        const startMonth = startDate.getMonth() + 1;
+        
+        // 年のオプションを生成（過去3年分）
+        const startYearSelect = document.getElementById('start-year');
+        const endYearSelect = document.getElementById('end-year');
+        
+        for (let year = currentYear - 2; year <= currentYear; year++) {
+            const option1 = new Option(year + '年', year);
+            const option2 = new Option(year + '年', year);
+            startYearSelect.add(option1);
+            endYearSelect.add(option2);
+        }
+        
+        // 月のオプションを生成
+        const startMonthSelect = document.getElementById('start-month');
+        const endMonthSelect = document.getElementById('end-month');
+        
+        for (let month = 1; month <= 12; month++) {
+            const option1 = new Option(month + '月', month);
+            const option2 = new Option(month + '月', month);
+            startMonthSelect.add(option1);
+            endMonthSelect.add(option2);
+        }
+        
+        // 初期値を設定（直近3ヶ月）
+        startYearSelect.value = startYear;
+        startMonthSelect.value = startMonth;
+        endYearSelect.value = currentYear;
+        endMonthSelect.value = currentMonth;
+    }
+
+    // 範囲指定での過去の予約読み込み
+    loadPastReservationsWithRange() {
+        const startYear = document.getElementById('start-year').value;
+        const startMonth = document.getElementById('start-month').value;
+        const endYear = document.getElementById('end-year').value;
+        const endMonth = document.getElementById('end-month').value;
+        
+        if (window.reservationManager) {
+            window.reservationManager.loadPastReservationsWithRange(
+                parseInt(startYear),
+                parseInt(startMonth),
+                parseInt(endYear),
+                parseInt(endMonth)
+            );
         }
     }
 
