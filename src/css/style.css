@@ -1287,10 +1287,34 @@ table th {
     color: var(--white-color);
 }
 
+/* オーバーレイ */
+.overlay {
+    display: none;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 1200px) {
     .hamburger-btn {
         display: flex;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 1400;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+        display: block;
     }
 
     .sidebar {

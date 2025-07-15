@@ -30,16 +30,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
     const mainContent = document.querySelector('.main-content');
 
     toggleSidebarBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         sidebar.classList.add('active');
+        overlay.classList.add('active');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
     });
 
     mainContent.addEventListener('click', () => {
         if (sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
+            overlay.classList.remove('active');
         }
     });
     
