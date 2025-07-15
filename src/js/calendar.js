@@ -378,14 +378,20 @@ class CalendarManager {
             const timeSlotsHtml = Array.from({length: 36}, (_, slotIndex) => {
                 const hour = Math.floor(slotIndex / 4) + 9;
                 const minute = (slotIndex % 4) * 15;
-                return `<div class="time-slot" data-hour="${hour}" data-minute="${minute}"></div>`;
+                return `<li class="time-slot">
+                    <button class="time-slot-btn" data-hour="${hour}" data-minute="${minute}"></button>
+                </li>`;
             }).join('');
             
             return `
                 <div class="day-column" data-date="${getDateString(date)}">
                     <div class="day-header${todayClass}">${dayNames[i]}<br>${date.getDate()}</div>
-                    <div class="time-grid" style="position: relative;">
-                        ${timeSlotsHtml}
+                    <div class="day-body" style="position: relative;">
+                        <ul class="week-reservation-list">
+                        </ul>
+                        <ul class="time-grid">
+                            ${timeSlotsHtml}
+                        </ul>
                     </div>
                 </div>
             `;
@@ -412,13 +418,13 @@ class CalendarManager {
 
     // 週間ビューのイベントリスナー設定
     setupWeekViewEventListeners() {
-        const timeSlots = document.querySelectorAll('.time-slot');
-        timeSlots.forEach(slot => {
-            slot.addEventListener('click', () => {
+        const timeSlotButtons = document.querySelectorAll('.time-slot-btn');
+        timeSlotButtons.forEach(button => {
+            button.addEventListener('click', () => {
                 if (authManager.getLoginStatus().isLoggedIn) {
-                    const hour = parseInt(slot.dataset.hour);
-                    const minute = parseInt(slot.dataset.minute);
-                    const dayColumn = slot.closest('.day-column');
+                    const hour = parseInt(button.dataset.hour);
+                    const minute = parseInt(button.dataset.minute);
+                    const dayColumn = button.closest('.day-column');
                     const dateString = dayColumn.dataset.date;
                     
                     const [year, month, day] = dateString.split('-').map(Number);
@@ -437,7 +443,7 @@ class CalendarManager {
             const dateString = dayColumn.dataset.date;
             const [year, month, day] = dateString.split('-').map(Number);
             const date = new Date(year, month - 1, day);
-            const timeGrid = dayColumn.querySelector('.time-grid');
+            const timeGrid = dayColumn.querySelector('.day-body');
             
             this.renderDayReservations(timeGrid, date);
         });
@@ -501,7 +507,7 @@ class CalendarManager {
         const dayColumns = document.querySelectorAll('.day-column');
         dayColumns.forEach(dayColumn => {
             if (dayColumn.dataset.date === todayString) {
-                const timeGrid = dayColumn.querySelector('.time-grid');
+                const timeGrid = dayColumn.querySelector('.day-body');
                 if (timeGrid) {
                     timeGrid.insertAdjacentHTML('beforeend', currentTimeLineHtml);
                 }
@@ -514,6 +520,17 @@ class CalendarManager {
         const dateString = getDateString(date);
         const dayReservations = this.getReservationsForDate(date);
         
+        // 開始時間の早い順にソート
+        dayReservations.sort((a, b) => {
+            const timeA = new Date(a.start_datetime);
+            const timeB = new Date(b.start_datetime);
+            return timeA - timeB;
+        });
+        
+        // week-reservation-listを取得
+        const weekReservationList = timeGrid.querySelector('.week-reservation-list');
+        if (!weekReservationList) return;
+        
         dayReservations.forEach(reservation => {
             const startTime = new Date(reservation.start_datetime);
             const endTime = new Date(reservation.end_datetime);
@@ -522,15 +539,22 @@ class CalendarManager {
             const startSlot = this.getTimeSlotIndex(startTime);
             const endSlot = this.getTimeSlotIndex(endTime);
             
-            // 予約要素を作成
-            const reservationElement = createElement('div', 'week-reservation');
-            reservationElement.textContent = reservation.title;
+            // 予約要素を作成（li要素として）
+            const reservationElement = createElement('li', 'week-reservation');
+            
+            // ボタン要素を作成
+            const reservationButton = createElement('button', 'week-reservation-btn');
+            
+            // span要素でテキストを囲む
+            const titleSpan = createElement('span');
+            titleSpan.textContent = reservation.title;
+            reservationButton.appendChild(titleSpan);
             const backgroundColor = authManager.getReservationColor(reservation);
             const departmentName = reservation.department_name || reservation.user_department_name || '部署不明';
-            reservationElement.style.backgroundColor = backgroundColor;
-            reservationElement.style.color = getContrastColor(backgroundColor, departmentName);
+            reservationButton.style.backgroundColor = backgroundColor;
+            reservationButton.style.color = getContrastColor(backgroundColor, departmentName);
             
-            // 絶対配置で位置を設定（9時基準でtop: 0pxから開始）
+            // li要素に絶対配置で位置を設定（9時基準でtop: 0pxから開始）
             const slotHeight = 20; // 各スロットの高さ（px）
             
             reservationElement.style.position = 'absolute';
@@ -540,13 +564,16 @@ class CalendarManager {
             reservationElement.style.right = '2px';
             reservationElement.style.zIndex = '10';
             
-            // クリックイベント
-            reservationElement.addEventListener('click', (e) => {
+            // クリックイベントをボタンに設定
+            reservationButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.showReservationDetails(reservation);
             });
             
-            timeGrid.appendChild(reservationElement);
+            // ボタンをli要素に追加
+            reservationElement.appendChild(reservationButton);
+            
+            weekReservationList.appendChild(reservationElement);
         });
     }
     
