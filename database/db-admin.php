@@ -44,6 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
                 
+            case 'setup_company_settings':
+                $result = setupCompanySettings();
+                if ($result['success']) {
+                    $message = $result['message'];
+                } else {
+                    $error = $result['message'];
+                }
+                break;
+                
         }
     }
 }
@@ -299,6 +308,46 @@ function importNewReserveFromCsv($pdo, $csvFile) {
     return $message;
 }
 
+// Company Settings セットアップ
+function setupCompanySettings() {
+    try {
+        $pdo = getDB();
+        
+        // company_settingsテーブルを作成
+        $createTableSQL = "
+        CREATE TABLE IF NOT EXISTS company_settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            setting_key TEXT UNIQUE NOT NULL,
+            setting_value TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )";
+        
+        $pdo->exec($createTableSQL);
+        
+        // 既存のdefault_colorをチェック
+        $checkSQL = "SELECT COUNT(*) FROM company_settings WHERE setting_key = 'default_color'";
+        $stmt = $pdo->prepare($checkSQL);
+        $stmt->execute();
+        $exists = $stmt->fetchColumn();
+        
+        if ($exists == 0) {
+            // default_colorを挿入
+            $insertSQL = "INSERT INTO company_settings (setting_key, setting_value) VALUES (?, ?)";
+            $stmt = $pdo->prepare($insertSQL);
+            $stmt->execute(['default_color', '#374151']);
+            $message = '✅ company_settingsテーブルを作成し、default_color: #374151を挿入しました。';
+        } else {
+            $message = '⚠️ company_settingsテーブルは既に存在し、default_colorも設定済みです。';
+        }
+        
+        return ['success' => true, 'message' => $message];
+        
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => 'Company Settings セットアップエラー: ' . $e->getMessage()];
+    }
+}
+
 
 // データベース状態取得
 function getDatabaseStatus() {
@@ -360,6 +409,10 @@ function getTableData() {
             ORDER BY r.id DESC LIMIT 50
         ");
         $data['reservations'] = $stmt->fetchAll();
+        
+        // Company Settings データ
+        $stmt = $pdo->query("SELECT * FROM company_settings ORDER BY id ASC");
+        $data['company_settings'] = $stmt->fetchAll();
         
         return ['success' => true, 'data' => $data];
     } catch (Exception $e) {
@@ -692,9 +745,60 @@ $tableData = getTableData();
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Company Settings データ -->
+                <h3>Company Settings データ</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Setting Key</th>
+                                <th>Setting Value</th>
+                                <th>Preview</th>
+                                <th>作成日時</th>
+                                <th>更新日時</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (isset($tableData['data']['company_settings'])): ?>
+                                <?php foreach ($tableData['data']['company_settings'] as $setting): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($setting['id']); ?></td>
+                                        <td><?php echo htmlspecialchars($setting['setting_key']); ?></td>
+                                        <td><?php echo htmlspecialchars($setting['setting_value']); ?></td>
+                                        <td>
+                                            <?php if ($setting['setting_key'] === 'default_color'): ?>
+                                                <div style="background-color: <?php echo htmlspecialchars($setting['setting_value']); ?>; width: 50px; height: 30px; border: 1px solid #ccc; border-radius: 4px;"></div>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($setting['created_at']); ?></td>
+                                        <td><?php echo htmlspecialchars($setting['updated_at']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #999;">company_settingsテーブルが存在しません</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         <?php endif; ?>
         
+        <!-- Company Settings セットアップ -->
+        <div class="section">
+            <h2>Company Settings セットアップ</h2>
+            <p>company_settingsテーブルを作成し、default_color: #374151を挿入します。</p>
+            <form method="post" style="display: inline;">
+                <input type="hidden" name="action" value="setup_company_settings">
+                <button type="submit" class="btn">Company Settings セットアップ</button>
+            </form>
+        </div>
+
         <!-- データベース初期化 -->
         <div class="section">
             <h2>データベース初期化</h2>

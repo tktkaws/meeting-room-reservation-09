@@ -6,19 +6,18 @@ $method = $_SERVER['REQUEST_METHOD'];
 // 全社カラー設定取得
 if ($method === 'GET') {
     try {
-        $settingsFile = __DIR__ . '/../database/company_settings.json';
+        $pdo = getDB();
         
-        if (file_exists($settingsFile)) {
-            $settings = json_decode(file_get_contents($settingsFile), true);
-            $color = $settings['default_color'] ?? '#718096';
-        } else {
-            $color = '#718096';
-        }
+        $stmt = $pdo->prepare("SELECT setting_value FROM company_settings WHERE setting_key = 'default_color'");
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        
+        $color = $result ?: '#718096';
         
         jsonResponse(['color' => $color]);
         
     } catch (Exception $e) {
-        jsonResponse(['error' => 'File error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
     }
 }
 
@@ -37,22 +36,33 @@ if ($method === 'POST') {
     $color = $data['color'];
     
     try {
-        $settingsFile = __DIR__ . '/../database/company_settings.json';
+        $pdo = getDB();
         
-        // 既存の設定を読み込む
-        $settings = [];
-        if (file_exists($settingsFile)) {
-            $settings = json_decode(file_get_contents($settingsFile), true) ?? [];
+        // company_settingsテーブルが存在するかチェック
+        $stmt = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='company_settings'");
+        if (!$stmt->fetchColumn()) {
+            // テーブルが存在しない場合は作成
+            $createTableSQL = "
+            CREATE TABLE company_settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                setting_key TEXT UNIQUE NOT NULL,
+                setting_value TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )";
+            $pdo->exec($createTableSQL);
         }
         
-        // 新しい設定を追加
-        $settings['default_color'] = $color;
-        $settings['updated_at'] = date('c');
-        
-        // JSONファイルに保存
-        if (file_put_contents($settingsFile, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
-            throw new Exception('Failed to save settings file');
-        }
+        // default_colorの更新または挿入
+        $stmt = $pdo->prepare("
+            INSERT INTO company_settings (setting_key, setting_value) 
+            VALUES ('default_color', ?)
+            ON CONFLICT(setting_key) 
+            DO UPDATE SET 
+                setting_value = excluded.setting_value,
+                updated_at = CURRENT_TIMESTAMP
+        ");
+        $stmt->execute([$color]);
         
         jsonResponse([
             'message' => 'Company color saved successfully',
@@ -60,7 +70,7 @@ if ($method === 'POST') {
         ]);
         
     } catch (Exception $e) {
-        jsonResponse(['error' => 'File error: ' . $e->getMessage()], 500);
+        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
     }
 }
 
