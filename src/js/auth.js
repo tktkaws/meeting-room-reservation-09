@@ -349,9 +349,9 @@ class AuthManager {
                     <div id="loginForm">
                         
                         <p>
-                            admin@example.com
+                            mail: admin@example.com
                             <br>
-                            takahashi@example.com
+                            pass: admin@example.com
                         </p>
                     </div>
                     <a id="adminMenu" href="signup.html" class="sidebar-btn-link">

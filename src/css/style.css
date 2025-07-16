@@ -7,7 +7,6 @@
 }
 
 :root {
-    --primary-color: #3498db;
     --primary-color: #0031D8;
     --primary-hover-color: #2980b9;
     --danger-color: #e74c3c;
@@ -30,6 +29,21 @@
     --error-bg: #f8d7da;
     --error-text: #721c24;
     --error-border: #f5c6cb;
+    
+    --border-light-gray: #e9ecef;
+    --text-color-secondary: #6c757d;
+    --sidebar-text-color: #333;
+    --today-accent-color: #667eea;
+    --reservation-border-color: #d3dae4;
+    --current-time-color: #e53e3e;
+    --loading-border-color: #f3f3f3;
+    --header-text-color: #495057;
+    --list-border-color: #dee2e6;
+    
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-medium: rgba(0, 0, 0, 0.2);
+    --shadow-dark: rgba(0, 0, 0, 0.3);
+    --overlay-color: rgba(0, 0, 0, 0.4);
 
     --list-view-height: calc(100vh - 120px);
     --calendar-day-height: calc((var(--list-view-height) - 40px) / 5);
@@ -60,7 +74,7 @@ body {
 .user-table-container {
     background: var(--white-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-light);
     overflow: hidden;
 }
 
@@ -70,7 +84,7 @@ body {
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-light-gray);
 }
 
 .user-table-body {
@@ -83,7 +97,7 @@ body {
     grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: .5rem;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-light-gray);
     transition: background-color 0.2s;
 }
 
@@ -110,13 +124,13 @@ body {
 }
 
 /* .sortable-header:hover {
-    background-color: #e9ecef;
+    background-color: var(--border-light-gray);
 } */
 
 .sort-indicator {
     margin-left: 0.5rem;
     font-size: 0.75rem;
-    color: #6c757d;
+    color: var(--text-color-secondary);
 }
 
 
@@ -130,13 +144,12 @@ body {
     grid-auto-flow: column;
     min-height: 100vh;
     margin: 0 auto;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px var(--shadow-light);
 }
 
 @media screen and (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr;
-        /* grid-template-columns: 250px 1fr; */
     }
 
     .sidebar {
@@ -146,7 +159,7 @@ body {
         height: 100vh;
         z-index: 1500;
         transition: left 0.3s ease;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 15px var(--shadow-medium);
     }
 
     .sidebar.active {
@@ -162,7 +175,7 @@ body {
     width: 250px;
     height: 100vh;
     background: var(--background-color);
-    color: #333;
+    color: var(--sidebar-text-color);
     overflow-y: auto;
     transition: left 0.3s ease;
     z-index: 1000;
@@ -422,7 +435,7 @@ body {
 .hamburger-btn .bar {
     width: 25px;
     height: 3px;
-    background-color: #2c3e50;
+    background-color: var(--text-color-main);
     margin: 3px 0;
     transition: 0.3s;
 }
@@ -490,7 +503,7 @@ body {
 }
 
 /* .today-btn:hover {
-    background-color: #667eea;
+    background-color: var(--today-accent-color);
     background-color: var(--primary-color);
     border: solid 2px var(--primary-color);
     color: var(--white-color);
@@ -565,7 +578,7 @@ body {
     padding: 0.5rem;
     text-align: center;
     font-weight: 600;
-    color: #4a5568;
+    color: var(--text-color-light);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -636,14 +649,14 @@ body {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    background: #667eea;
+    background: var(--today-accent-color);
     background: var(--primary-color);
 
 }
 
 .month-cell.today .cell-date span {
     grid-area: 1 / 1;
-    color: #FFF;
+    color: var(--white-color);
     transform: translateY(0.2em) translateX(-0.1em);
 }
 
@@ -681,7 +694,7 @@ body {
     gap: 0.5rem;
     position: relative;
     line-height: 1;
-    border-left: 4px solid #d3dae4; */
+    border-left: 4px solid var(--reservation-border-color); */
     overflow: hidden;
 
 }
@@ -711,7 +724,7 @@ body {
     gap: 0.5rem;
     position: relative;
     line-height: 1;
-    border-left: 4px solid #d3dae4;
+    border-left: 4px solid var(--reservation-border-color);
 
 }
 
@@ -791,13 +804,13 @@ body {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    background: #667eea;
+    background: var(--today-accent-color);
     background: var(--primary-color);
 }
 
 .day-header.today .day-header-date span {
     grid-area: 1 / 1;
-    color: #FFF;
+    color: var(--white-color);
     transform: translateX(-0.05em);
 }
 
@@ -808,7 +821,6 @@ body {
 
 .time-slot {
     height: var(--time-slot-height, 20px);
-    border-bottom: 1px solid var(--medium-gray-bg);
     cursor: pointer;
     transition: background-color 0.2s;
 }
@@ -836,7 +848,7 @@ body {
 .week-reservation-btn {
     width: 100%;
     height: 100%;
-    color: #FFF;
+    color: var(--white-color);
     border-radius: 4px;
     padding: 2px 4px;
     padding-top: 0;
@@ -845,7 +857,7 @@ body {
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.3);
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px var(--shadow-medium);
     display: grid;
     justify-content: start;
     align-items: start;
@@ -960,9 +972,9 @@ body {
     padding-right: calc(1rem + 15px);
     background-color: var(--light-gray-bg);
     background-color: var(--white-color);
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--list-border-color);
     font-weight: 600;
-    color: #495057;
+    color: var(--header-text-color);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -1034,11 +1046,11 @@ body {
     padding: 0;
     border: none;
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px var(--shadow-dark);
 }
 
 .modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--overlay-color);
 }
 
 .modal-content {
@@ -1165,7 +1177,7 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .config-main h2 {
@@ -1195,7 +1207,7 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 /* .company-color-section {
@@ -1282,7 +1294,7 @@ table th {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: var(--overlay-color);
         z-index: 1400;
         opacity: 0;
         visibility: hidden;
@@ -1425,7 +1437,7 @@ table th {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 2px solid #f3f3f3;
+    border: 2px solid var(--loading-border-color);
     border-top: 2px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -1529,7 +1541,7 @@ table th {
     left: 0;
     right: 0;
     height: 2px;
-    background: #e53e3e;
+    background: var(--current-time-color);
     z-index: 20;
     pointer-events: none;
     opacity: 0.6;
@@ -1541,7 +1553,7 @@ table th {
     top: -4px;
     width: 8px;
     height: 8px;
-    background: #e53e3e;
+    background: var(--current-time-color);
     border-radius: 50%;
     z-index: 20;
 }
