@@ -6,22 +6,15 @@ import {
     put, 
     del,
     getDateString,
-    getDateTimeString,
-    formatDate,
-    formatTime,
     validateRequired,
     validateLength,
     validateReservationTime,
-    adjustToBusinessHours,
-    roundToQuarter,
     showErrorMessage,
     showSuccessMessage,
     showLoading,
     showModal,
     hideModal,
-    confirm,
     createElement,
-    clearElement,
     sendReservationEmail
 } from './utils.js';
 import authManager from './auth.js';
@@ -219,84 +212,106 @@ class ReservationManager {
 
     // 予約フォーム作成
     createReservationForm(data) {
-        const form = createElement('form');
-        
-        // エラーメッセージ表示エリア
-        const errorContainer = createElement('div', 'error-container');
-        form.appendChild(errorContainer);
-        
-        // タイトル
-        const titleGroup = createElement('div', 'form-group');
-        const titleLabel = createElement('label', '', 'タイトル');
-        titleLabel.setAttribute('for', 'reservationTitle');
-        const titleInput = createElement('input');
-        titleInput.type = 'text';
-        titleInput.id = 'reservationTitle';
-        titleInput.value = data.title;
-        titleInput.required = true;
-        titleInput.maxLength = 50;
-        titleGroup.appendChild(titleLabel);
-        titleGroup.appendChild(titleInput);
-        form.appendChild(titleGroup);
-        
-        // 日付
-        const dateGroup = createElement('div', 'form-group');
-        const dateLabel = createElement('label', '', '日付');
-        dateLabel.setAttribute('for', 'reservationDate');
-        const dateInput = createElement('input');
-        dateInput.type = 'date';
-        dateInput.id = 'reservationDate';
-        dateInput.value = data.date;
-        dateInput.required = true;
-        dateGroup.appendChild(dateLabel);
-        dateGroup.appendChild(dateInput);
-        form.appendChild(dateGroup);
-        
-        // 開始時間
-        const startTimeGroup = createElement('div', 'form-group');
-        const startTimeLabel = createElement('label', '');
-        startTimeLabel.innerHTML = '開始時刻 <span class="required"></span>';
-        startTimeLabel.setAttribute('for', 'reservation-start-hour');
-        
-        const startTimeSelectGroup = createElement('div', 'time-select-group');
-        
-        // 開始時間（時）
-        const startHourSelect = createElement('select');
-        startHourSelect.id = 'reservation-start-hour';
-        startHourSelect.name = 'start_hour';
-        startHourSelect.required = true;
-        for (let hour = 9; hour <= 17; hour++) {
-            const option = createElement('option', '', hour);
-            option.value = hour;
-            if (hour == data.start_hour) option.selected = true;
-            startHourSelect.appendChild(option);
-        }
-        
-        const hourSeparator = createElement('span', 'time-separator', '時');
-        
-        // 開始時間（分）
-        const startMinuteSelect = createElement('select');
-        startMinuteSelect.id = 'reservation-start-minute';
-        startMinuteSelect.name = 'start_minute';
-        startMinuteSelect.required = true;
-        [0, 15, 30, 45].forEach(minute => {
-            const option = createElement('option', '', minute.toString().padStart(2, '0'));
-            option.value = minute;
-            if (minute == data.start_minute) option.selected = true;
-            startMinuteSelect.appendChild(option);
+        // 開始時間オプションの生成
+        const startHourOptions = Array.from({length: 9}, (_, i) => {
+            const hour = i + 9;
+            const selected = hour == data.start_hour ? 'selected' : '';
+            return `<option value="${hour}" ${selected}>${hour}</option>`;
+        }).join('');
+
+        // 終了時間オプションの生成  
+        const endHourOptions = Array.from({length: 10}, (_, i) => {
+            const hour = i + 9;
+            const selected = hour == data.end_hour ? 'selected' : '';
+            return `<option value="${hour}" ${selected}>${hour}</option>`;
+        }).join('');
+
+        // 分オプションの生成
+        const minuteOptions = [0, 15, 30, 45].map(minute => {
+            const startSelected = minute == data.start_minute ? 'selected' : '';
+            const endSelected = minute == data.end_minute ? 'selected' : '';
+            const minuteStr = minute.toString().padStart(2, '0');
+            return {
+                start: `<option value="${minute}" ${startSelected}>${minuteStr}</option>`,
+                end: `<option value="${minute}" ${endSelected}>${minuteStr}</option>`
+            };
         });
-        
-        const minuteSeparator = createElement('span', 'time-separator', '分');
-        
-        startTimeSelectGroup.appendChild(startHourSelect);
-        startTimeSelectGroup.appendChild(hourSeparator);
-        startTimeSelectGroup.appendChild(startMinuteSelect);
-        startTimeSelectGroup.appendChild(minuteSeparator);
-        
-        startTimeGroup.appendChild(startTimeLabel);
-        startTimeGroup.appendChild(startTimeSelectGroup);
-        form.appendChild(startTimeGroup);
-        
+
+        const startMinuteOptions = minuteOptions.map(opt => opt.start).join('');
+        const endMinuteOptions = minuteOptions.map(opt => opt.end).join('');
+
+        const formHtml = `
+            <form>
+                <div class="error-container"></div>
+                
+                <div class="form-group">
+                    <label for="reservationTitle">タイトル</label>
+                    <input type="text" id="reservationTitle" value="${data.title}" required maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="reservationDate">日付</label>
+                    <input type="date" id="reservationDate" value="${data.date}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reservation-start-hour">開始時刻 <span class="required"></span></label>
+                    <div class="time-select-group">
+                        <select id="reservation-start-hour" name="start_hour" required>
+                            ${startHourOptions}
+                        </select>
+                        <span class="time-separator">時</span>
+                        <select id="reservation-start-minute" name="start_minute" required>
+                            ${startMinuteOptions}
+                        </select>
+                        <span class="time-separator">分</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reservation-end-hour">終了時刻 <span class="required"></span></label>
+                    <div class="time-select-group">
+                        <select id="reservation-end-hour" name="end_hour" required>
+                            ${endHourOptions}
+                        </select>
+                        <span class="time-separator">時</span>
+                        <select id="reservation-end-minute" name="end_minute" required>
+                            ${endMinuteOptions}
+                        </select>
+                        <span class="time-separator">分</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reservationDescription">詳細</label>
+                    <textarea id="reservationDescription" maxlength="300" placeholder="会議の詳細を入力してください（任意）">${data.description}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="reservationCompanyWide" ${data.is_company_wide ? 'checked' : ''}>
+                        全社共通の予約
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit">${this.currentEditingReservation ? '更新' : '作成'}</button>
+                    <button type="button" commandfor="reservationModal" command="close">キャンセル</button>
+                </div>
+            </form>
+        `;
+
+        // DOM要素として作成
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = formHtml;
+        const form = tempDiv.firstElementChild;
+
+        // イベントリスナーの設定
+        const startHourSelect = form.querySelector('#reservation-start-hour');
+        const startMinuteSelect = form.querySelector('#reservation-start-minute');
+        const endHourSelect = form.querySelector('#reservation-end-hour');
+        const endMinuteSelect = form.querySelector('#reservation-end-minute');
+
         // 開始時刻変更時の終了時刻自動設定
         const updateEndTime = () => {
             const startHour = parseInt(startHourSelect.value);
@@ -315,96 +330,10 @@ class ReservationManager {
             
             endHourSelect.value = endHour;
             endMinuteSelect.value = endMinute;
-            
         };
         
         startHourSelect.addEventListener('change', updateEndTime);
         startMinuteSelect.addEventListener('change', updateEndTime);
-        
-        // 終了時間
-        const endTimeGroup = createElement('div', 'form-group');
-        const endTimeLabel = createElement('label', '');
-        endTimeLabel.innerHTML = '終了時刻 <span class="required"></span>';
-        endTimeLabel.setAttribute('for', 'reservation-end-hour');
-        
-        const endTimeSelectGroup = createElement('div', 'time-select-group');
-        
-        // 終了時間（時）
-        const endHourSelect = createElement('select');
-        endHourSelect.id = 'reservation-end-hour';
-        endHourSelect.name = 'end_hour';
-        endHourSelect.required = true;
-        for (let hour = 9; hour <= 18; hour++) {
-            const option = createElement('option', '', hour);
-            option.value = hour;
-            if (hour == data.end_hour) option.selected = true;
-            endHourSelect.appendChild(option);
-        }
-        
-        const endHourSeparator = createElement('span', 'time-separator', '時');
-        
-        // 終了時間（分）
-        const endMinuteSelect = createElement('select');
-        endMinuteSelect.id = 'reservation-end-minute';
-        endMinuteSelect.name = 'end_minute';
-        endMinuteSelect.required = true;
-        [0, 15, 30, 45].forEach(minute => {
-            const option = createElement('option', '', minute.toString().padStart(2, '0'));
-            option.value = minute;
-            if (minute == data.end_minute) option.selected = true;
-            endMinuteSelect.appendChild(option);
-        });
-        
-        const endMinuteSeparator = createElement('span', 'time-separator', '分');
-        
-        endTimeSelectGroup.appendChild(endHourSelect);
-        endTimeSelectGroup.appendChild(endHourSeparator);
-        endTimeSelectGroup.appendChild(endMinuteSelect);
-        endTimeSelectGroup.appendChild(endMinuteSeparator);
-        
-        endTimeGroup.appendChild(endTimeLabel);
-        endTimeGroup.appendChild(endTimeSelectGroup);
-        form.appendChild(endTimeGroup);
-        
-        // 詳細
-        const descriptionGroup = createElement('div', 'form-group');
-        const descriptionLabel = createElement('label', '', '詳細');
-        descriptionLabel.setAttribute('for', 'reservationDescription');
-        const descriptionInput = createElement('textarea');
-        descriptionInput.id = 'reservationDescription';
-        descriptionInput.value = data.description;
-        descriptionInput.maxLength = 300;
-        descriptionInput.placeholder = '会議の詳細を入力してください（任意）';
-        descriptionGroup.appendChild(descriptionLabel);
-        descriptionGroup.appendChild(descriptionInput);
-        form.appendChild(descriptionGroup);
-        
-        // 全社共通フラグ
-        const companyWideGroup = createElement('div', 'form-group');
-        const companyWideLabel = createElement('label');
-        const companyWideInput = createElement('input');
-        companyWideInput.type = 'checkbox';
-        companyWideInput.id = 'reservationCompanyWide';
-        companyWideInput.checked = data.is_company_wide;
-        companyWideLabel.appendChild(companyWideInput);
-        companyWideLabel.appendChild(document.createTextNode('全社共通の予約'));
-        companyWideGroup.appendChild(companyWideLabel);
-        form.appendChild(companyWideGroup);
-        
-        // ボタン
-        const actions = createElement('div', 'form-actions');
-        
-        const submitBtn = createElement('button', '', this.currentEditingReservation ? '更新' : '作成');
-        submitBtn.type = 'submit';
-        
-        const cancelBtn = createElement('button', '', 'キャンセル');
-        cancelBtn.type = 'button';
-        cancelBtn.setAttribute('commandfor', 'reservationModal');
-        cancelBtn.setAttribute('command', 'close');
-        
-        actions.appendChild(submitBtn);
-        actions.appendChild(cancelBtn);
-        form.appendChild(actions);
         
         // フォーム送信イベント
         form.addEventListener('submit', (e) => this.handleFormSubmit(e));

@@ -18,7 +18,6 @@ class AuthManager {
     this.userColorSettings = {};
     this.companyDefaultColor = "#3498db";
     this.initialized = false;
-    this.init();
   }
 
   async init() {
@@ -570,12 +569,6 @@ class AuthManager {
 
   // 予約カラー取得（全社かどうかも考慮）
   getReservationColor(reservation) {
-    // console.log('予約カラー取得:', {
-    //     reservation: reservation,
-    //     user_department_id: reservation.user_department_id,
-    //     department_id: reservation.department_id,
-    //     is_company_wide: reservation.is_company_wide
-    // });
 
     // 全社の場合
     if (reservation.is_company_wide) {
@@ -705,12 +698,12 @@ class AuthManager {
 // グローバルインスタンス作成（シングルトンパターン）
 let authManagerInstance = null;
 
-function getAuthManager() {
+function createAuthManager() {
   if (!authManagerInstance) {
     authManagerInstance = new AuthManager();
   }
   return authManagerInstance;
 }
 
-// エクスポート
-export default getAuthManager();
+// エクスポート（シングルトンインスタンス）
+export default createAuthManager();

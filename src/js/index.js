@@ -107,57 +107,6 @@ if (window.calendarManager) {
     };
 }
 
-// 通知権限の取得
-async function requestNotificationPermission() {
-    if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            console.log('通知権限が許可されました');
-        }
-    }
-}
-
-// 5分前通知（実装例）
-function scheduleNotification(reservation) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-        const startTime = new Date(reservation.start_datetime);
-        const notificationTime = new Date(startTime.getTime() - 5 * 60 * 1000); // 5分前
-        const now = new Date();
-        
-        if (notificationTime > now) {
-            const timeout = notificationTime.getTime() - now.getTime();
-            setTimeout(() => {
-                new Notification(`予約開始5分前です`, {
-                    body: `${reservation.title}\n${reservation.start_datetime}`,
-                    icon: '/favicon.ico'
-                });
-            }, timeout);
-        }
-    }
-}
-
-// ページ可視性API（タブが非アクティブになったときの処理）
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        // タブが非アクティブになった
-        console.log('タブが非アクティブになりました');
-    } else {
-        // タブがアクティブになった
-        console.log('タブがアクティブになりました');
-        // データを再読み込み
-        if (window.reservationManager) {
-            window.reservationManager.loadReservations();
-        }
-    }
-});
-
-// 定期的なデータ更新（5分間隔）
-setInterval(() => {
-    if (!document.hidden && window.reservationManager) {
-        window.reservationManager.loadReservations();
-    }
-}, 5 * 60 * 1000);
-
 // デバッグ用の関数をグローバルに追加
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     window.debug = {

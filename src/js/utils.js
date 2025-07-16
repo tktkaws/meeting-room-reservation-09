@@ -311,7 +311,7 @@ export function confirm(message) {
 export function showModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal && modal.tagName === 'DIALOG') {
-        modal.showModal();
+            modal.showModal();
     }
 }
 

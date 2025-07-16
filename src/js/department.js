@@ -479,43 +479,4 @@ window.addEventListener('unhandledrejection', (event) => {
     showErrorMessage('通信エラーが発生しました', document.body);
 });
 
-// ページを離れる前の確認（無効化）
-// window.addEventListener('beforeunload', (event) => {
-//     // フォームが編集中の場合は確認
-//     const form = document.getElementById('departmentForm');
-//     if (form && document.getElementById('cancelBtn').style.display !== 'none') {
-//         event.preventDefault();
-//         event.returnValue = '編集中の内容が失われます。本当にページを離れますか？';
-//     }
-// });
-
-// キーボードショートカット
-document.addEventListener('keydown', (event) => {
-    // Ctrl+N: 新規追加
-    if (event.ctrlKey && event.key === 'n') {
-        event.preventDefault();
-        const departmentName = document.getElementById('departmentName');
-        if (departmentName) {
-            departmentName.focus();
-        }
-    }
-    
-    // Esc: 編集キャンセル
-    if (event.key === 'Escape') {
-        const cancelBtn = document.getElementById('cancelBtn');
-        if (cancelBtn && cancelBtn.style.display !== 'none') {
-            const departmentManager = window.departmentManager;
-            if (departmentManager) {
-                departmentManager.resetForm();
-            }
-        }
-        
-        // モーダルを閉じる
-        const modal = document.getElementById('deleteModal');
-        if (modal && modal.style.display === 'block') {
-            hideModal('deleteModal');
-        }
-    }
-});
-
 export default DepartmentManager;

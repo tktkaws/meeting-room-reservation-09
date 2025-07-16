@@ -412,30 +412,4 @@ window.addEventListener('unhandledrejection', (event) => {
     showErrorMessage('通信エラーが発生しました', document.body);
 });
 
-// ページを離れる前の確認（無効化）
-// window.addEventListener('beforeunload', (event) => {
-//     // フォームが変更されている場合は確認
-//     const forms = document.querySelectorAll('form');
-//     for (const form of forms) {
-//         if (form.checkValidity && form.checkValidity() === false) {
-//             event.preventDefault();
-//             event.returnValue = '変更が保存されていません。本当にページを離れますか？';
-//             break;
-//         }
-//     }
-// });
-
-// キーボードショートカット
-document.addEventListener('keydown', (event) => {
-    // Ctrl+S: 設定保存
-    if (event.ctrlKey && event.key === 's') {
-        event.preventDefault();
-        const activeElement = document.activeElement;
-        const form = activeElement.closest('form');
-        if (form) {
-            form.requestSubmit();
-        }
-    }
-});
-
 export default ConfigManager;

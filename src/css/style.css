@@ -536,6 +536,7 @@ body {
     font-weight: 600;
     color: var(--text-color-main);
     min-width: 200px;
+    line-height: 1;
 }
 
 /* カレンダー */
@@ -1080,6 +1081,9 @@ body {
     border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.3s;
+    /* -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none; */
 }
 
 .form-group input:focus,

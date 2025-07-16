@@ -712,14 +712,6 @@ class CalendarManager {
         const dateString = getDateString(date);
         const filtered = this.reservations.filter(r => r.date === dateString);
         
-        // デバッグ用ログ（一時的）
-        // if (filtered.length > 0) {
-        //     console.log('予約マッチング:', {
-        //         cellDate: dateString,
-        //         reservations: filtered.map(r => ({ title: r.title, date: r.date }))
-        //     });
-        // }
-        
         return filtered;
     }
 
@@ -1024,7 +1016,6 @@ class CalendarManager {
                     element.style.left = '2px';
                     element.style.right = '2px';
                     element.style.zIndex = '10';
-                    // console.log('Updated reservation element:', startTime, endTime, 'top:', position.top, 'height:', position.height - 2);
                 }
             }
         });
