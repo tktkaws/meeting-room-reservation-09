@@ -21,7 +21,8 @@ import {
     hideModal,
     confirm,
     createElement,
-    clearElement
+    clearElement,
+    sendReservationEmail
 } from './utils.js';
 import authManager from './auth.js';
 
@@ -541,6 +542,12 @@ class ReservationManager {
         console.log('送信データ:', data); // デバッグ用
         const response = await post('api/reservations.php', data);
         showSuccessMessage('予約を作成しました', document.querySelector('#sidebar-message'));
+        
+        // 成功後にメール送信
+        if (response.reservation) {
+            sendReservationEmail(response.reservation, 'created');
+        }
+        
         return response;
     }
 
@@ -548,18 +555,37 @@ class ReservationManager {
     async updateReservation(id, data) {
         const response = await put('api/reservations.php', { id, ...data });
         showSuccessMessage('予約を更新しました', document.querySelector('#sidebar-message'));
+        
+        // 成功後にメール送信
+        if (response.reservation) {
+            sendReservationEmail(response.reservation, 'updated');
+        }
+        
         return response;
     }
 
     // 予約削除
     async deleteReservation(id) {
         try {
-            // モーダルをすぐに閉じる
+            // 削除前に予約データを保存（メール送信用）
+            const reservationToDelete = this.getReservation(id);
+            if (!reservationToDelete) {
+                throw new Error('予約が見つかりません');
+            }
+            
+            // 削除APIリクエスト
+            await del('api/reservations.php', { id });
+            
+            // 削除成功後にモーダルクローズとカレンダー更新を同時実行
             hideModal('reservationModal');
             
-            await del('api/reservations.php', { id });
-            showSuccessMessage('予約を削除しました', document.querySelector('#sidebar-message'));
+            
+            // 削除成功後にメール送信
+            sendReservationEmail(reservationToDelete, 'deleted');
+            
+            // カレンダー更新
             await this.loadReservations();
+            showSuccessMessage('予約を削除しました', document.querySelector('#sidebar-message'));
         } catch (error) {
             showErrorMessage(error.message, document.querySelector('#sidebar-message'));
         }

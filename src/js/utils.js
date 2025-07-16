@@ -472,3 +472,19 @@ export function adjustToBusinessHours(date = new Date()) {
     // 15分単位に調整
     return roundToQuarter(result);
 }
+
+// メール送信API呼び出し
+export async function sendReservationEmail(reservationData, action) {
+    try {
+        const response = await post('api/send_email.php', {
+            reservation_data: reservationData,
+            action: action // 'created', 'updated', 'deleted'
+        });
+        console.log('メール送信成功:', response.message);
+        return true;
+    } catch (error) {
+        console.error('メール送信エラー:', error.message);
+        // メール送信失敗はユーザーエクスペリエンスを損なわないよう静かに処理
+        return false;
+    }
+}
