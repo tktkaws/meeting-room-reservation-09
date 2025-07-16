@@ -37,6 +37,7 @@
     scrollbar-gutter: stable;
 
 }
+
 body {
     font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -65,11 +66,9 @@ body {
 
 .user-table-header {
     display: grid;
-    grid-template-columns: 50px 120px 1fr 120px 120px 100px 120px 100px;
     grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: 1rem;
-    background: var(--light-gray-bg);
     font-weight: 600;
     border-bottom: 1px solid #e9ecef;
 }
@@ -81,7 +80,6 @@ body {
 
 .user-table-row {
     display: grid;
-    grid-template-columns: 50px 1fr 1fr 1fr 120px 100px 120px 100px;
     grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: .5rem;
@@ -89,9 +87,6 @@ body {
     transition: background-color 0.2s;
 }
 
-/* .user-table-row:hover {
-    background: var(--light-gray-bg);
-} */
 
 .table-cell {
     display: flex;
@@ -268,8 +263,6 @@ body {
     background-color: var(--light-gray-bg);
     border-radius: 4px;
 }
-
-.color-setting-text {}
 
 .color-item label {
     font-size: 0.9rem;
@@ -493,6 +486,7 @@ body {
     cursor: pointer;
     background-color: inherit;
     font-weight: 600;
+    transform: translateY(0.1rem);
 }
 
 /* .today-btn:hover {
@@ -603,18 +597,9 @@ body {
     align-content: start;
     padding: 0.5rem;
 }
+
 .month-cell-btn:hover {
     background-color: var(--light-gray-bg);
-}
-
-.month-cell.other-month {
-    /* color: #a0aec0;
-    background: #f9f9f9; */
-}
-
-.month-cell.today {
-    /* background-color: #e8f5e8;
-    border: 2px solid #27ae60; */
 }
 
 .month-cell.past {
@@ -658,7 +643,7 @@ body {
 .month-cell.today .cell-date span {
     grid-area: 1 / 1;
     color: #FFF;
-    transform: translateY(0.2em);
+    transform: translateY(0.2em) translateX(-0.1em);
 }
 
 .cell-reservations {
@@ -812,10 +797,7 @@ body {
 .day-header.today .day-header-date span {
     grid-area: 1 / 1;
     color: #FFF;
-}
-
-.day-header.today {
-    /* background-color: var(--primary-color); */
+    transform: translateX(-0.05em);
 }
 
 .time-grid {
@@ -850,19 +832,6 @@ body {
     transition: background-color 0.2s;
 }
 
-.week-reservation {
-    /* color: #FFF;
-    border-radius: 4px;
-    padding: 2px 4px;
-    padding-top: 0;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
-}
-
 .week-reservation-btn {
     width: 100%;
     height: 100%;
@@ -880,6 +849,7 @@ body {
     justify-content: start;
     align-items: start;
 }
+
 .week-reservation-btn span {
     text-align: left;
 }
@@ -1004,17 +974,6 @@ body {
     margin: 0;
 }
 
-.reservation-list-item {
-    /* display: grid;
-    grid-template-columns: 10px 10% 12% 1fr 24%;
-    gap: 1rem;
-    padding: 1rem;
-    border-bottom: 1px solid var(--medium-gray-bg);
-    cursor: pointer;
-    transition: background-color 0.3s;
-    align-items: center; */
-}
-
 .reservation-list-item-btn {
     width: 100%;
     border: none;
@@ -1024,7 +983,7 @@ body {
     grid-template-columns: 10px 10% 12% 1fr 24%;
     gap: 1rem;
     padding: 1rem;
-    /* border-bottom: 1px solid var(--medium-gray-bg); */
+    border-bottom: 1px solid var(--medium-gray-bg);
     cursor: pointer;
     transition: background-color 0.3s;
     align-items: center;
@@ -1056,14 +1015,6 @@ body {
     color: transparent;
     border-radius: 2px;
 }
-
-.reservation-time {}
-
-.reservation-title {}
-
-.reservation-user {}
-
-.reservation-time {}
 
 /* アクションボタン */
 .action-buttons {
@@ -1202,8 +1153,7 @@ body {
 /* 設定ページ */
 .config-main {
     max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+    margin: 4rem auto 0;
 }
 
 .config-main section {
@@ -1218,7 +1168,6 @@ body {
     color: var(--text-color-main);
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--medium-gray-bg);
 }
 
 
@@ -1233,7 +1182,7 @@ body {
 .department-main {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem;
+    margin-top: 4rem;
 }
 
 .department-form-section,

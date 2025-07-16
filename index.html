@@ -15,6 +15,8 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet">
     <link rel="stylesheet" href="src/css/style.css">
+    <script type="module" src="https://unpkg.com/invokers-polyfill@latest/invoker.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/dialog-closedby-polyfill@latest/index.min.js"></script>
 </head>
 
 <body>
@@ -30,7 +32,7 @@
                     <span class="bar"></span>
                     <span class="bar"></span>
                 </button>
-                <div class="navigation">
+                <nav class="navigation">
                     <button id="todayBtn" class="today-btn">今日</button>
                     <button class="nav-btn prev" id="prevBtnMonth">
                         <img src="/meeting-room-reservation-09/src/images/prev.svg" alt="prev">
@@ -39,16 +41,16 @@
                             src="/meeting-room-reservation-09/src/images/next.svg" alt="next"></button>
                     <span class="current-date" id="currentDate"><img
                             src="/meeting-room-reservation-09/src/images/next.svg" alt="" class="material-icon"></span>
-                </div>
+                </nav>
                 <div class="list-controls" style="display: none;">
                     <button id="past-btn">過去の予約</button>
                     <button id="current-btn">今後の予約</button>
                     <form class="past-range-form" style="display: none;">
-                            <select id="start-year" class="past-range-form-select"></select>
-                            <select id="start-month" class="past-range-form-select"></select>
-                            <span>～</span>
-                            <select id="end-year" class="past-range-form-select"></select>
-                            <select id="end-month" class="past-range-form-select"></select>
+                        <select id="start-year" class="past-range-form-select"></select>
+                        <select id="start-month" class="past-range-form-select"></select>
+                        <span>～</span>
+                        <select id="end-year" class="past-range-form-select"></select>
+                        <select id="end-month" class="past-range-form-select"></select>
                     </form>
                 </div>
                 <div class="action-buttons" id="actionButtons" style="display: none;">
@@ -61,11 +63,11 @@
                     <button id="listView" class="view-btn">リスト</button>
                 </div>
             </div>
-            <div id="calendar-container">
-                <div id="monthCalendar" class="calendar-view"></div>
-                <div id="weekCalendar" class="calendar-view" style="display: none;"></div>
-                <div id="listCalendar" class="calendar-view" style="display: none;"></div>
-            </div>
+            <section id="calendar-container">
+                <section id="monthCalendar" class="calendar-view"></section>
+                <section id="weekCalendar" class="calendar-view" style="display: none;"></section>
+                <section id="listCalendar" class="calendar-view" style="display: none;"></section>
+            </section>
         </main>
     </div>
 
