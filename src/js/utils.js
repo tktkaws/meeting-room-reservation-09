@@ -84,6 +84,15 @@ export function formatDate(date) {
     return new Date(date).toLocaleDateString('ja-JP');
 }
 
+export function formatDateWithDay(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][d.getDay()];
+    return `${year}年${month}月${day}日（${dayOfWeek}）`;
+}
+
 export function formatDateJapanese(date) {
     const d = new Date(date);
     return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;

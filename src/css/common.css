@@ -11,7 +11,7 @@
     --danger-color: #e74c3c;
     --success-color: #155724;
     --background-color: #F8FAFD;
-    --text-color-main: #2c3e50;
+    --text-color-main: #333333;
     --text-color-muted: #7f8c8d;
     --white-color: #ffffff;
     --border-color: #dee2e6;
@@ -576,6 +576,7 @@ body {
     padding: 0;
     border: none;
     border-radius: 8px;
+    color: var(--text-color-main);
 }
 
 .modal::backdrop {
@@ -738,13 +739,6 @@ body {
     align-items: flex-start;
 }
 
-.detail-item label {
-    font-weight: 600;
-    min-width: 100px;
-    color: var(--text-color-main);
-    margin-right: 1rem;
-}
-
 .reservation-details {
     margin: 0;
     padding: 0;
@@ -758,7 +752,6 @@ body {
 .reservation-details dt {
     font-weight: 600;
     min-width: 100px;
-    color: var(--text-color-main);
     margin: 0;
     margin-right: 1rem;
 }

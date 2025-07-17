@@ -331,6 +331,7 @@
 .reservation-list-header {
     display: grid;
     grid-template-columns: 10px 10% 12% 1fr 24%;
+    grid-template-columns: .8rem 12rem 8rem 1fr 24%;
     gap: 1rem;
     padding: 1rem;
     padding-right: calc(1rem + 15px);
@@ -356,7 +357,7 @@
     background: none;
     color: inherit;
     display: grid;
-    grid-template-columns: 10px 10% 12% 1fr 24%;
+    grid-template-columns: .8rem 12rem 8rem 1fr 24%;
     gap: 1rem;
     padding: 1rem;
     border-bottom: 1px solid var(--medium-gray-bg);
@@ -365,6 +366,9 @@
     align-items: center;
     font-size: 1rem;
     text-align: left;
+}
+.reservation-list-item-btn.today {
+    background-color: var(--light-gray-bg);
 }
 
 .reservation-list-item:hover {

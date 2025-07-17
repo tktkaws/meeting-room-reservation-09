@@ -7,6 +7,7 @@ import {
     getLastDayOfWeek,
     getDateString,
     formatDate,
+    formatDateWithDay,
     formatDateJapanese,
     formatTime,
     createElement,
@@ -633,11 +634,18 @@ class CalendarManager {
             const borderColor = authManager.getReservationColor(reservation);
             const startTime = formatTime(reservation.start_datetime);
             const endTime = formatTime(reservation.end_datetime);
-            const dateFormatted = formatDate(reservation.date);
+            const dateFormatted = formatDateWithDay(reservation.date);
             
+            const today = new Date();
+            const reservationDate = new Date(reservation.date);
+            const isToday = today.getFullYear() === reservationDate.getFullYear() &&
+                          today.getMonth() === reservationDate.getMonth() &&
+                          today.getDate() === reservationDate.getDate();
+            const todayClass = isToday ? ' today' : '';
+
             return `
                 <li class="reservation-list-item">
-                    <button class="reservation-list-item-btn" data-reservation-id="${reservation.id}">
+                    <button class="reservation-list-item-btn${todayClass}" data-reservation-id="${reservation.id}">
                         <span class="theme-color-icon" style="background-color: ${borderColor};">■</span>
                         <div class="reservation-date">
                             ${dateFormatted}
@@ -693,7 +701,7 @@ class CalendarManager {
         
         const title = createElement('div', 'reservation-title', reservation.title);
         const details = createElement('div', 'reservation-details');
-        details.innerHTML = `${formatDate(reservation.date)} | ${reservation.user_name} (${reservation.department_name})`;
+        details.innerHTML = `${formatDateWithDay(reservation.date)} | ${reservation.user_name} (${reservation.department_name})`;
         
         info.appendChild(title);
         info.appendChild(details);
@@ -754,7 +762,7 @@ class CalendarManager {
                 
                 <div class="detail-row">
                     <dt>日付</dt>
-                    <dd>${formatDate(reservation.date)}</dd>
+                    <dd>${formatDateWithDay(reservation.date)}</dd>
                 </div>
                 
                 <div class="detail-row">
