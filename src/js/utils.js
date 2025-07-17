@@ -272,7 +272,7 @@ export function showErrorMessage(message, container) {
 
 // 成功メッセージ表示
 export function showSuccessMessage(message, container) {
-    console.log('Success:', message);
+    // console.log('Success:', message);
     const successDiv = createElement('div', 'success-message', message);
     container.insertBefore(successDiv, container.firstChild);
     
@@ -382,7 +382,6 @@ export function getContrastColor(backgroundColor, departmentName = '') {
     const selectedColor = whiteContrast >= wcagThreshold && blackContrast >= wcagThreshold ? '#FFF' : 
                          whiteContrast > blackContrast ? '#FFF' : '#000';
     
-    // コンソール出力
     // console.log(`${departmentName ? `[${departmentName}] ` : ''}背景色: ${backgroundColor}, 白コントラスト: ${whiteContrast.toFixed(2)}, 黒コントラスト: ${blackContrast.toFixed(2)}, 選択色: ${selectedColor}`);
     
     return selectedColor;
@@ -480,7 +479,7 @@ export async function sendReservationEmail(reservationData, action) {
             reservation_data: reservationData,
             action: action // 'created', 'updated', 'deleted'
         });
-        console.log('メール送信成功:', response.message);
+        // console.log('メール送信成功:', response.message);
         return true;
     } catch (error) {
         console.error('メール送信エラー:', error.message);

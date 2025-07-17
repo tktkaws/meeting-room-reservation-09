@@ -468,7 +468,7 @@ class ReservationManager {
 
     // 予約作成
     async createReservation(data) {
-        console.log('送信データ:', data); // デバッグ用
+        // console.log('送信データ:', data);
         const response = await post('api/reservations.php', data);
         showSuccessMessage('予約を作成しました', document.querySelector('#sidebar-message'));
         

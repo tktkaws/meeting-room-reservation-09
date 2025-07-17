@@ -85,9 +85,7 @@ class AuthManager {
   // 全社のデフォルトカラー取得
   async loadCompanyColor() {
     try {
-      // console.log('全社カラー設定を取得します');
       const response = await get("api/company-color.php");
-      // console.log('全社カラー設定の取得結果:', response);
       this.companyDefaultColor = response.color || "#3498db";
 
       // ログイン状態に応じてUIを更新
@@ -103,8 +101,6 @@ class AuthManager {
 
   // イベントリスナー設定
   setupEventListeners() {
-    // console.log('AuthManager: イベントリスナーを設定します');
-
     // 既存のイベントリスナーをクリア
     this.clearEventListeners();
 
@@ -278,10 +274,6 @@ class AuthManager {
 
   // UI更新
   updateUI() {
-    // console.log("Rendering sidebar...");
-    // console.log("isLoggedIn:", this.isLoggedIn);
-    // console.log("isAdmin:", this.isAdmin);
-
     const sidebarHTML = `
             <h1><a href="/meeting-room-reservation-09/">会議室予約システム</a></h1>
             

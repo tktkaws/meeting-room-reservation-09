@@ -114,9 +114,9 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         calendarManager: () => window.calendarManager,
         reservationManager: () => window.reservationManager,
         showTestData: () => {
-            console.log('認証状態:', authManager.getLoginStatus());
-            console.log('予約データ:', window.reservationManager?.getReservations());
-            console.log('部署データ:', authManager.departments);
+            // console.log('認証状態:', authManager.getLoginStatus());
+            // console.log('予約データ:', window.reservationManager?.getReservations());
+            // console.log('部署データ:', authManager.departments);
         }
     };
 }

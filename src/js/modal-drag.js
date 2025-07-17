@@ -58,7 +58,7 @@ class ModalDrag {
             const modals = document.querySelectorAll('dialog.modal');
             modals.forEach(modal => {
                 modal.addEventListener('close', () => {
-                    console.log('Dialog close event triggered for:', modal.id);
+                    // console.log('Dialog close event triggered for:', modal.id);
                     this.resetModalPosition(modal);
                 });
             });
@@ -70,7 +70,7 @@ class ModalDrag {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === Node.ELEMENT_NODE && node.matches('dialog.modal')) {
                         node.addEventListener('close', () => {
-                            console.log('Dialog close event triggered for:', node.id);
+                            // console.log('Dialog close event triggered for:', node.id);
                             this.resetModalPosition(node);
                         });
                     }
@@ -153,7 +153,7 @@ class ModalDrag {
     }
 
     resetModalPosition(modal) {
-        console.log('Resetting modal position for:', modal.id);
+        // console.log('Resetting modal position for:', modal.id);
         
         // 強制的に位置をリセット
         modal.style.position = '';
@@ -169,7 +169,7 @@ class ModalDrag {
             modal.style.top = '';
             modal.style.transform = '';
             modal.style.margin = '';
-            console.log('Modal position reset completed for:', modal.id);
+            // console.log('Modal position reset completed for:', modal.id);
         }, 10);
     }
 }

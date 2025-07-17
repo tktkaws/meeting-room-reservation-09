@@ -998,7 +998,6 @@ class CalendarManager {
     // 週間ビューの予約位置を更新
     updateWeekReservationsPositions() {
         const timeSlotHeight = parseInt(document.documentElement.style.getPropertyValue('--time-slot-height') || '20');
-        // console.log('Updating week reservations positions with slot height:', timeSlotHeight);
         
         // week-reservation要素の更新
         const reservationElements = document.querySelectorAll('.week-reservation');

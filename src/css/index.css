@@ -79,11 +79,13 @@
     color: var(--white-color);
     width: fit-content;
     margin-inline: auto;
-    display: grid;
+    position: relative;
 }
 
 .month-cell.today .cell-date::before {
-    grid-area: 1 / 1;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
     content: '';
     width: 1.5rem;
@@ -93,9 +95,10 @@
 }
 
 .month-cell.today .cell-date span {
-    grid-area: 1 / 1;
+    position: absolute;
+    top: 0.3rem;
+    left: 0.2rem;
     color: var(--white-color);
-    transform: translateY(0.2em) translateX(-0.1em);
 }
 
 .cell-reservations {
@@ -186,8 +189,7 @@
 .day-header {
     height: 60px;
     padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
+    display: grid;
     align-items: center;
     justify-content: center;
     font-weight: 600;
@@ -199,12 +201,15 @@
 .day-header.today .day-header-date {
     color: var(--white-color);
     width: fit-content;
+    height: auto;
     margin-inline: auto;
     display: grid;
 }
 
 .day-header.today .day-header-date::before {
     grid-area: 1 / 1;
+    top: 0;
+    left: 0;
     display: block;
     content: '';
     width: 1.5rem;
@@ -215,8 +220,9 @@
 
 .day-header.today .day-header-date span {
     grid-area: 1 / 1;
+    top: 0.3rem;
+    left: 0.2rem;
     color: var(--white-color);
-    transform: translateX(-0.05em);
 }
 
 .time-grid {
