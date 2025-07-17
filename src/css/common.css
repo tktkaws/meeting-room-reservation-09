@@ -765,3 +765,22 @@ body {
     max-width: 100%;
     white-space: normal;
 }
+
+/* 共通 */
+/* 設定ページ */
+
+.form-section {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--white-color);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    display: grid;
+}
+
+.form-section-heading {
+    color: var(--text-color-main);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}

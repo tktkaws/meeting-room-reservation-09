@@ -1,25 +1,4 @@
 /* 部署管理ページ */
-.department-main {
-    max-width: 1000px;
-    margin: 0 auto;
-    margin-top: 4rem;
-}
-
-.department-form-section,
-.department-list-section {
-    background-color: var(--white-color);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 8px;
-}
-
-.department-main h2 {
-    color: var(--text-color-main);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--medium-gray-bg);
-}
-
 .table-container {
     overflow-x: auto;
 }
@@ -38,7 +17,7 @@ table td {
 }
 
 table th {
-    background-color: var(--light-gray-bg);
+    border-bottom: 1px solid var(--medium-gray-bg);
     font-weight: 600;
     color: var(--text-color-main);
 }
@@ -69,4 +48,9 @@ table th {
 .delete-btn {
     background-color: var(--danger-color);
     color: var(--white-color);
+}
+
+.form-section-btn {
+     width: fit-content;
+    justify-self: end;
 }
