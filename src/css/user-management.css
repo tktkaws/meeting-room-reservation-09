@@ -1,0 +1,70 @@
+/* ユーザー管理ページのスタイル */
+.user-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-action-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.user-table-container {
+    margin-top: 1rem;
+    background: var(--white-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.user-table-header {
+    display: grid;
+    grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
+    gap: 1rem;
+    padding: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-table-body {
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+}
+
+.user-table-row {
+    display: grid;
+    grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
+    gap: 1rem;
+    padding: .5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.table-cell {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0;
+}
+
+.checkbox-cell {
+    justify-content: center;
+}
+
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.sort-indicator {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-color-main);
+}
+
+/* ユーザー管理ページ */
+.config-main.user-management {
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 100%;
+}

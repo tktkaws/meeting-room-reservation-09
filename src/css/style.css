@@ -8,37 +8,34 @@
 
 :root {
     --primary-color: #0031D8;
-    --primary-hover-color: #2980b9;
     --danger-color: #e74c3c;
-    --danger-hover-color: #c0392b;
-    --warning-color: #f39c12;
-    --warning-hover-color: #e67e22;
     --background-color: #F8FAFD;
+
     --text-color-main: #2c3e50;
     --text-color-light: #4A5568;
     --text-color-muted: #7f8c8d;
     --white-color: #fff;
     --border-color: #e2e8f0;
-    --border-color-dark: #bdc3c7;
+    --border-color: #bdc3c7;
     --light-gray-bg: #f8f9fa;
     --medium-gray-bg: #ecf0f1;
     --medium-gray-hover-bg: #d5dbdb;
-    --success-bg: #ffffff;
-    --success-text: #155724;
-    --success-border: #c3e6cb;
-    --error-bg: #f8d7da;
-    --error-text: #721c24;
-    --error-border: #f5c6cb;
+    --white-color: #ffffff;
+    --success-color: #155724;
+    --success-color: #c3e6cb;
+    --white-color: #f8d7da;
+    --danger-color: #721c24;
+    --danger-color: #f5c6cb;
     
-    --border-light-gray: #e9ecef;
-    --text-color-secondary: #6c757d;
+    --border-color: #e9ecef;
+    --text-color-main: #6c757d;
     --sidebar-text-color: #333;
     --today-accent-color: #667eea;
     --reservation-border-color: #d3dae4;
     --current-time-color: #e53e3e;
-    --loading-border-color: #f3f3f3;
+    --white-color: #f3f3f3;
     --header-text-color: #495057;
-    --list-border-color: #dee2e6;
+    --border-color: #dee2e6;
     
     --shadow-light: rgba(0, 0, 0, 0.1);
     --shadow-medium: rgba(0, 0, 0, 0.2);
@@ -84,7 +81,7 @@ body {
     gap: 1rem;
     padding: 1rem;
     font-weight: 600;
-    border-bottom: 1px solid var(--border-light-gray);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .user-table-body {
@@ -97,7 +94,7 @@ body {
     grid-template-columns: 50px 120px 240px 120px 120px 100px 120px 100px;
     gap: 1rem;
     padding: .5rem;
-    border-bottom: 1px solid var(--border-light-gray);
+    border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
 }
 
@@ -124,13 +121,13 @@ body {
 }
 
 /* .sortable-header:hover {
-    background-color: var(--border-light-gray);
+    background-color: var(--border-color);
 } */
 
 .sort-indicator {
     margin-left: 0.5rem;
     font-size: 0.75rem;
-    color: var(--text-color-secondary);
+    color: var(--text-color-main);
 }
 
 
@@ -207,7 +204,7 @@ body {
     padding: 0.5rem 1rem;
     height: 40px;
     margin-bottom: 1rem;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 0.9rem;
 }
@@ -287,7 +284,7 @@ body {
     display: flex;
     gap: 0.1rem;
     align-items: center;
-    /* border: 1px solid var(--border-color-dark); */
+    /* border: 1px solid var(--border-color); */
 }
 
 .color-item input[type="color"] {
@@ -313,19 +310,19 @@ body {
 
 .color-item:hover .color-item input[type="text"] {
     visibility: visible;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
 }
 
 #colorSettings:hover .color-item input[type="text"] {
     visibility: visible;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
 }
 
 .colorInfo-block {
     width: 20px;
     height: 20px;
     border-radius: 3px;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     display: inline-block;
     margin-right: 1rem;
 }
@@ -363,16 +360,16 @@ body {
 }
 
 #sidebar-message.success {
-    background-color: var(--success-bg);
-    color: var(--success-text);
-    border: 1px solid var(--success-border);
+    background-color: var(--white-color);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
     display: block;
 }
 
 #sidebar-message.error {
-    background-color: var(--error-bg);
-    color: var(--error-text);
-    border: 1px solid var(--error-border);
+    background-color: var(--white-color);
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
     display: block;
 }
 
@@ -748,7 +745,7 @@ body {
 .time-axis-header {
     height: 60px;
     /* background-color: #34495e; */
-    /* border-bottom: 1px solid var(--border-color-dark); */
+    /* border-bottom: 1px solid var(--border-color); */
 }
 
 .time-label {
@@ -757,8 +754,8 @@ body {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-color-main);
-    border-right: 1px solid var(--border-color-dark);
-    /* border-bottom: 1px solid var(--border-color-dark); */
+    border-right: 1px solid var(--border-color);
+    /* border-bottom: 1px solid var(--border-color); */
 }
 
 .time-label span {
@@ -770,7 +767,7 @@ body {
 .day-column {
     flex: 1;
     position: relative;
-    /* border-right: 1px solid var(--border-color-dark); */
+    /* border-right: 1px solid var(--border-color); */
 }
 
 .day-column:last-child {
@@ -787,7 +784,7 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     text-align: center;
-    border-bottom: 1px solid var(--border-color-dark);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .day-header.today .day-header-date {
@@ -815,7 +812,7 @@ body {
 }
 
 .time-grid {
-    border-right: 1px solid var(--border-color-dark);
+    border-right: 1px solid var(--border-color);
 
 }
 
@@ -830,7 +827,7 @@ body {
 }
 
 .time-slot:nth-child(4n) {
-    border-bottom: 1px solid var(--border-color-dark);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .time-slot-btn {
@@ -876,14 +873,14 @@ body {
     display: grid;
     grid-template-columns: 80px repeat(7, 1fr);
     gap: 1px;
-    background-color: var(--border-color-dark);
+    background-color: var(--border-color);
 }
 
 .week-header {
     display: grid;
     grid-template-columns: 80px repeat(7, 1fr);
     gap: 1px;
-    background-color: var(--border-color-dark);
+    background-color: var(--border-color);
     margin-bottom: 1px;
 }
 
@@ -912,7 +909,7 @@ body {
 }
 
 .week-cell.hour-start {
-    border-top: 2px solid var(--border-color-dark);
+    border-top: 2px solid var(--border-color);
 } */
 
 /* リストビュー */
@@ -951,7 +948,7 @@ body {
 
 .list-controls input[type="date"] {
     padding: 0.5rem;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
 }
 
@@ -972,7 +969,7 @@ body {
     padding-right: calc(1rem + 15px);
     background-color: var(--light-gray-bg);
     background-color: var(--white-color);
-    border-bottom: 1px solid var(--list-border-color);
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
     color: var(--header-text-color);
     position: sticky;
@@ -1089,7 +1086,7 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.3s;
@@ -1249,7 +1246,7 @@ table th {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     margin-right: 0.5rem;
 }
 
@@ -1265,11 +1262,6 @@ table th {
     cursor: pointer;
     font-size: 0.8rem;
     transition: background-color 0.3s;
-}
-
-.edit-btn {
-    background-color: var(--warning-color);
-    color: var(--white-color);
 }
 
 .delete-btn {
@@ -1415,21 +1407,21 @@ table th {
 
 /* エラーメッセージ */
 .error-message {
-    background-color: var(--error-bg);
-    color: var(--error-text);
+    background-color: var(--white-color);
+    color: var(--danger-color);
     padding: 0.75rem;
     border-radius: 4px;
     margin-bottom: 1rem;
-    border: 1px solid var(--error-border);
+    border: 1px solid var(--danger-color);
 }
 
 .success-message {
-    background-color: var(--success-bg);
-    color: var(--success-text);
+    background-color: var(--white-color);
+    color: var(--success-color);
     padding: 0.75rem;
     border-radius: 4px;
     margin-bottom: 1rem;
-    border: 1px solid var(--success-border);
+    border: 1px solid var(--success-color);
 }
 
 /* ローディング */
@@ -1437,7 +1429,7 @@ table th {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 2px solid var(--loading-border-color);
+    border: 2px solid var(--white-color);
     border-top: 2px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -1625,9 +1617,9 @@ table th {
 .past-range-form-select {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--border-color-dark);
+    border: 1px solid var(--border-color);
     border: none;
-    border-bottom: 1px solid var(--border-color-dark);
+    border-bottom: 1px solid var(--border-color);
     font-size: 1rem;
     font-weight: 600;
     transition: border-color 0.3s;

@@ -1,0 +1,19 @@
+/* 設定ページ */
+.config-main {
+    max-width: 800px;
+    margin: 4rem auto 0;
+}
+
+.config-main section {
+    background-color: var(--white-color);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+.config-main h2 {
+    color: var(--text-color-main);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+

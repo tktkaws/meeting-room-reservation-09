@@ -1,0 +1,423 @@
+/* カレンダー */
+.calendar-view {
+    background-color: var(--white-color);
+    border-radius: 8px;
+}
+
+/* 月間カレンダー */
+.month-calendar {
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+    row-gap: 1px;
+    background-color: var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.month-header {
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1px;
+}
+
+.month-header-cell {
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-color-main);
+}
+
+.month-cell {
+    width: 100%;
+    background-color: var(--white-color);
+    min-height: 120px;
+    min-height: var(--calendar-day-height);
+    transition: background-color 0.3s;
+    display: grid;
+    grid-template-rows: 2rem 1fr;
+}
+
+.month-cell-btn {
+    grid-column: 1;
+    grid-row: 1/-1;
+    width: 100%;
+    border: none;
+    background: none;
+    color: inherit;
+    background-color: var(--white-color);
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s;
+    display: grid;
+    justify-content: center;
+    align-content: start;
+    padding: 0.5rem;
+}
+
+.month-cell-btn:hover {
+    background-color: var(--light-gray-bg);
+}
+
+.month-cell.past {
+    cursor: default;
+}
+
+.month-cell.past:hover {
+    background-color: var(--white-color);
+}
+
+.cell-date {
+    display: grid;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: .5rem;
+    font-size: 0.9rem;
+}
+
+.month-cell.today .cell-date {
+    color: var(--white-color);
+    width: fit-content;
+    margin-inline: auto;
+    display: grid;
+}
+
+.month-cell.today .cell-date::before {
+    grid-area: 1 / 1;
+    display: block;
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+}
+
+.month-cell.today .cell-date span {
+    grid-area: 1 / 1;
+    color: var(--white-color);
+    transform: translateY(0.2em) translateX(-0.1em);
+}
+
+.cell-reservations {
+    grid-column: 1;
+    grid-row: 2/3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    padding: 0.5rem;
+}
+
+.month-cell.past .cell-reservations {
+    opacity: .6;
+}
+
+.reservation-item {
+    overflow: hidden;
+}
+
+.reservation-item-btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.3s;
+
+    padding: 0.25rem;
+    padding-left: .5rem;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    justify-content: start;
+    gap: 0.5rem;
+    position: relative;
+    line-height: 1;
+    border-left: 4px solid var(--text-color-main);
+}
+
+/* 週間カレンダー */
+.week-view-container {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.week-time-axis {
+    width: 80px;
+}
+
+.time-axis-header {
+    height: 60px;
+}
+
+.time-label {
+    height: calc(var(--time-slot-height, 20px) * 4);
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color-main);
+    border-right: 1px solid var(--border-color);
+}
+
+.time-label span {
+    display: inline-block;
+    transform: translateY(-0.9em);
+    margin-right: .5em;
+}
+
+.day-column {
+    flex: 1;
+    position: relative;
+}
+
+.day-column:last-child {
+    border-right: none;
+}
+
+.day-header {
+    height: 60px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.day-header.today .day-header-date {
+    color: var(--white-color);
+    width: fit-content;
+    margin-inline: auto;
+    display: grid;
+}
+
+.day-header.today .day-header-date::before {
+    grid-area: 1 / 1;
+    display: block;
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+}
+
+.day-header.today .day-header-date span {
+    grid-area: 1 / 1;
+    color: var(--white-color);
+    transform: translateX(-0.05em);
+}
+
+.time-grid {
+    border-right: 1px solid var(--border-color);
+}
+
+.time-slot {
+    height: var(--time-slot-height, 20px);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.time-slot:hover {
+    background-color: var(--light-gray-bg);
+}
+
+
+
+.time-slot-btn {
+    width: 100%;
+    border: none;
+    background: none;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.week-reservation-btn {
+    width: 100%;
+    height: 100%;
+    color: var(--white-color);
+    border-radius: 4px;
+    padding: 2px 4px;
+    padding-top: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    overflow: hidden;
+    display: grid;
+    justify-content: start;
+    align-items: start;
+}
+
+.week-reservation-btn span {
+    text-align: left;
+}
+
+/* リストビュー */
+.list-view {
+    background-color: var(--white-color);
+}
+
+.list-controls {
+    width: fit-content;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.list-controls button {
+    width: fit-content;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--medium-gray-bg);
+    color: var(--text-color-main);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.list-controls button.active {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+.list-controls input[type="date"] {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.reservation-list {
+    background-color: var(--white-color);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reservation-list-header {
+    display: grid;
+    grid-template-columns: 10px 10% 12% 1fr 24%;
+    gap: 1rem;
+    padding: 1rem;
+    padding-right: calc(1rem + 15px);
+    background-color: var(--light-gray-bg);
+    background-color: var(--white-color);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.reservation-list-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.reservation-list-item-btn {
+    width: 100%;
+    border: none;
+    background: none;
+    color: inherit;
+    display: grid;
+    grid-template-columns: 10px 10% 12% 1fr 24%;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--medium-gray-bg);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-items: center;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.reservation-list-item:hover {
+    background-color: var(--light-gray-bg);
+}
+
+.reservation-list-item:last-child {
+    border-bottom: none;
+}
+
+.reservation-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-color-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+    line-height: 1;
+    text-align: center;
+    color: transparent;
+    border-radius: 2px;
+}
+
+/* アクションボタン */
+.action-buttons {
+    justify-self: center;
+    align-self: center;
+}
+
+.current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--current-time-color);
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.current-time-marker {
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    background: var(--current-time-color);
+    border-radius: 50%;
+    z-index: 20;
+}
+
+.past-range-form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+    font-weight: 600;
+    transition: border-color 0.3s;
+    width: auto;
+    padding: 0.5rem;
+    background: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
