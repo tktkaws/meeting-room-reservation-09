@@ -908,6 +908,10 @@ class CalendarManager {
         const startYearSelect = document.getElementById('start-year');
         const endYearSelect = document.getElementById('end-year');
         
+        // 既存のオプションをクリア
+        startYearSelect.innerHTML = '';
+        endYearSelect.innerHTML = '';
+        
         for (let year = currentYear - 2; year <= currentYear; year++) {
             const option1 = new Option(year + '年', year);
             const option2 = new Option(year + '年', year);
@@ -918,6 +922,10 @@ class CalendarManager {
         // 月のオプションを生成
         const startMonthSelect = document.getElementById('start-month');
         const endMonthSelect = document.getElementById('end-month');
+        
+        // 既存のオプションをクリア
+        startMonthSelect.innerHTML = '';
+        endMonthSelect.innerHTML = '';
         
         for (let month = 1; month <= 12; month++) {
             const option1 = new Option(month + '月', month);
