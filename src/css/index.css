@@ -232,12 +232,11 @@
 .time-slot {
     height: var(--time-slot-height, 20px);
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
-.time-slot:hover {
+/* .time-slot:hover {
     background-color: var(--light-gray-bg);
-}
+} */
 
 
 
@@ -251,6 +250,16 @@
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     transition: background-color 0.2s;
+}
+
+.time-slot-btn.past {
+    cursor: auto;
+}
+.time-slot-btn:hover {
+    background-color: var(--light-gray-bg);
+}
+.time-slot-btn.past:hover {
+        background: none;
 }
 
 .week-reservation-btn {

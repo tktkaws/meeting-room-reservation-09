@@ -308,7 +308,7 @@ class CalendarManager {
         
         const cellHtml = `
             <li class="month-cell${otherMonthClass}${todayClass}${pastClass}">
-                <button class="month-cell-btn" data-date="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}">
+                <button class="month-cell-btn" data-date="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}"${pastClass ? ' tabindex="-1"' : ''}>
                     <div class="cell-date"><span>${date.getDate()}</span></div>
                 </button>
                 <ul class="cell-reservations">
@@ -391,8 +391,16 @@ class CalendarManager {
             const timeSlotsHtml = Array.from({length: 36}, (_, slotIndex) => {
                 const hour = Math.floor(slotIndex / 4) + 9;
                 const minute = (slotIndex % 4) * 15;
+                
+                // 過去日付の判定
+                const slotDateTime = new Date(date);
+                slotDateTime.setHours(hour, minute, 0, 0);
+                const isPast = slotDateTime < today;
+                const tabindexAttr = isPast ? ' tabindex="-1"' : '';
+                const classAttr = isPast ? ' past' : '';
+                
                 return `<li class="time-slot">
-                    <button class="time-slot-btn" data-hour="${hour}" data-minute="${minute}"></button>
+                    <button class="time-slot-btn${classAttr}" data-hour="${hour}" data-minute="${minute}"${tabindexAttr}></button>
                 </li>`;
             }).join('');
             
@@ -437,7 +445,7 @@ class CalendarManager {
 
     // 週間ビューのイベントリスナー設定
     setupWeekViewEventListeners() {
-        const timeSlotButtons = document.querySelectorAll('.time-slot-btn');
+        const timeSlotButtons = document.querySelectorAll('.time-slot-btn:not(.past)');
         timeSlotButtons.forEach(button => {
             button.addEventListener('click', () => {
                 if (authManager.getLoginStatus().isLoggedIn) {
