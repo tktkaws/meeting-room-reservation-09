@@ -16,9 +16,16 @@
         <header id="sidebar" class="sidebar">
             <!-- JavaScriptで動的に生成 -->
         </header>
-        <main class="department-main">
-            <section class="department-form-section">
-                <h2>全社共通設定</h2>
+        <main class="main-content">
+            <header class="content-header">
+                <button id="toggleSidebar" class="hamburger-btn">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </header>
+            <section class="form-section">
+                <h2 class="form-section-heading">全社共通設定</h2>
                 <div class="company-color-section">
                     <form id="companyColorForm">
                         <div class="form-group">
@@ -35,8 +42,8 @@
                 </div>
             </section>
 
-            <section class="department-list-section">
-                <h2>部署一覧</h2>
+            <section class="form-section">
+                <h2 class="form-section-heading">部署一覧</h2>
                 <div style="margin-bottom: 1rem;">
                     <button id="addDepartmentBtn" class="btn btn-primary">新規部署追加</button>
                 </div>

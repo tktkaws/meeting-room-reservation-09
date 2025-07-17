@@ -15,7 +15,8 @@ import {
     createElement,
     showModal,
     hideModal,
-    formatDate
+    formatDate,
+    initializeHamburgerMenu
 } from './utils.js';
 import authManager from './auth.js';
 import { ModalDrag } from './modal-drag.js';
@@ -47,6 +48,9 @@ class UserManagementManager {
         await this.loadDepartments();
         this.setupEventListeners();
         this.populateUserTable();
+        
+        // ハンバーガーメニューの初期化
+        initializeHamburgerMenu();
     }
 
     // ユーザー一覧読み込み
@@ -163,7 +167,6 @@ class UserManagementManager {
                 <div class="table-cell">${user.department_name}</div>
                 <div class="table-cell">${user.email_notification ? '受信する' : '受信しない'}</div>
                 <div class="table-cell">${user.admin ? '管理者' : '一般ユーザー'}</div>
-                <div class="table-cell">${formatDate(user.created_at)}</div>
                 <div class="table-cell">
                     <button class="btn btn-sm btn-outline edit-user-btn" data-user-id="${user.id}">編集</button>
                 </div>

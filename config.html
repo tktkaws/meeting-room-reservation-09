@@ -16,35 +16,40 @@
         </header>
 
         <main class="main-content">
-            <div class="config-main">
-                <section class="user-info-section">
-                    <h2>ユーザー情報</h2>
-                    <form id="userInfoForm">
-                        <div class="form-group">
-                            <label for="userNameInput">名前</label>
-                            <input type="text" id="userNameInput" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="userEmail">メールアドレス</label>
-                            <input type="email" id="userEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="userDepartmentSelect">部署</label>
-                            <select id="userDepartmentSelect" required>
-                                <option value="">選択してください</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="emailNotification">メール通知設定</label>
-                            <select id="emailNotification" required>
-                                <option value="true">メール通知を受信する</option>
-                                <option value="false">メール通知を受信しない</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">更新</button>
-                    </form>
-                </section>
-            </div>
+            <header class="content-header">
+                <button id="toggleSidebar" class="hamburger-btn">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </header>
+            <section class="form-section">
+                <h2 class="form-section-heading">ユーザー情報</h2>
+                <form id="userInfoForm">
+                    <div class="form-group">
+                        <label for="userNameInput">名前</label>
+                        <input type="text" id="userNameInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">メールアドレス</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userDepartmentSelect">部署</label>
+                        <select id="userDepartmentSelect" required>
+                            <option value="">選択してください</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailNotification">メール通知設定</label>
+                        <select id="emailNotification" required>
+                            <option value="true">メール通知を受信する</option>
+                            <option value="false">メール通知を受信しない</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">更新</button>
+                </form>
+            </section>
         </main>
     </div>
 

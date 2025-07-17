@@ -10,7 +10,8 @@ import {
     showSuccessMessage,
     showLoading,
     clearElement,
-    createElement
+    createElement,
+    initializeHamburgerMenu
 } from './utils.js';
 import authManager from './auth.js';
 
@@ -33,6 +34,9 @@ class SignupManager {
         await this.loadDepartments();
         this.setupEventListeners();
         this.populateForm();
+        
+        // ハンバーガーメニューの初期化
+        initializeHamburgerMenu();
     }
 
     // 部署一覧読み込み

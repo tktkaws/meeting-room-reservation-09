@@ -14,7 +14,8 @@ import {
     hideModal,
     confirm,
     clearElement,
-    createElement
+    createElement,
+    initializeHamburgerMenu
 } from './utils.js';
 import authManager from './auth.js';
 import { ModalDrag } from './modal-drag.js';
@@ -40,6 +41,9 @@ class DepartmentManager {
         await this.loadCompanyColor();
         this.setupEventListeners();
         this.renderDepartmentTable();
+        
+        // ハンバーガーメニューの初期化
+        initializeHamburgerMenu();
     }
 
     // 管理者権限必須メッセージ表示

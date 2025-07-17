@@ -18,17 +18,21 @@
         </header>
 
         <main class="main-content">
-            <div class="config-main user-management">
-                <div class="user-management-header">
-                    <h2>ユーザー管理</h2>
+            <header class="content-header user-management-header">
+                <button id="toggleSidebar" class="hamburger-btn">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <h2 class="user-management-header-heading">ユーザー管理</h2>
                     <div class="bulk-action-controls">
                         <button id="bulkDeleteBtn" class="btn btn-danger" disabled>選択したユーザーを削除</button>
                         <button id="bulkEditBtn" class="btn btn-secondary" disabled>一括編集</button>
                         <button id="selectAllBtn" class="btn btn-outline">全選択</button>
                         <button id="deselectAllBtn" class="btn btn-outline">全解除</button>
                     </div>
-                </div>
-
+            </header>
+            <div class="config-main user-management">
                 <div class="user-table-container">
                     <div class="user-table-header">
                         <div class="table-cell checkbox-cell">
@@ -52,10 +56,6 @@
                         </div>
                         <div class="table-cell sortable-header" data-sort="admin">
                             管理者
-                            <span class="sort-indicator"></span>
-                        </div>
-                        <div class="table-cell sortable-header" data-sort="created_at">
-                            作成日
                             <span class="sort-indicator"></span>
                         </div>
                         <div class="table-cell">操作</div>
@@ -168,7 +168,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 id="modalTitle" class="modal-heading">削除確認</h1>
-                <button class="modal-header-close" commandfor="reservationModal" command="close"><img
+                <button class="modal-header-close" commandfor="deleteConfirmModal" command="close"><img
                         src="/meeting-room-reservation-09/src/images/close.svg" alt=""></button>
             </div>
             <div id="deleteConfirmContent" class="modal-body">
@@ -176,7 +176,7 @@
                 <p>削除されたユーザーが作成した予約は、同じ部署のユーザーまたは管理者に引き継がれます。</p>
                 <div class="form-actions">
                     <button type="button" commandfor="deleteConfirmModal" command="close" class="btn btn-secondary">キャンセル</button>
-                    <button type="button" id="confirmDelete" class="btn btn-danger">削除</button>
+                    <button type="button" id="confirmDelete" class="btn danger">削除</button>
                 </div>
             </div>
         </div>

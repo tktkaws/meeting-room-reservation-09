@@ -4,6 +4,7 @@ import authManager from './auth.js';
 import CalendarManager from './calendar.js';
 import ReservationManager from './reservations.js';
 import { ModalDrag } from './modal-drag.js';
+import { initializeHamburgerMenu } from './utils.js';
 
 // DOM読み込み完了時の処理
 document.addEventListener('DOMContentLoaded', async () => {
@@ -28,28 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         reservationManager.loadReservations();
     };
 
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const mainContent = document.querySelector('.main-content');
-
-    toggleSidebarBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-    });
-
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-
-    mainContent.addEventListener('click', () => {
-        if (sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        }
-    });
+    // ハンバーガーメニューの初期化
+    initializeHamburgerMenu();
     
     // console.log('会議室予約システムが初期化されました');
 });

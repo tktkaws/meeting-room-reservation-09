@@ -496,3 +496,45 @@ export async function sendReservationEmail(reservationData, action) {
         return false;
     }
 }
+
+// ハンバーガーボタン初期化関数
+export function initializeHamburgerMenu() {
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.querySelector('.main-content');
+
+    if (!toggleSidebarBtn || !sidebar) {
+        console.warn('ハンバーガーメニューの要素が見つかりません');
+        return;
+    }
+
+    // ハンバーガーボタンクリック時
+    toggleSidebarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.add('active');
+        if (overlay) {
+            overlay.classList.add('active');
+        }
+    });
+
+    // オーバーレイクリック時
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // メインコンテンツクリック時
+    if (mainContent) {
+        mainContent.addEventListener('click', () => {
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+            }
+        });
+    }
+}

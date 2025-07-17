@@ -11,7 +11,8 @@ import {
     showSuccessMessage,
     showLoading,
     clearElement,
-    createElement
+    createElement,
+    initializeHamburgerMenu
 } from './utils.js';
 import authManager from './auth.js';
 
@@ -38,6 +39,9 @@ class ConfigManager {
         this.setupEventListeners();
         this.populateForm();
         this.updateColorSettings();
+        
+        // ハンバーガーメニューの初期化
+        initializeHamburgerMenu();
     }
 
     // ログイン必須メッセージ表示
